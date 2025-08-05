@@ -1,0 +1,15 @@
+
+import ResumeEditor from "@/components/resume/resume-editor"
+
+export default function ResumeEditPage({ params }: { params: { id: string } }) {
+    return (
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+
+            <main
+                className="ml-0 md:ml-64 p-4 sm:p-6 lg:p-8 overflow-x-hidden transition-all duration-300"
+            >
+                <ResumeEditor resumeId={params.id} />
+            </main>
+        </div>
+    )
+}

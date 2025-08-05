@@ -1,0 +1,226 @@
+.floatingMenu {
+  position: fixed;
+  bottom: 30px;
+  right: 200px; /* 저장 패널과 겹치지 않도록 왼쪽으로 이동 */
+  z-index: 998;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease-in-out;
+  transform: translateY(20px);
+}
+
+.floatingMenu.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.toggleButton {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #4c82f7;
+  color: white;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(76, 130, 247, 0.3);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 999;
+}
+
+:global(.dark) .toggleButton {
+  background: #6366f1;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.toggleButton:hover {
+  background: #3a6fd0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(76, 130, 247, 0.4);
+}
+
+:global(.dark) .toggleButton:hover {
+  background: #4f46e5;
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+
+.menuContainer {
+  position: absolute;
+  bottom: 70px;
+  right: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  padding: 16px;
+  min-width: 200px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px) scale(0.95);
+  transition: all 0.2s ease;
+  border: 1px solid #e5e7eb;
+}
+
+:global(.dark) .menuContainer {
+  background: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.menuContainer.expanded {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.questionNumbers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+:global(.dark) .questionNumbers {
+  border-bottom-color: #374151;
+}
+
+.questionButton {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #4c82f7;
+  background: white;
+  color: #4c82f7;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+:global(.dark) .questionButton {
+  background: #374151;
+  border-color: #6366f1;
+  color: #6366f1;
+}
+
+.questionButton:hover {
+  background: #4c82f7;
+  color: white;
+  transform: translateY(-1px);
+}
+
+:global(.dark) .questionButton:hover {
+  background: #6366f1;
+  color: white;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.addButton,
+.removeButton {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 8px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.addButton {
+  background: #10b981;
+  color: white;
+}
+
+:global(.dark) .addButton {
+  background: #059669;
+}
+
+.addButton:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+:global(.dark) .addButton:hover {
+  background: #047857;
+}
+
+.removeButton {
+  background: #ef4444;
+  color: white;
+}
+
+:global(.dark) .removeButton {
+  background: #dc2626;
+}
+
+.removeButton:hover:not(:disabled) {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+:global(.dark) .removeButton:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.removeButton:disabled {
+  background: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+:global(.dark) .removeButton:disabled {
+  background: #4b5563;
+  color: #6b7280;
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+  .floatingMenu {
+    bottom: 20px;
+    right: 20px; /* 모바일에서는 원래 위치 */
+  }
+
+  .toggleButton {
+    width: 50px;
+    height: 50px;
+    font-size: 18px;
+  }
+
+  .menuContainer {
+    min-width: 180px;
+    bottom: 60px;
+  }
+
+  .questionNumbers {
+    grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
+  }
+
+  .questionButton {
+    width: 35px;
+    height: 35px;
+    font-size: 12px;
+  }
+
+  .addButton,
+  .removeButton {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+}

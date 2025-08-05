@@ -1,0 +1,1141 @@
+/* style.module.css 수정 */
+.pageContainer {
+  min-height: 100vh;
+  background: #f8fafc;
+  margin-left: 0; /* 기본값을 0으로 */
+  transition: background-color 0.3s ease;
+}
+
+:global(.dark) .pageContainer {
+  background: #0f172a;
+}
+
+/* 페이지 제목 섹션 */
+.pageHeaderInline {
+  padding: 24px 32px 16px 32px;
+  margin-bottom: 0;
+}
+
+.pageTitleSection {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pageTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 6px 0;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+:global(.dark) .pageTitle {
+  color: #f1f5f9;
+}
+
+.titleIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #6366f1;
+  transition: color 0.3s ease;
+}
+
+:global(.dark) .titleIcon {
+  color: #818cf8;
+}
+
+.pageDescription {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+:global(.dark) .pageDescription {
+  color: #94a3b8;
+}
+
+.resumePage {
+  padding: 0 32px 32px 32px;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.mainWrapper {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-right: 150px;
+}
+
+.mainLayout {
+  display: flex;
+  padding-top: 0;
+  max-width: 1200px;
+  gap: 24px;
+  width: 100%;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+/* 사이드바 스타일 - 이력서 페이지 스타일 적용 */
+.sidebar {
+  width: 60px;
+  background: white;
+  padding: 16px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  height: fit-content;
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+  position: sticky;
+  top: 24px;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+  border: 1px solid #e2e8f0;
+}
+
+:global(.dark) .sidebar {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.sidebarButton {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #6366f1;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:global(.dark) .sidebarButton {
+  background: #334155;
+  border-color: #475569;
+  color: #818cf8;
+}
+
+.sidebarButton:hover:not(:disabled) {
+  background: #6366f1;
+  color: white;
+  border-color: #6366f1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px 0 rgba(99, 102, 241, 0.15);
+}
+
+:global(.dark) .sidebarButton:hover:not(:disabled) {
+  background: #818cf8;
+  color: white;
+  border-color: #818cf8;
+}
+
+.sidebarButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* 메인 컨텐츠 영역 - 이력서 페이지 스타일 적용 */
+.resume {
+  flex: 1;
+  max-width: 920px;
+  min-width: 650px;
+  padding: 40px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+  transition: all 0.3s ease;
+  border: 1px solid #e2e8f0;
+  position: relative;
+}
+
+:global(.dark) .resume {
+  background: #1e293b;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+  border-color: #334155;
+}
+
+.titleInput {
+  width: 100%;
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding: 18px 24px;
+  margin-bottom: 28px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  background: white;
+  color: #1e293b;
+  outline: none;
+}
+
+:global(.dark) .titleInput {
+  background: #334155;
+  border-color: #475569;
+  color: #f1f5f9;
+}
+
+.titleInput:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+:global(.dark) .titleInput:focus {
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.1);
+}
+
+/* 토글 컨테이너 */
+.toggleContainer {
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+:global(.dark) .toggleContainer {
+  background: #334155;
+  border-color: #475569;
+}
+
+.toggleText {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #64748b;
+  cursor: help;
+  transition: color 0.3s ease;
+}
+
+:global(.dark) .toggleText {
+  color: #94a3b8;
+}
+
+.toggleLabel {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+}
+
+.toggleLabel input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSlider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #cbd5e1;
+  border-radius: 28px;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+:global(.dark) .toggleSlider {
+  background: #475569;
+}
+
+.toggleSlider::before {
+  content: '';
+  position: absolute;
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  top: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.3s;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+:global(.dark) .toggleSlider::before {
+  background: #f1f5f9;
+}
+
+.toggleLabel input:checked + .toggleSlider {
+  background: #6366f1;
+}
+
+:global(.dark) .toggleLabel input:checked + .toggleSlider {
+  background: #818cf8;
+}
+
+.toggleLabel input:checked + .toggleSlider::before {
+  transform: translateX(24px);
+}
+
+.questionContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.questionBlock {
+  border-left: 3px solid #6366f1;
+  padding-left: 24px;
+  margin-bottom: 32px;
+  position: relative;
+  transition: all 0.3s ease;
+  scroll-margin-top: 80px;
+}
+
+:global(.dark) .questionBlock {
+  border-left-color: #818cf8;
+}
+
+.questionHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.questionLabel {
+  font-weight: 600;
+  color: #475569;
+  min-width: 60px;
+  font-size: 0.875rem;
+  transition: color 0.3s ease;
+}
+
+:global(.dark) .questionLabel {
+  color: #cbd5e1;
+}
+
+.questionTitleInput {
+  flex: 1;
+  padding: 14px 18px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  background: white;
+  color: #1e293b;
+  outline: none;
+}
+
+:global(.dark) .questionTitleInput {
+  background: #334155;
+  border-color: #475569;
+  color: #f1f5f9;
+}
+
+.questionTitleInput:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+:global(.dark) .questionTitleInput:focus {
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.1);
+}
+
+/* style.module.css */
+
+.content {
+  box-sizing: border-box; /* 박스 크기 계산 방식을 명확히 지정 */
+  width: 100%;
+  height: 400px; /* 높이를 조금 더 여유있게 수정 */
+  padding: 20px 24px;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  resize: none;
+  overflow-y: auto;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  background: white;
+  color: #1e293b;
+  outline: none;
+}
+
+:global(.dark) .content {
+  background: #334155;
+  border-color: #475569;
+  color: #f1f5f9;
+}
+
+.content:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+:global(.dark) .content:focus {
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.1);
+}
+
+.charCount {
+  text-align: right;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 8px;
+  transition: color 0.3s ease;
+}
+
+:global(.dark) .charCount {
+  color: #94a3b8;
+}
+
+/* 저장 패널 - 이력서 스타일 적용 */
+.saveSidebar {
+  position: fixed;
+  top: 120px;
+  right: 40px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 997;
+  transition: all 0.3s ease;
+  width: 170px;
+}
+
+:global(.dark) .saveSidebar {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.loadTrigger {
+  background: transparent;
+  color: #6366f1;
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px dashed #6366f1;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+:global(.dark) .loadTrigger {
+  color: #818cf8;
+  border-color: #818cf8;
+}
+
+.loadTrigger:hover {
+  background: #f0f9ff;
+  border-color: #3b82f6;
+}
+
+:global(.dark) .loadTrigger:hover {
+  background: #1e3a8a;
+  border-color: #60a5fa;
+}
+
+.saveButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.saveMenuBtn {
+  background: #6366f1;
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+:global(.dark) .saveMenuBtn {
+  background: #818cf8;
+}
+
+.saveMenuBtn:hover:not(:disabled) {
+  background: #4f46e5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px 0 rgba(99, 102, 241, 0.15);
+}
+
+:global(.dark) .saveMenuBtn:hover:not(:disabled) {
+  background: #6366f1;
+}
+
+.saveMenuBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.exportLinkWrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.exportLink {
+  color: #6366f1;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+  user-select: none;
+  transition: color 0.3s ease;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+:global(.dark) .exportLink {
+  color: #818cf8;
+}
+
+.exportLink:hover {
+  background: #f0f9ff;
+  text-decoration: none;
+}
+
+:global(.dark) .exportLink:hover {
+  background: #1e3a8a;
+}
+
+.exportOptions {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+:global(.dark) .exportOptions {
+  background: #334155;
+  border-color: #475569;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+}
+
+.exportOptions button {
+  background: none;
+  border: none;
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #475569;
+}
+
+:global(.dark) .exportOptions button {
+  color: #f1f5f9;
+}
+
+.exportOptions button:hover {
+  background: #f8fafc;
+}
+
+:global(.dark) .exportOptions button:hover {
+  background: #475569;
+}
+
+/* placeholder 색상 */
+.titleInput::placeholder,
+.questionTitleInput::placeholder,
+.content::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1;
+}
+
+:global(.dark) .titleInput::placeholder,
+:global(.dark) .questionTitleInput::placeholder,
+:global(.dark) .content::placeholder {
+  color: #64748b !important;
+}
+
+/* 모달 스타일 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+:global(.dark) .modal {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.modalContent {
+  background: white;
+  padding: 32px;
+  border-radius: 16px;
+  width: 500px;
+  max-width: 90%;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+  border: 1px solid #e2e8f0;
+}
+
+:global(.dark) .modalContent {
+  background: #1e293b;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  border-color: #334155;
+}
+
+.modalContent h2 {
+  color: #1e293b;
+  margin-bottom: 20px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  transition: color 0.3s ease;
+}
+
+:global(.dark) .modalContent h2 {
+  color: #f1f5f9;
+}
+
+.loading,
+.emptyList {
+  color: #64748b;
+  text-align: center;
+  padding: 24px;
+  font-size: 0.875rem;
+  transition: color 0.3s ease;
+}
+
+:global(.dark) .loading,
+:global(.dark) .emptyList {
+  color: #94a3b8;
+}
+
+.loadList {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.loadItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px 0;
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.3s ease;
+}
+
+:global(.dark) .loadItem {
+  border-bottom-color: #475569;
+}
+
+.loadItem:hover {
+  background: #f8fafc;
+  padding-left: 12px;
+  padding-right: 12px;
+  border-radius: 8px;
+  border-bottom-color: transparent;
+}
+
+:global(.dark) .loadItem:hover {
+  background: #334155;
+}
+
+.loadTitle {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #1e293b;
+  transition: color 0.3s ease;
+}
+
+:global(.dark) .loadTitle {
+  color: #f1f5f9;
+}
+
+.draftBadge {
+  color: #d97706;
+  font-weight: 500;
+  font-size: 0.875rem;
+  background: #fef3c7;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-left: 8px;
+}
+
+:global(.dark) .draftBadge {
+  color: #fbbf24;
+  background: #92400e;
+}
+
+.loadMeta {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 4px;
+  transition: color 0.3s ease;
+}
+
+:global(.dark) .loadMeta {
+  color: #94a3b8;
+}
+
+.loadBtn {
+  background: #6366f1;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+:global(.dark) .loadBtn {
+  background: #818cf8;
+}
+
+.loadBtn:hover {
+  background: #4f46e5;
+  transform: translateY(-1px);
+}
+
+:global(.dark) .loadBtn:hover {
+  background: #6366f1;
+}
+
+.closeBtn {
+  margin-top: 20px;
+  background: #f8fafc;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #475569;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+:global(.dark) .closeBtn {
+  background: #475569;
+  color: #f1f5f9;
+}
+
+.closeBtn:hover {
+  background: #e2e8f0;
+  transform: translateY(-1px);
+}
+
+:global(.dark) .closeBtn:hover {
+  background: #64748b;
+}
+@media (min-width: 769px) {
+  .pageContainer {
+    margin-left: 280px; /* 사이드바 너비에 맞춤 */
+  }
+}
+
+/* 수정 후 */
+@media (max-width: 768px) {
+  .pageContainer {
+    margin-left: 0;
+  }
+
+  .mainWrapper {
+    padding-right: 0;
+  }
+
+  .pageHeaderInline {
+    padding: 20px 16px 16px 16px;
+  }
+
+  .pageTitle {
+    font-size: 1.5rem;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .titleIcon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .pageDescription {
+    font-size: 0.875rem;
+  }
+
+  .resumePage {
+    padding: 0 16px 40px 16px;
+  }
+
+  .mainLayout {
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 16px;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    position: static;
+    border-radius: 12px;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 12px 16px;
+    gap: 8px;
+  }
+
+  .sidebarButton {
+    width: 44px;
+    height: 44px;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .resume {
+    padding: 24px;
+    max-width: 100%;
+    min-width: auto;
+  }
+
+  .titleInput {
+    font-size: 18px;
+    padding: 14px 16px;
+  }
+
+  .questionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .questionTitleInput {
+    width: 100%;
+  }
+
+  .content {
+    height: 250px;
+    padding: 14px 16px;
+  }
+
+  .saveSidebar {
+    position: static;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .modalContent {
+    padding: 24px;
+    width: 95%;
+  }
+
+  .modalContent h2 {
+    font-size: 18px;
+  }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .pageContainer {
+    margin-left: 0;
+  }
+
+  .mainWrapper {
+    padding-right: 0;
+
+  }
+
+  .pageHeaderInline {
+    padding: 20px 16px 16px 16px;
+  }
+
+  .pageTitle {
+    font-size: 1.5rem;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .titleIcon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .pageDescription {
+    font-size: 0.875rem;
+  }
+
+  .resumePage {
+    padding: 0 16px 40px 16px;
+  }
+
+  .mainLayout {
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 16px;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    position: static;
+    border-radius: 12px;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 12px 16px;
+    gap: 8px;
+  }
+
+  .sidebarButton {
+    width: 44px;
+    height: 44px;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .resume {
+    padding: 24px;
+    max-width: 100%;
+    min-width: auto;
+  }
+
+  .titleInput {
+    font-size: 18px;
+    padding: 14px 16px;
+  }
+
+  .questionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .questionTitleInput {
+    width: 100%;
+  }
+
+  .content {
+    height: 250px;
+    padding: 14px 16px;
+  }
+
+  .saveSidebar {
+    position: static;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .modalContent {
+    padding: 24px;
+    width: 95%;
+  }
+
+  .modalContent h2 {
+    font-size: 18px;
+  }
+}
+
+.exportOptions button {
+  background: none;
+  border: none;
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #475569;
+}
+
+:global(.dark) .exportOptions button {
+  color: #f1f5f9;
+}
+
+.exportOptions button:hover:not(:disabled) {
+  background: #f8fafc;
+}
+
+:global(.dark) .exportOptions button:hover:not(:disabled) {
+  background: #475569;
+}
+
+.exportOptions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: #9ca3af;
+}
+
+:global(.dark) .exportOptions button:disabled {
+  color: #6b7280;
+}
+
+/* 불러오기 모달의 액션 버튼들 */
+.loadActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.loadBtn {
+  background: #6366f1;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 60px;
+}
+
+:global(.dark) .loadBtn {
+  background: #818cf8;
+}
+
+.loadBtn:hover:not(:disabled) {
+  background: #4f46e5;
+  transform: translateY(-1px);
+}
+
+:global(.dark) .loadBtn:hover:not(:disabled) {
+  background: #6366f1;
+}
+
+.loadBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* 삭제 버튼 스타일 */
+.deleteBtn {
+  background: transparent;  /* 배경 투명 */
+  color: #6b7280;          /* 회색 텍스트 */
+  border: none;
+  padding: 8px 10px;
+  font-size: 1.2rem;       /* × 아이콘 크기 조정 */
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:global(.dark) .deleteBtn {
+  color: #9ca3af;          /* 다크모드에서 밝은 회색 */
+}
+
+.deleteBtn:hover:not(:disabled) {
+  background: #f3f4f6;    /* 호버시 연한 회색 배경 */
+  color: #374151;         /* 호버시 진한 회색 텍스트 */
+  transform: translateY(-1px);
+  box-shadow: none;       /* 그림자 제거 */
+}
+
+:global(.dark) .deleteBtn:hover:not(:disabled) {
+  background: #374151;    /* 다크모드 호버 배경 */
+  color: #f9fafb;         /* 다크모드 호버 텍스트 */
+}
+
+.deleteBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  background: transparent; /* 비활성화시에도 투명 배경 */
+}
+
+/* loadItem 수정 - 액션 버튼들을 위한 공간 확보 */
+.loadItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px 0;
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.3s ease;
+  gap: 16px; /* 텍스트와 버튼 사이 간격 */
+}
+
+:global(.dark) .loadItem {
+  border-bottom-color: #475569;
+}
+
+.loadItem:hover {
+  background: #f8fafc;
+  padding-left: 12px;
+  padding-right: 12px;
+  border-radius: 8px;
+  border-bottom-color: transparent;
+}
+
+:global(.dark) .loadItem:hover {
+  background: #334155;
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+  .loadActions {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .loadBtn,
+  .deleteBtn {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .loadItem {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+}
