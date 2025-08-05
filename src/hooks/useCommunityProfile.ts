@@ -31,7 +31,7 @@ export const useCommunityProfile = (userId: number | null) => {
 
             const token = localStorage.getItem('authToken') || localStorage.getItem('accessToken');
             
-            const response = await fetch(`https://initback-production-67bf.up.railway.app/api/profile/user/${userId}`, {
+            const response = await fetch(`https://initmainback-production.up.railway.app/api/profile/user/${userId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'

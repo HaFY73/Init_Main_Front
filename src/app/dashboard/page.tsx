@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation"
 import EnhancedJobRecommendations from '@/components/EnhancedJobRecommendations'
 
 // API 기본 URL
-const API_BASE_URL = "https://initback-production-67bf.up.railway.app/api/home";
+const API_BASE_URL = "https://initmainback-production.up.railway.app/api/home";
 
 // 유틸리티 함수
 const cn = (...inputs: (string | undefined | null | boolean)[]) => {

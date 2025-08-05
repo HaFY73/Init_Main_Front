@@ -6,7 +6,7 @@
 const getApiBaseUrl = (): string => {
   if (typeof window === 'undefined') {
     // 서버 사이드 렌더링 환경
-    return 'https://initback-production-67bf.up.railway.app';
+    return 'https://initmainback-production.up.railway.app';
   }
   
   // 클라이언트 사이드 환경
@@ -14,7 +14,7 @@ const getApiBaseUrl = (): string => {
     return process.env.NEXT_PUBLIC_API_URL || 'https://your-backend-domain.com';
   }
   
-  return 'https://initback-production-67bf.up.railway.app';
+  return 'https://initmainback-production.up.railway.app';
 };
 
 /**
