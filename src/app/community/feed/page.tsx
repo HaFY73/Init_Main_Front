@@ -1195,7 +1195,7 @@ export default function FeedPage() {
                                     {/* 🔥 프로필이 없을 때 오버레이 */}
                                     {showProfileRequired && (
                                         <div
-                                            className="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 rounded-lg flex items-center justify-center">
+                                            className="absolute inset-0 bg-gradient-to-br from-white/70 to-gray-50/60 backdrop-blur-sm z-10 rounded-lg flex items-center justify-center">
                                             <ProfileRequiredAlert
                                                 variant="card"
                                                 className="max-w-md"
