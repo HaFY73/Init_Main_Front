@@ -14,6 +14,7 @@ import {ImageIcon, User, Briefcase, MapPin, Building2, Lock} from "lucide-react"
 import {getCurrentUserId} from "@/utils/auth"
 import {uploadProfileImage} from "@/lib/profile-api"
 import {HexColorPicker} from "react-colorful"
+import {getAvatarData, refreshAllProfileImages} from "@/utils/imageUtils"
 
 interface CommunityProfile {
     id?: number
@@ -73,7 +74,7 @@ export default function ProfileDialog() {
         followingCount: 0
     })
 
-    const [profileImage, setProfileImage] = useState<string>("https://ui-avatars.com/api/?name=User&background=6366f1&color=fff&size=96")
+    const [profileImage, setProfileImage] = useState<string>("")
     const [loading, setLoading] = useState(false)
     const [saving, setSaving] = useState(false)
     const [imageUploading, setImageUploading] = useState(false)
@@ -82,9 +83,33 @@ export default function ProfileDialog() {
 
     const userId = getCurrentUserId()
 
+    // 🔥 프로필 이름 변경 시 기본 아바타 업데이트
+    useEffect(() => {
+        // 프로필 이미지가 기본 아바타이고 이름이 변경된 경우에만 업데이트
+        if (profileImage.includes('ui-avatars.com') && profile.displayName) {
+            const avatarData = getAvatarData("", profile.displayName)
+            const newAvatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(avatarData.fallbackChar)}&background=6366f1&color=fff&size=96`
+            if (profileImage !== newAvatarUrl) {
+                setProfileImage(newAvatarUrl)
+            }
+        }
+    }, [profile.displayName, profileImage])
+
     useEffect(() => {
         if (isOpen && userId) loadCommunityProfile()
     }, [isOpen, userId])
+
+    // 🔥 프로필 이름 변경 시 기본 아바타 업데이트
+    useEffect(() => {
+        // 프로필 이미지가 기본 아바타이고 이름이 변경된 경우에만 업데이트
+        if (profileImage.includes('ui-avatars.com') && profile.displayName) {
+            const avatarData = getAvatarData("", profile.displayName)
+            const newAvatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(avatarData.fallbackChar)}&background=6366f1&color=fff&size=96`
+            if (profileImage !== newAvatarUrl) {
+                setProfileImage(newAvatarUrl)
+            }
+        }
+    }, [profile.displayName, profileImage])
 
     useEffect(() => {
         // 컴포넌트 언마운트시 Object URL 정리
@@ -94,6 +119,18 @@ export default function ProfileDialog() {
             }
         }
     }, [profileImage])
+
+    // 🔥 프로필 이름 변경 시 기본 아바타 업데이트
+    useEffect(() => {
+        // 프로필 이미지가 기본 아바타이고 이름이 변경된 경우에만 업데이트
+        if (profileImage.includes('ui-avatars.com') && profile.displayName) {
+            const avatarData = getAvatarData("", profile.displayName)
+            const newAvatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(avatarData.fallbackChar)}&background=6366f1&color=fff&size=96`
+            if (profileImage !== newAvatarUrl) {
+                setProfileImage(newAvatarUrl)
+            }
+        }
+    }, [profile.displayName, profileImage])
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -129,17 +166,25 @@ export default function ProfileDialog() {
                     const profileData = result.data
                     setProfile(prev => ({...prev, ...profileData}))
 
-                    if (profileData.profileImageUrl) {
-                        // 🔥 서버 이미지 URL 처리 개선
-                        let imageUrl = profileData.profileImageUrl
-
-                        // Base64가 아닌 경우에만 서버 URL 접두사 추가
-                        if (!imageUrl.startsWith('data:') && !imageUrl.startsWith('http')) {
-                            imageUrl = `http://localhost:8080${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`
-                        }
+                    // 🔥 프로필 이미지 처리 개선
+                    const avatarData = getAvatarData(profileData.profileImageUrl, profileData.displayName)
+                    if (avatarData.hasImage) {
+                        console.log('🖼️ 프로필 이미지 설정:', avatarData.imageUrl)
+                        setProfileImage(avatarData.imageUrl)
+                    } else {
+                        // 🔥 이미지가 없으면 이름 기반 기본 아바타 생성
+                        const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(avatarData.fallbackChar)}&background=6366f1&color=fff&size=96`
+                        console.log('🎨 기본 아바타 생성:', fallbackUrl)
+                        setProfileImage(fallbackUrl)
                     }
                 } else {
-                    setProfileImage("https://ui-avatars.com/api/?name=User&background=6366f1&color=fff&size=96")
+                    // 🔥 프로필이 없는 경우
+                    const displayName = profile.displayName || "사용자"
+                    const firstChar = displayName.charAt(0).toUpperCase()
+                    const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstChar)}&background=6366f1&color=fff&size=96`
+                    console.log('🎨 새 사용자 기본 아바타 생성:', fallbackUrl)
+                    setProfileImage(fallbackUrl)
+                }
                 }
             }
         } catch (err) {
@@ -156,33 +201,53 @@ export default function ProfileDialog() {
         setImageUploading(true)
 
         try {
-            console.log('🔄 프로필 이미지 업로드 시작:', file.name)
+            console.log('🔄 프로필 이미지 업로드 시작:', {
+                userId,
+                fileName: file.name,
+                fileSize: file.size,
+                fileType: file.type
+            });
 
             // 🔥 즉시 미리보기를 위한 Object URL 생성
             const previewUrl = URL.createObjectURL(file)
+            console.log('👀 미리보기 URL 생성:', previewUrl)
             setProfileImage(previewUrl)
 
             // 🔥 프로필 이미지 전용 API 사용
             const imageUrl = await uploadProfileImage(userId!, file)
-                console.log('✅ 프로필 이미지 업로드 성공:', imageUrl)
+            console.log('✅ 서버 업로드 성공, 받은 URL:', imageUrl)
+            
+            // 🔥 URL 유형 확인
+            if (imageUrl.startsWith('http')) {
+                console.log('✅ 완전한 URL 확인됨:', imageUrl)
+            } else {
+                console.log('⚠️ 상대 경로 URL:', imageUrl)
+            }
 
-                // 🔥 실제 서버 URL로 교체
-                setProfileImage(imageUrl)
-                setProfile(prev => ({...prev, profileImageUrl: imageUrl}))
+            // 🔥 실제 서버 URL로 교체
+            setProfileImage(imageUrl)
+            setProfile(prev => ({...prev, profileImageUrl: imageUrl}))
 
-                // 🔥 임시 Object URL 해제
-                URL.revokeObjectURL(previewUrl)
+            // 🔥 임시 Object URL 해제
+            URL.revokeObjectURL(previewUrl)
+            
+            // 🔥 이미지 캐시 새로고침
+            setTimeout(() => {
+                refreshAllProfileImages()
+            }, 1000)
+            
+            console.log('🎉 프로필 이미지 업로드 및 설정 완료')
         } catch (error) {
             console.error('❌ 프로필 이미지 업로드 에러:', error)
 
-            // 🔥 에러시 원래 이미지로 복원
-            if (profile.profileImageUrl) {
-                const originalUrl = profile.profileImageUrl.startsWith('/')
-                    ? `http://localhost:8080${profile.profileImageUrl}`
-                    : profile.profileImageUrl
-                setProfileImage(originalUrl)
+            // 🔥 에러시 현재 프로필 이름에 맞는 기본 이미지로 복원
+            const avatarData = getAvatarData(profile.profileImageUrl, profile.displayName)
+            if (avatarData.hasImage) {
+                setProfileImage(avatarData.imageUrl)
             } else {
-                setProfileImage("/placeholder_person.svg?height=96&width=96")
+                // 🔥 이미지가 없으면 현재 프로필 이름으로 기본 아바타 생성
+                const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(avatarData.fallbackChar)}&background=6366f1&color=fff&size=96`
+                setProfileImage(fallbackUrl)
             }
 
             alert('이미지 업로드 중 오류가 발생했습니다.')
@@ -217,6 +282,41 @@ export default function ProfileDialog() {
 
             if (response.ok) {
                 alert("프로필이 저장되었습니다")
+                
+                // 🔥 프로필 저장 후 이미지 캐시 새로고침
+                console.log('💾 프로필 저장 완료 - 이미지 캐시 새로고침 시작')
+                
+                // 1. 전체 프로필 이미지 캐시 새로고침
+                refreshAllProfileImages()
+                
+                // 2. 페이지별 처리
+                const currentPath = window.location.pathname
+                console.log('📍 현재 경로:', currentPath)
+                
+                if (currentPath.includes('/community/')) {
+                    console.log('🔄 커뮤니티 페이지 - 페이지 새로고침')
+                    
+                    // 커뮤니티 페이지에서는 강제 새로고침
+                    setTimeout(() => {
+                        // 브라우저 캐시 무효화
+                        if ('caches' in window) {
+                            caches.keys().then(names => {
+                                names.forEach(name => caches.delete(name))
+                            })
+                        }
+                        
+                        // 페이지 새로고침
+                        window.location.reload()
+                    }, 800) // 800ms 후 새로고침 (이미지 캐시 정리 시간 확보)
+                } else {
+                    console.log('ℹ️ 일반 페이지 - 이미지 캐시만 새로고침')
+                    
+                    // 다른 페이지에서는 이미지만 새로고침
+                    setTimeout(() => {
+                        refreshAllProfileImages()
+                    }, 500)
+                }
+                
                 setIsOpen(false)
             } else {
                 const errorText = await response.text()
@@ -295,7 +395,9 @@ export default function ProfileDialog() {
                                         onClick={() => profileFileInputRef.current?.click()}>
                                     <AvatarImage src={profileImage}/>
                                     <AvatarFallback
-                                        className="text-lg">{profile.displayName.charAt(0) || '사'}</AvatarFallback>
+                                        className="text-lg bg-violet-500 text-white">
+                                        {profile.displayName ? profile.displayName.charAt(0).toUpperCase() : 'U'}
+                                    </AvatarFallback>
                                 </Avatar>
                                 {imageUploading && <div
                                     className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">

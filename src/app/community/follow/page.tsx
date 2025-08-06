@@ -11,6 +11,7 @@ import {Card, CardContent, CardHeader} from "@/components/ui/card"
 import {Input} from "@/components/ui/input"
 import {Search, Users, UserMinus} from "lucide-react"
 import {getCurrentUserId} from "@/utils/auth"
+import {getAvatarData} from "@/utils/imageUtils"
 import {motion} from "framer-motion";
 import ProfileModal from "@/components/ProfileModal"
 
@@ -59,7 +60,7 @@ export default function FollowPage() {
             const token = localStorage.getItem('authToken') || localStorage.getItem('accessToken')
 
             // 백엔드 API 엔드포인트에 맞춘 URL
-            const url = new URL('`https://initmainback-production.up.railway.app/api/follows/following')
+            const url = new URL('https://initmainback-production.up.railway.app/api/follows/following')
             url.searchParams.append('userId', currentUserId.toString())
             url.searchParams.append('currentUserId', currentUserId.toString())
             url.searchParams.append('page', '0')
@@ -259,18 +260,17 @@ export default function FollowPage() {
                                                         {/* 아바타 + 유저 정보 */}
                                                         <div
                                                             className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                                                            <Avatar className="h-12 w-12">
-                                                                <AvatarImage
-                                                                    src={
-                                                                        user.profileImageUrl
-                                                                            ? user.profileImageUrl.startsWith("http")
-                                                                                ? user.profileImageUrl
-                                                                                : `http://localhost:8080${user.profileImageUrl}`
-                                                                            : "/placeholder_person.svg?height=48&width=48"
-                                                                    }
-                                                                />
-                                                                <AvatarFallback>{user.displayName[0]}</AvatarFallback>
-                                                            </Avatar>
+                                                            {(() => {
+                                                                const avatarData = getAvatarData(user.profileImageUrl, user.displayName);
+                                                                return (
+                                                                    <Avatar className="h-12 w-12">
+                                                                        <AvatarImage src={avatarData.imageUrl} />
+                                                                        <AvatarFallback className="bg-violet-500 text-white">
+                                                                            {avatarData.fallbackChar}
+                                                                        </AvatarFallback>
+                                                                    </Avatar>
+                                                                );
+                                                            })()}
                                                             <div>
                                                                 <h3 className="font-semibold text-gray-900">
                                                                     {user.displayName}

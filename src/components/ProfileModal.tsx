@@ -16,6 +16,7 @@ import {
     Lock,
     Eye
 } from "lucide-react"
+import { getAvatarData } from "@/utils/imageUtils"
 
 // 백엔드 ProfileModalDto에 맞춘 인터페이스
 interface ProfileModalData {
@@ -113,14 +114,7 @@ export default function ProfileModal({isOpen, onClose, userId}: ProfileModalProp
 
             if (response.ok) {
                 const data: ProfileModalData = await response.json()
-                console.log('✅ 프로필 데이터 수신:', data)
-                console.log('🔍 bio 데이터 확인:', data.bio)
-                console.log('🔍 coverImageUrl 데이터 확인:', data.coverImageUrl)
-
-                // 이미지 URL 처리
-                if (data.profileImageUrl && !data.profileImageUrl.startsWith('data:') && !data.profileImageUrl.startsWith('http')) {
-                    data.profileImageUrl = `http://localhost:8080${data.profileImageUrl.startsWith('/') ? '' : '/'}${data.profileImageUrl}`
-                }
+                console.log('✅ 프로필 모달 데이터 수신:', data)
 
                 setProfile(data)
             } else if (response.status === 404) {
@@ -195,18 +189,23 @@ export default function ProfileModal({isOpen, onClose, userId}: ProfileModalProp
                                 {/* 프로필 이미지 & 기본 정보 */}
                                 <div className="text-center">
                                     <div className="relative inline-block">
-                                        <Avatar
-                                            className="h-24 w-24 sm:h-28 sm:w-28 border-4 border-white shadow-xl">
-                                            <AvatarImage
-                                                src={profile.profileImageUrl || "/placeholder_person.svg?height=112&width=112"}
-                                                alt={profile.displayName}
-                                                className="object-cover"
-                                            />
-                                            <AvatarFallback
-                                                className="text-xl sm:text-2xl font-semibold bg-gradient-to-br from-violet-500 to-purple-600 text-white">
-                                                {profile.displayName.charAt(0).toUpperCase()}
-                                            </AvatarFallback>
-                                        </Avatar>
+                                        {(() => {
+                                            const avatarData = getAvatarData(profile.profileImageUrl, profile.displayName);
+                                            return (
+                                                <Avatar
+                                                    className="h-24 w-24 sm:h-28 sm:w-28 border-4 border-white shadow-xl">
+                                                    <AvatarImage
+                                                        src={avatarData.imageUrl}
+                                                        alt={profile.displayName}
+                                                        className="object-cover"
+                                                    />
+                                                    <AvatarFallback
+                                                        className="text-xl sm:text-2xl font-semibold bg-gradient-to-br from-violet-500 to-purple-600 text-white">
+                                                        {avatarData.fallbackChar}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                            );
+                                        })()}
                                         {/* 공개/비공개 배지 */}
                                         <div className="absolute -bottom-1 -right-1">
                                             <Badge

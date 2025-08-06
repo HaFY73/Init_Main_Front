@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Users, MessageSquare, BookmarkIcon, PenSquare, Menu, type LucideIcon } from "lucide-react"
 import { useProfileDialog } from "@/contexts/ProfileDialogContext"
 import { useCommunityProfile } from "@/hooks/useCommunityProfile"
+import { getAvatarData } from "@/utils/imageUtils"
 
 interface UpwardMenuProps {
   className?: string
@@ -85,35 +86,17 @@ export function UpwardMenu({
 
   const handleMainButtonClick = () => setMenuVisible(!menuVisible)
 
-  // 프로필 이미지 URL 결정
-  const getProfileImageUrl = () => {
-    if (loading) return "/placeholder_person.svg?height=32&width=32"
-    
-    if (profile?.profileImageUrl) {
-      // base64 데이터인 경우 그대로 사용
-      if (profile.profileImageUrl.startsWith('data:')) {
-        return profile.profileImageUrl
-      }
-      // 절대 URL인 경우 그대로 사용
-      if (profile.profileImageUrl.startsWith('http')) {
-        return profile.profileImageUrl
-      }
-      // 상대 경로인 경우 절대 URL로 변환
-      if (profile.profileImageUrl.startsWith('/')) {
-        return `http://localhost:8080${profile.profileImageUrl}`
-      }
-      // 기타 경우 그대로 사용
-      return profile.profileImageUrl
+  // 아바타 데이터 처리
+  const getAvatarInfo = () => {
+    if (loading) {
+      return {
+        imageUrl: "",
+        fallbackChar: "U"
+      };
     }
     
-    return "/placeholder_person.svg?height=32&width=32"
-  }
-
-  // 프로필 이름 첫 글자 가져오기
-  const getProfileInitial = () => {
-    if (loading) return "U"
-    return profile?.displayName?.charAt(0) || "U"
-  }
+    return getAvatarData(profile?.profileImageUrl, profile?.displayName);
+  };
 
   return (
       <div className={`fixed bottom-20 z-50 ${className ?? "right-6"}`} ref={menuRef}>
@@ -138,15 +121,16 @@ export function UpwardMenu({
                   {item.isAvatar ? (
                       <Avatar className="h-8 w-8">
                         <AvatarImage
-                            src={getProfileImageUrl()}
+                            src={getAvatarInfo().imageUrl}
                             alt={profile?.displayName || "프로필"}
                             onError={(e) => {
-                              console.log("이미지 로딩 실패:", getProfileImageUrl())
-                              e.currentTarget.src = "/placeholder_person.svg?height=32&width=32"
+                              console.log("이미지 로딩 실패:", getAvatarInfo().imageUrl)
+                              // 이미지 로딩 실패시 아바타를 숨기고 fallback 표시
+                              e.currentTarget.style.display = 'none'
                             }}
                         />
                         <AvatarFallback className="text-xs font-medium">
-                          {getProfileInitial()}
+                          {getAvatarInfo().fallbackChar}
                         </AvatarFallback>
                       </Avatar>
                   ) : (

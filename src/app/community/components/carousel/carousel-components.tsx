@@ -4,7 +4,7 @@ import React, { useState, useEffect, memo, useCallback } from "react"
 import { ChevronLeft, ChevronRight, Share2, Bookmark, Heart, MessageCircle, UserPlus, UserCheck } from "lucide-react"
 import type { Post as FeedPagePostType, Category as FeedPageCategoryType } from "@/app/community/feed/page"
 import Image from "next/image"
-import { getFullImageUrl } from "@/utils/imageUtils"
+import { getAvatarData, getPostImageUrl } from "@/utils/imageUtils"
 
 const MAX_VISIBILITY = 3
 
@@ -77,7 +77,8 @@ export const AdaptedPostCard = memo<AdaptedPostCardProps>(function AdaptedPostCa
   isActive,
 }) {
   const displayCategoryLabel = getCategoryLabel(post, allCategories)
-  const authorInitial = post.author.name ? post.author.name[0].toUpperCase() : "A"
+  // 🔥 아바타 데이터 처리 통일
+  const avatarData = getAvatarData(post.author.avatar, post.author.name)
   const [showLikeEffect, setShowLikeEffect] = useState(false)
   const [isLikeAnimating, setIsLikeAnimating] = useState(false)
 
@@ -128,15 +129,29 @@ export const AdaptedPostCard = memo<AdaptedPostCardProps>(function AdaptedPostCa
 
       <div className="post-header">
         <div className="avatar">
-          <img 
-            src={post.author.avatar || "/placeholder_person.svg"} 
-            alt={post.author.name}
-            className="w-full h-full object-cover rounded-full"
-            onError={(e) => {
-              console.error('🖼️ [Carousel] 프로필 이미지 로딩 실패:', post.author.avatar);
-              e.currentTarget.src = "/placeholder_person.svg";
-            }}
-          />
+          {/* 🔥 아바타 이미지 처리 개선 */}
+          {avatarData.hasImage ? (
+            <img 
+              src={avatarData.imageUrl} 
+              alt={post.author.name}
+              className="w-full h-full object-cover rounded-full"
+              onError={(e) => {
+                console.error('🖼️ [Carousel] 프로필 이미지 로딩 실패:', avatarData.imageUrl);
+                e.currentTarget.style.display = 'none';
+                const fallbackDiv = e.currentTarget.parentElement?.querySelector('.avatar-fallback') as HTMLElement;
+                if (fallbackDiv) fallbackDiv.style.display = 'flex';
+              }}
+            />
+          ) : null}
+          {/* 🔥 fallback 아바타 */}
+          <div 
+            className={`avatar-fallback absolute inset-0 bg-violet-500 rounded-full flex items-center justify-center text-white font-semibold text-sm ${
+              avatarData.hasImage ? 'hidden' : 'flex'
+            }`}
+            style={{ fontSize: '12px' }}
+          >
+            {avatarData.fallbackChar}
+          </div>
         </div>
         <div className="post-meta">
           <div className="author-name">{post.author.name}</div>
@@ -159,16 +174,16 @@ export const AdaptedPostCard = memo<AdaptedPostCardProps>(function AdaptedPostCa
       <div className="post-category-container">
         <div className="post-category-badge">{displayCategoryLabel}</div>
       </div>
-      {post.imageUrl?.trim() && post.imageUrl.trim() !== "/placeholder.svg" && (
+      {post.imageUrl?.trim() && (
           <div className="relative w-full h-[200px] rounded-md">
             <Image
-                src={getFullImageUrl(post.imageUrl.trim()) || post.imageUrl.trim()}
+                src={getPostImageUrl(post.imageUrl.trim())}
                 alt={"Post image"}
                 fill
                 style={{ objectFit: "contain" }}
                 className="rounded-md"
                 onError={(e) => {
-                  console.error('🖼️ [Carousel] 이미지 로딩 실패:', post.imageUrl);
+                  console.error('🖼️ [Carousel] 게시글 이미지 로딩 실패:', post.imageUrl);
                   e.currentTarget.style.display = 'none';
                 }}
             />

@@ -298,7 +298,7 @@ export default function BookmarkPage() {
                                             <Avatar className="h-10 w-10">
                                                 <AvatarImage
                                                     src={post.author.avatar || "/placeholder_person.svg?height=40&width=40"}/>
-                                                <AvatarFallback>{post.author.name[0]}</AvatarFallback>
+                                                <AvatarFallback className="bg-violet-500 text-white">{post.author.name ? post.author.name.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
                                             </Avatar>
                                             <div className="flex-1">
                                                 <p className="font-semibold text-sm">{post.author.name}</p>
@@ -575,7 +575,7 @@ export default function BookmarkPage() {
                                             <Avatar className="h-10 w-10">
                                                 <AvatarImage
                                                     src={detailedPost.author.avatar || "/placeholder_person.svg"}/>
-                                                <AvatarFallback>{detailedPost.author.name[0]}</AvatarFallback>
+                                                <AvatarFallback className="bg-violet-500 text-white">{detailedPost.author.name ? detailedPost.author.name.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
                                             </Avatar>
                                             <div>
                                                 <DialogTitle className="text-base font-semibold">
@@ -665,8 +665,8 @@ export default function BookmarkPage() {
                                                                     <AvatarImage
                                                                         src={comment.author.avatar || "/placeholder_person.svg"}
                                                                     />
-                                                                    <AvatarFallback>
-                                                                        {comment.author.name[0]}
+                                                                    <AvatarFallback className="bg-violet-500 text-white">
+                                                                        {comment.author.name ? comment.author.name.charAt(0).toUpperCase() : 'U'}
                                                                     </AvatarFallback>
                                                                 </Avatar>
                                                                 <div className="flex-1 min-w-0">

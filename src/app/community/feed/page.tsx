@@ -12,7 +12,7 @@ import {
     deleteComment, toggleFollow, checkFollowStatus, type PostResponse, type CommentResponse, type ApiResponse
 } from "@/lib/post-api"
 import {getCurrentUserId} from "@/utils/auth"
-import {getFullImageUrl} from "@/utils/imageUtils"
+import {getFullImageUrl, getAvatarData, getPostImageUrl} from "@/utils/imageUtils"
 import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
@@ -94,12 +94,15 @@ const allCategories = [...jobCategoriesList, ...topicCategoriesList]
 
 // 🔥 수정 2: PostResponse를 Post로 변환하는 함수 추가
 const convertPostResponseToPost = (postResponse: PostResponse): Post => {
+    // 🔥 아바타 데이터 처리 통일
+    const avatarData = getAvatarData(postResponse.author.avatar, postResponse.author.name);
+    
     return {
         id: postResponse.id,
         author: {
             id: postResponse.author.id,
             name: postResponse.author.name,
-            avatar: postResponse.author.avatar || "/placeholder_person.svg",
+            avatar: avatarData.imageUrl,
             title: postResponse.author.jobTitle || "없음",
             isFollowing: postResponse.author.isFollowing || false
         },
@@ -184,7 +187,7 @@ export default function FeedPage() {
                             id: commentResponse.author.id,
                             userId: commentResponse.author.userId,
                             name: commentResponse.author.name,
-                            avatar: commentResponse.author.avatar || "/placeholder_person.svg",
+                            avatar: getAvatarData(commentResponse.author.avatar, commentResponse.author.name).imageUrl,
                             title: commentResponse.author.title || "사용자"
                         },
                         content: commentResponse.content,
@@ -392,6 +395,7 @@ export default function FeedPage() {
 
                     // 🔥 PostResponse를 Post로 변환
                     const convertedPosts = posts.map(convertPostResponseToPost);
+                    
                     setPosts(convertedPosts);
 
                     // 팔로우 상태 초기화
@@ -872,7 +876,7 @@ export default function FeedPage() {
                         id: response.data.author.id,           // CommunityProfile ID
                         userId: response.data.author.userId,   // User ID
                         name: response.data.author.name,
-                        avatar: response.data.author.avatar || "/placeholder_person.svg",
+                        avatar: getAvatarData(response.data.author.avatar, response.data.author.name).imageUrl,
                         title: response.data.author.title || "사용자"
                     },
                     content: response.data.content,
@@ -1200,8 +1204,10 @@ export default function FeedPage() {
                                         <div className="flex items-center gap-3">
                                             <Avatar className="h-10 w-10">
                                                 <AvatarImage
-                                                    src={detailedPost.author.avatar || "/placeholder_person.svg"}/>
-                                                <AvatarFallback>{detailedPost.author.name[0]}</AvatarFallback>
+                                                    src={detailedPost.author.avatar || ""}/>
+                                                <AvatarFallback className="bg-violet-500 text-white">
+                                                    {detailedPost.author.name ? detailedPost.author.name.charAt(0).toUpperCase() : 'U'}
+                                                </AvatarFallback>
                                             </Avatar>
                                             <div>
                                                 <DialogTitle
@@ -1251,21 +1257,17 @@ export default function FeedPage() {
                                         <div className="space-y-4 pr-2">
                                             {detailedPost.imageUrl && (
                                                 <div className="relative w-full h-[300px] rounded-md">
-                                                    {detailedPost.imageUrl?.trim() ? (
-                                                        <div className="relative w-full h-[300px] rounded-md">
-                                                            <Image
-                                                                src={getFullImageUrl(detailedPost.imageUrl.trim()) || detailedPost.imageUrl.trim()}
-                                                                alt={"Post image"}
-                                                                fill
-                                                                style={{objectFit: "contain"}}
-                                                                className="rounded-md"
-                                                                onError={(e) => {
-                                                                    console.error('🖼️ 이미지 로딩 실패:', detailedPost.imageUrl);
-                                                                    e.currentTarget.style.display = 'none';
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    ) : null}
+                                                    <Image
+                                                        src={getPostImageUrl(detailedPost.imageUrl.trim())}
+                                                        alt={"Post image"}
+                                                        fill
+                                                        style={{objectFit: "contain"}}
+                                                        className="rounded-md"
+                                                        onError={(e) => {
+                                                            console.error('🖼️ 게시글 이미지 로딩 실패:', detailedPost.imageUrl);
+                                                            e.currentTarget.style.display = 'none';
+                                                        }}
+                                                    />
                                                 </div>
                                             )}
                                             <p className="text-gray-700 whitespace-pre-line leading-relaxed text-base">
@@ -1297,7 +1299,7 @@ export default function FeedPage() {
                                                                 <Avatar className="h-8 w-8 flex-shrink-0">
                                                                     <AvatarImage
                                                                         src={comment.author.avatar || "/placeholder_person.svg"}/>
-                                                                    <AvatarFallback>{comment.author.name[0]}</AvatarFallback>
+                                                                    <AvatarFallback className="bg-violet-500 text-white">{comment.author.name ? comment.author.name.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
                                                                 </Avatar>
                                                                 <div className="flex-1 min-w-0">
                                                                     <div className="flex items-center gap-2 mb-1">
@@ -1384,8 +1386,10 @@ export default function FeedPage() {
                                             <div className="border-t border-gray-200 p-4 flex items-center gap-3">
                                                 <Avatar className="h-8 w-8 flex-shrink-0">
                                                     <AvatarImage
-                                                        src={myProfile?.profileImageUrl || "/placeholder_person.svg"}/>
-                                                    <AvatarFallback>{myProfile?.displayName?.charAt(0) || "U"}</AvatarFallback>
+                                                        src={myProfile?.profileImageUrl || ""}/>
+                                                    <AvatarFallback className="bg-violet-500 text-white">
+                                                        {myProfile?.displayName?.charAt(0).toUpperCase() || "U"}
+                                                    </AvatarFallback>
                                                 </Avatar>
                                                 <div
                                                     className="flex-1 flex items-center gap-2 bg-white rounded-md px-3 py-2">

@@ -15,7 +15,7 @@ import {
     type CreatePostData
 } from "@/lib/post-api"
 import {uploadImageSimple} from "@/utils/imageUpload"
-import {getFullImageUrl, handleImageError} from "@/utils/imageUtils"
+import {getPostImageUrl, handleImageError} from "@/utils/imageUtils"
 import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
 import {Textarea} from "@/components/ui/textarea"
@@ -588,7 +588,7 @@ export default function WritePage() {
                         {post.image && (
                             <div className="mb-3">
                                 <img
-                                    src={getFullImageUrl(post.image) || post.image}
+                                    src={getPostImageUrl(post.image)}
                                     alt="Post image"
                                     className="mx-auto max-h-48 object-contain rounded-md"
                                     onError={(e) => handleImageError(post.image!, e.currentTarget)}
@@ -974,7 +974,7 @@ export default function WritePage() {
                                                 {newPost.image && (
                                                     <div className="mb-4">
                                                         <img
-                                                            src={getFullImageUrl(newPost.image) || newPost.image}
+                                                            src={getPostImageUrl(newPost.image)}
                                                             alt="Post preview"
                                                             className="mx-auto max-h-64 object-contain rounded-md"
                                                             onError={(e) => handleImageError(newPost.image!, e.currentTarget)}

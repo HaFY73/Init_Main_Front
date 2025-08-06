@@ -377,7 +377,7 @@ export default function ReplyPage() {
                         <div className="flex gap-3 flex-1">
                             <Avatar className="h-8 w-8 flex-shrink-0">
                                 <AvatarImage src={comment.author.avatar || "/placeholder_person.svg"}/>
-                                <AvatarFallback>{comment.author.name[0]}</AvatarFallback>
+                                <AvatarFallback className="bg-violet-500 text-white">{comment.author.name ? comment.author.name.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
                             </Avatar>
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-gray-800 line-clamp-2 leading-tight">&#34;{comment.content}&#34;</p>
@@ -671,7 +671,7 @@ export default function ReplyPage() {
                                     <div className="flex items-center gap-3">
                                         <Avatar className="h-10 w-10">
                                             <AvatarImage src={detailedPost.author.avatar || "/placeholder_person.svg"}/>
-                                            <AvatarFallback>{detailedPost.author.name[0]}</AvatarFallback>
+                                            <AvatarFallback className="bg-violet-500 text-white">{detailedPost.author.name ? detailedPost.author.name.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
                                         </Avatar>
                                         <div>
                                             <DialogTitle className="text-base font-semibold">
@@ -762,8 +762,8 @@ export default function ReplyPage() {
                                                                 <AvatarImage
                                                                     src={comment.author.avatar || "/placeholder_person.svg"}
                                                                 />
-                                                                <AvatarFallback>
-                                                                    {comment.author.name[0]}
+                                                                <AvatarFallback className="bg-violet-500 text-white">
+                                                                    {comment.author.name ? comment.author.name.charAt(0).toUpperCase() : 'U'}
                                                                 </AvatarFallback>
                                                             </Avatar>
                                                             <div className="flex-1 min-w-0">
