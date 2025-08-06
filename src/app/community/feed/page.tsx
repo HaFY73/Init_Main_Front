@@ -95,8 +95,31 @@ const allCategories = [...jobCategoriesList, ...topicCategoriesList]
 
 // 🔥 수정 2: PostResponse를 Post로 변환하는 함수 추가
 const convertPostResponseToPost = (postResponse: PostResponse): Post => {
+    // 🔥 디버깅: 원본 데이터 확인
+    console.log('🔍 [캐러셀] PostResponse 원본:', {
+        postId: postResponse.id,
+        authorName: postResponse.author.name,
+        authorAvatar: postResponse.author.avatar,
+        authorProfileImageUrl: postResponse.author.profileImageUrl || 'undefined',
+        authorId: postResponse.author.id
+    });
+    
+    // 🔥 프로필 이미지 우선순위 처리
+    // 1순위: profileImageUrl (커뮤니티 프로필)
+    // 2순위: avatar (기본 사용자 프로필)
+    const profileImageUrl = postResponse.author.profileImageUrl || postResponse.author.avatar || null;
+    
     // 🔥 아바타 데이터 처리 통일
-    const avatarData = getAvatarData(postResponse.author.avatar, postResponse.author.name);
+    const avatarData = getAvatarData(profileImageUrl, postResponse.author.name);
+    
+    console.log('🖼️ [캐러셀] 변환된 아바타:', {
+        원본profileImageUrl: postResponse.author.profileImageUrl,
+        원본avatar: postResponse.author.avatar,
+        최종선택: profileImageUrl,
+        hasImage: avatarData.hasImage,
+        imageUrl: avatarData.imageUrl,
+        fallbackChar: avatarData.fallbackChar
+    });
     
     return {
         id: postResponse.id,
@@ -408,6 +431,19 @@ export default function FeedPage() {
 
                     // 🔥 PostResponse를 Post로 변환
                     const convertedPosts = posts.map(convertPostResponseToPost);
+                    
+                    // 🔥 백엔드 응답 데이터 확인용 (임시)
+                    if (posts.length > 0) {
+                        console.log('📡 백엔드 응답 샘플:', {
+                            총게시글수: posts.length,
+                            첫번째게시글: {
+                                id: posts[0].id,
+                                작성자이름: posts[0].author?.name,
+                                작성자아바타: posts[0].author?.avatar,
+                                프로필이미지URL: posts[0].author?.profileImageUrl
+                            }
+                        });
+                    }
                     
                     setPosts(convertedPosts);
 
@@ -1072,16 +1108,6 @@ export default function FeedPage() {
                 <div className="community-container bg-gradient-to-br from-violet-50 to-indigo-100 pl-6">
                     <div className="community-main" ref={contentRef}>
                         <div className="community-feed-container">
-                            {/* 🔥 프로필 필수 알림 - 배너 형태 */}
-                            {showProfileRequired && showProfileAlert && (
-                                <div className="mb-6">
-                                    <ProfileRequiredAlert 
-                                        variant="banner" 
-                                        onDismiss={() => setShowProfileAlert(false)}
-                                    />
-                                </div>
-                            )}
-
                             {/* 필터 헤더 */}
                             <div className="mb-6 pt-8">
                                 <h1 className="text-2xl font-bold text-gray-900 mb-1 flex items-center">

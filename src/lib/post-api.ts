@@ -46,6 +46,7 @@ export interface PostResponse {
         id: number; // 🔥 undefined 제거 - 필수 필드로 변경
         name: string
         avatar?: string
+        profileImageUrl?: string  // 🔥 추가: 실제 커뮤니티 프로필 이미지 URL
         jobTitle: string;
         isFollowing?: boolean
     }

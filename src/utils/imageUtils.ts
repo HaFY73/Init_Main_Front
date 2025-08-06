@@ -17,11 +17,20 @@ export interface AvatarData {
  * 프로필 이미지가 있으면 사용하고, 없으면 이름 기반 기본 아바타 생성
  */
 export const getAvatarData = (profileImageUrl?: string | null, displayName?: string | null): AvatarData => {
-  // 🔥 프로필 이미지가 있는 경우
-  if (profileImageUrl && 
+  console.log('🔍 [getAvatarData] 입력:', { profileImageUrl, displayName });
+  
+  // 🔥 더 엄격한 프로필 이미지 유효성 검사
+  const isValidImageUrl = profileImageUrl && 
+      typeof profileImageUrl === 'string' &&
       profileImageUrl.trim() !== '' && 
       profileImageUrl !== 'null' && 
-      profileImageUrl !== 'undefined') {
+      profileImageUrl !== 'undefined' &&
+      profileImageUrl !== 'http://localhost:8080/null' && // 백엔드에서 잘못된 URL 생성 시
+      profileImageUrl !== 'https://initmainback-production.up.railway.app/null' && // 프로덕션 잘못된 URL
+      (profileImageUrl.startsWith('http') || profileImageUrl.startsWith('/'));
+
+  // 🔥 프로필 이미지가 있는 경우
+  if (isValidImageUrl) {
     
     let imageUrl = profileImageUrl.trim();
     
@@ -38,6 +47,8 @@ export const getAvatarData = (profileImageUrl?: string | null, displayName?: str
       }
     }
     
+    console.log('✅ [getAvatarData] 유효한 이미지 URL:', imageUrl);
+    
     return {
       hasImage: true,
       imageUrl: imageUrl,
@@ -47,6 +58,8 @@ export const getAvatarData = (profileImageUrl?: string | null, displayName?: str
   
   // 🔥 프로필 이미지가 없는 경우 - 이름 기반 기본 아바타
   const fallbackChar = getDisplayNameFirstChar(displayName);
+  
+  console.log('⚠️ [getAvatarData] 이미지 없음, fallback 사용:', fallbackChar);
   
   return {
     hasImage: false,

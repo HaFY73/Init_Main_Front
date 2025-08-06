@@ -170,11 +170,13 @@ export const AdaptedPostCard = memo<AdaptedPostCardProps>(function AdaptedPostCa
                 console.error('🖼️ [Carousel] 프로필 이미지 로딩 실패:', avatarData.imageUrl);
                 e.currentTarget.style.display = 'none';
                 const fallbackDiv = e.currentTarget.parentElement?.querySelector('.avatar-fallback') as HTMLElement;
-                if (fallbackDiv) fallbackDiv.style.display = 'flex';
+                if (fallbackDiv) {
+                  fallbackDiv.style.display = 'flex';
+                }
               }}
             />
           ) : null}
-          {/* 🔥 fallback 아바타 */}
+          {/* 🔥 fallback 아바타 - 항상 렌더링하되 조건에 따라 표시/숨김 */}
           <div 
             className={`avatar-fallback absolute inset-0 bg-violet-500 rounded-full flex items-center justify-center text-white font-semibold text-sm ${
               avatarData.hasImage ? 'hidden' : 'flex'
