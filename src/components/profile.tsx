@@ -151,48 +151,46 @@ export default function ProfileDialog() {
     }
 
     const loadCommunityProfile = async () => {
-        if (!userId) return
-        setLoading(true)
+        if (!userId) return;
+        setLoading(true);
+
         try {
             const res = await fetch(`https://initmainback-production.up.railway.app/api/community/profile/${userId}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('authToken') || localStorage.getItem('accessToken')}`,
                     'Content-Type': 'application/json'
                 }
-            })
-            if (res.ok) {
-                const result: any = await res.json()
-                if (result.success && result.data) {
-                    const profileData = result.data
-                    setProfile(prev => ({...prev, ...profileData}))
+            });
 
-                    // 🔥 프로필 이미지 처리 개선
-                    const avatarData = getAvatarData(profileData.profileImageUrl, profileData.displayName)
+            if (res.ok) {
+                const result: any = await res.json();
+                if (result.success && result.data) {
+                    const profileData = result.data;
+                    setProfile(prev => ({ ...prev, ...profileData }));
+
+                    const avatarData = getAvatarData(profileData.profileImageUrl, profileData.displayName);
                     if (avatarData.hasImage) {
-                        console.log('🖼️ 프로필 이미지 설정:', avatarData.imageUrl)
-                        setProfileImage(avatarData.imageUrl)
+                        console.log('🖼️ 프로필 이미지 설정:', avatarData.imageUrl);
+                        setProfileImage(avatarData.imageUrl);
                     } else {
-                        // 🔥 이미지가 없으면 이름 기반 기본 아바타 생성
-                        const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(avatarData.fallbackChar)}&background=6366f1&color=fff&size=96`
-                        console.log('🎨 기본 아바타 생성:', fallbackUrl)
-                        setProfileImage(fallbackUrl)
+                        const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(avatarData.fallbackChar)}&background=6366f1&color=fff&size=96`;
+                        console.log('🎨 기본 아바타 생성:', fallbackUrl);
+                        setProfileImage(fallbackUrl);
                     }
                 } else {
-                    // 🔥 프로필이 없는 경우
-                    const displayName = profile.displayName || "사용자"
-                    const firstChar = displayName.charAt(0).toUpperCase()
-                    const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstChar)}&background=6366f1&color=fff&size=96`
-                    console.log('🎨 새 사용자 기본 아바타 생성:', fallbackUrl)
-                    setProfileImage(fallbackUrl)
-                }
+                    const displayName = profile.displayName || "사용자";
+                    const firstChar = displayName.charAt(0).toUpperCase();
+                    const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(firstChar)}&background=6366f1&color=fff&size=96`;
+                    console.log('🎨 새 사용자 기본 아바타 생성:', fallbackUrl);
+                    setProfileImage(fallbackUrl);
                 }
             }
         } catch (err) {
-            console.error("프로필 로딩 오류", err)
+            console.error("프로필 로딩 오류", err);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
 
     const handleProfileImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files?.[0]) return
