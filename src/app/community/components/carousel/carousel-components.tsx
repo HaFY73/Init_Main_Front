@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, memo, useCallback } from "react"
-import { ChevronLeft, ChevronRight, Share2, Bookmark, Heart, MessageCircle, UserPlus, UserCheck } from "lucide-react"
+import { ChevronLeft, ChevronRight, Bookmark, Heart, MessageCircle, UserPlus, UserCheck } from "lucide-react"
 import type { Post as FeedPagePostType, Category as FeedPageCategoryType } from "@/app/community/feed/page"
 import Image from "next/image"
 import { getAvatarData, getPostImageUrl } from "@/utils/imageUtils"
