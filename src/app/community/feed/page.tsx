@@ -103,15 +103,15 @@ const convertPostResponseToPost = (postResponse: PostResponse): Post => {
         authorProfileImageUrl: postResponse.author.profileImageUrl || 'undefined',
         authorId: postResponse.author.id
     });
-    
+
     // 🔥 프로필 이미지 우선순위 처리
     // 1순위: profileImageUrl (커뮤니티 프로필)
     // 2순위: avatar (기본 사용자 프로필)
     const profileImageUrl = postResponse.author.profileImageUrl || postResponse.author.avatar || null;
-    
+
     // 🔥 아바타 데이터 처리 통일
     const avatarData = getAvatarData(profileImageUrl, postResponse.author.name);
-    
+
     console.log('🖼️ [캐러셀] 변환된 아바타:', {
         원본profileImageUrl: postResponse.author.profileImageUrl,
         원본avatar: postResponse.author.avatar,
@@ -120,7 +120,7 @@ const convertPostResponseToPost = (postResponse: PostResponse): Post => {
         imageUrl: avatarData.imageUrl,
         fallbackChar: avatarData.fallbackChar
     });
-    
+
     return {
         id: postResponse.id,
         author: {
@@ -431,7 +431,7 @@ export default function FeedPage() {
 
                     // 🔥 PostResponse를 Post로 변환
                     const convertedPosts = posts.map(convertPostResponseToPost);
-                    
+
                     // 🔥 백엔드 응답 데이터 확인용 (임시)
                     if (posts.length > 0) {
                         console.log('📡 백엔드 응답 샘플:', {
@@ -444,7 +444,7 @@ export default function FeedPage() {
                             }
                         });
                     }
-                    
+
                     setPosts(convertedPosts);
 
                     // 팔로우 상태 초기화
@@ -1191,53 +1191,54 @@ export default function FeedPage() {
 
                             {/* 게시글 Carousel */}
                             {posts.length > 0 ? (
-                                <div className="carousel-container-wrapper">
+                                <div className="carousel-container-wrapper relative">
                                     {/* 🔥 프로필이 없을 때 오버레이 */}
-                                    <div className="relative">
-                                        {showProfileRequired && (
-                                            <div className="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 rounded-lg flex items-center justify-center">
-                                                <ProfileRequiredAlert 
-                                                    variant="card"
-                                                    className="max-w-md"
-                                                    showDismiss={false}
-                                                />
-                                            </div>
-                                        )}
-                                        
-                                        <div className={showProfileRequired ? "opacity-30 pointer-events-none" : ""}>
-                                            <Carousel initialActiveIndex={currentPostIndex} onCardClick={handleOpenPostDetail}
-                                                      onCommentClick={handleOpenPostComments}>
-                                                {posts.map((post) => (
-                                                    <AdaptedPostCard
-                                                        key={post.id}
-                                                        post={post}
-                                                        allCategories={allCategories}
-                                                        onCardClick={handleOpenPostDetail}
-                                                        onCommentClick={handleOpenPostComments}
-                                                        onLike={handleLikeToggle}
-                                                        onBookmark={handleBookmarkToggle}
-                                                        onFollowToggle={() => handleFollowToggle(post.author.name, post.author.id)}
-                                                        isActive={false}
-                                                        hasProfile={hasProfile}
-                                                        onProfileRequired={() => setShowProfileAlert(true)}
-                                                    />
-                                                ))}
-                                            </Carousel>
+                                    {showProfileRequired && (
+                                        <div
+                                            className="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 rounded-lg flex items-center justify-center">
+                                            <ProfileRequiredAlert
+                                                variant="card"
+                                                className="max-w-md"
+                                                showDismiss={false}
+                                            />
                                         </div>
+                                    )}
+
+                                    <div className={showProfileRequired ? "opacity-30 pointer-events-none" : ""}>
+                                        <Carousel initialActiveIndex={currentPostIndex}
+                                                  onCardClick={handleOpenPostDetail}
+                                                  onCommentClick={handleOpenPostComments}>
+                                            {posts.map((post) => (
+                                                <AdaptedPostCard
+                                                    key={post.id}
+                                                    post={post}
+                                                    allCategories={allCategories}
+                                                    onCardClick={handleOpenPostDetail}
+                                                    onCommentClick={handleOpenPostComments}
+                                                    onLike={handleLikeToggle}
+                                                    onBookmark={handleBookmarkToggle}
+                                                    onFollowToggle={() => handleFollowToggle(post.author.name, post.author.id)}
+                                                    isActive={false}
+                                                    hasProfile={hasProfile}
+                                                    onProfileRequired={() => setShowProfileAlert(true)}
+                                                />
+                                            ))}
+                                        </Carousel>
                                     </div>
                                 </div>
                             ) : (
                                 <div className="flex flex-col items-center justify-center py-20 text-center">
                                     {/* 🔥 프로필이 없는 경우 우선 표시 */}
                                     {showProfileRequired ? (
-                                        <ProfileRequiredAlert 
+                                        <ProfileRequiredAlert
                                             variant="card"
                                             className="max-w-lg"
                                             showDismiss={false}
                                         />
                                     ) : (
                                         <>
-                                            <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6">
+                                            <div
+                                                className="w-24 h-24 rounded-full flex items-center justify-center mb-6">
                                                 <Rss className="h-12 w-12 text-gray-400"/>
                                             </div>
                                             <h3 className="text-xl font-semibold text-gray-700 mb-2">
@@ -1271,7 +1272,8 @@ export default function FeedPage() {
                                                         <br/>실제 서버 연결 시 모든 기능이 정상 작동합니다.
                                                         {feedMode === "following" && (
                                                             <>
-                                                                <br/><strong>팔로우 피드:</strong> 팔로우한 사용자가 있고 해당 사용자들이 게시글을 작성했는지
+                                                                <br/><strong>팔로우 피드:</strong> 팔로우한 사용자가 있고 해당 사용자들이 게시글을
+                                                                작성했는지
                                                                 확인해주세요.
                                                             </>
                                                         )}
@@ -1404,7 +1406,8 @@ export default function FeedPage() {
                                                                 <Avatar className="h-8 w-8 flex-shrink-0">
                                                                     <AvatarImage
                                                                         src={comment.author.avatar || "/placeholder_person.svg"}/>
-                                                                    <AvatarFallback className="bg-violet-500 text-white">{comment.author.name ? comment.author.name.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
+                                                                    <AvatarFallback
+                                                                        className="bg-violet-500 text-white">{comment.author.name ? comment.author.name.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
                                                                 </Avatar>
                                                                 <div className="flex-1 min-w-0">
                                                                     <div className="flex items-center gap-2 mb-1">
