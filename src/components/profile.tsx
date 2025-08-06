@@ -12,7 +12,7 @@ import {Input} from "@/components/ui/input"
 import {Textarea} from "@/components/ui/textarea"
 import {ImageIcon, User, Briefcase, MapPin, Building2, Lock} from "lucide-react"
 import {getCurrentUserId} from "@/utils/auth"
-import {uploadImageToServer} from "@/utils/imageUpload"
+import {uploadProfileImage} from "@/lib/profile-api"
 import {HexColorPicker} from "react-colorful"
 
 interface CommunityProfile {
@@ -162,34 +162,16 @@ export default function ProfileDialog() {
             const previewUrl = URL.createObjectURL(file)
             setProfileImage(previewUrl)
 
-            // 🔥 서버에 실제 업로드
-            const result = await uploadImageToServer(file) // Base64 대신 서버 업로드
-
-            if (result.success && result.imageUrl) {
-                console.log('✅ 프로필 이미지 업로드 성공:', result.imageUrl)
+            // 🔥 프로필 이미지 전용 API 사용
+            const imageUrl = await uploadProfileImage(userId!, file)
+                console.log('✅ 프로필 이미지 업로드 성공:', imageUrl)
 
                 // 🔥 실제 서버 URL로 교체
-                setProfileImage(result.imageUrl)
-                setProfile(prev => ({...prev, profileImageUrl: result.imageUrl}))
+                setProfileImage(imageUrl)
+                setProfile(prev => ({...prev, profileImageUrl: imageUrl}))
 
                 // 🔥 임시 Object URL 해제
                 URL.revokeObjectURL(previewUrl)
-            } else {
-                console.error('❌ 프로필 이미지 업로드 실패:', result.error)
-
-                // 🔥 실패시 원래 이미지로 복원
-                if (profile.profileImageUrl) {
-                    const originalUrl = profile.profileImageUrl.startsWith('/')
-                        ? `http://localhost:8080${profile.profileImageUrl}`
-                        : profile.profileImageUrl
-                    setProfileImage(originalUrl)
-                } else {
-                    setProfileImage("/placeholder_person.svg?height=96&width=96")
-                }
-
-                URL.revokeObjectURL(previewUrl)
-                alert(result.error || '이미지 업로드에 실패했습니다.')
-            }
         } catch (error) {
             console.error('❌ 프로필 이미지 업로드 에러:', error)
 
