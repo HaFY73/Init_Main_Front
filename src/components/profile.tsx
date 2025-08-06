@@ -73,7 +73,7 @@ export default function ProfileDialog() {
         followingCount: 0
     })
 
-    const [profileImage, setProfileImage] = useState<string>("/placeholder_person.svg?height=96&width=96")
+    const [profileImage, setProfileImage] = useState<string>("https://ui-avatars.com/api/?name=User&background=6366f1&color=fff&size=96")
     const [loading, setLoading] = useState(false)
     const [saving, setSaving] = useState(false)
     const [imageUploading, setImageUploading] = useState(false)
@@ -139,7 +139,7 @@ export default function ProfileDialog() {
                         }
                     }
                 } else {
-                    setProfileImage("/placeholder_person.svg?height=96&width=96")
+                    setProfileImage("https://ui-avatars.com/api/?name=User&background=6366f1&color=fff&size=96")
                 }
             }
         } catch (err) {
