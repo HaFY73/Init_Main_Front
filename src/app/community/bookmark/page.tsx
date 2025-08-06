@@ -33,6 +33,8 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog"
 import {motion} from "framer-motion";
+import {useCommunityProfile} from "@/hooks/useCommunityProfile";
+import ProfileRequiredAlert from "@/components/ProfileRequiredAlert";
 
 interface CategoryInfo {
     label: string
@@ -83,12 +85,30 @@ export default function BookmarkPage() {
     const [sortBy, setSortBy] = useState<"recent" | "oldest">("recent")
     const [viewMode] = useState<"grid" | "list">("grid")
     const [refreshing, setRefreshing] = useState(false)
+    const [showProfileAlert, setShowProfileAlert] = useState(false) // 🔥 프로필 알림 상태
     const router = useRouter();
 
     const [detailedPost, setDetailedPost] = useState<PostResponse | null>(null)
     const [activeTab, setActiveTab] = useState<"post" | "comments">("post")
     const [visibleComments, setVisibleComments] = useState(5)
     const [postComments, setPostComments] = useState<Comment[]>([]) // 🔥 댓글 상태 추가
+
+    const {profile: myProfile, loading: profileLoading} = useCommunityProfile(); // 🔥 프로필 훅 추가
+    
+    // userId 정의
+    const userId = typeof window !== 'undefined' ? 
+        (localStorage.getItem('userId') ? Number(localStorage.getItem('userId')) : null) : null;
+
+    // 🔥 커뮤니티 프로필 존재 여부 확인
+    const hasProfile = !profileLoading && myProfile && myProfile.displayName;
+    const showProfileRequired = !profileLoading && !hasProfile && userId;
+
+    // 🔥 프로필 로딩 완료 후 알림 표시 결정
+    useEffect(() => {
+        if (!profileLoading && showProfileRequired) {
+            setShowProfileAlert(true);
+        }
+    }, [profileLoading, showProfileRequired]);
 
     // 🔥 댓글 로딩 함수 추가
     const loadCommentsForPost = async (postId: number) => {
@@ -438,6 +458,16 @@ export default function BookmarkPage() {
                 <div className="community-container bg-red-50">
                     <div className="community-main">
                         <div className="community-bookmark-container">
+                            {/* 🔥 프로필 필수 알림 - 배너 형태 */}
+                            {showProfileRequired && showProfileAlert && (
+                                <div className="mb-6">
+                                    <ProfileRequiredAlert 
+                                        variant="banner" 
+                                        onDismiss={() => setShowProfileAlert(false)}
+                                    />
+                                </div>
+                            )}
+
                             {/* Header */}
                             <div className="mb-6 pt-8">
                                 <div className="flex items-center justify-between">
@@ -535,8 +565,21 @@ export default function BookmarkPage() {
                                 </div>
                             )}
 
-                            <div className="pb-20">
-                                {renderContent()}
+                            {/* 🔥 북마크 목록에 오버레이 */}
+                            <div className="relative">
+                                {showProfileRequired && (
+                                    <div className="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 rounded-lg flex items-center justify-center">
+                                        <ProfileRequiredAlert 
+                                            variant="card"
+                                            className="max-w-md"
+                                            showDismiss={false}
+                                        />
+                                    </div>
+                                )}
+                                
+                                <div className={`pb-20 ${showProfileRequired ? "opacity-30 pointer-events-none" : ""}`}>
+                                    {renderContent()}
+                                </div>
                             </div>
 
                         </div>

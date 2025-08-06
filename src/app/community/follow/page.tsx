@@ -13,6 +13,8 @@ import {Search, Users, UserMinus} from "lucide-react"
 import {getCurrentUserId} from "@/utils/auth"
 import {getAvatarData} from "@/utils/imageUtils"
 import {motion} from "framer-motion";
+import ProfileRequiredAlert from "@/components/ProfileRequiredAlert"
+import {useCommunityProfile} from "@/hooks/useCommunityProfile";
 import ProfileModal from "@/components/ProfileModal"
 
 // 백엔드 FollowDto.UserInfoDto에 맞춘 사용자 타입 정의
@@ -45,9 +47,21 @@ export default function FollowPage() {
     const currentUserId = getCurrentUserId()
     const [modalOpen, setModalOpen] = useState(false)
     const [selectedUserId, setSelectedUserId] = useState<number | null>(null)
+    const {profile: myProfile, loading: profileLoading} = useCommunityProfile(); // 🔥 프로필 상태 추가
+
+    // 🔥 커뮤니티 프로필 존재 여부 확인
+    const hasProfile = !profileLoading && myProfile && myProfile.displayName;
+    const showProfileRequired = !profileLoading && !hasProfile && currentUserId;
 
     // 팔로잉 목록을 가져오는 함수
     const fetchFollowingUsers = async () => {
+        // 🔥 프로필 체크 추가
+        if (!hasProfile) {
+            console.log('⚠️ 커뮤니티 프로필이 없어서 팔로잉 목록을 가져오지 않습니다.');
+            setLoading(false);
+            return;
+        }
+
         if (!currentUserId) {
             console.error('사용자 ID가 없습니다.');
             setLoading(false);
@@ -122,8 +136,11 @@ export default function FollowPage() {
     }
 
     useEffect(() => {
-        fetchFollowingUsers()
-    }, [currentUserId])
+        // 🔥 프로필 로딩이 완료된 후에만 팔로잉 목록 가져오기
+        if (!profileLoading) {
+            fetchFollowingUsers();
+        }
+    }, [currentUserId, profileLoading, hasProfile]);
 
     // 페이지에 포커스될 때마다 새로고침
     useEffect(() => {
@@ -214,6 +231,17 @@ export default function FollowPage() {
                 <div className="community-container bg-blue-50">
                     <div className="community-main">
                         <div className="community-follow-container">
+                            {/* 🔥 프로필 필수 알림 */}
+                            {showProfileRequired && (
+                                <div className="mb-6">
+                                    <ProfileRequiredAlert 
+                                        variant="card"
+                                        className="max-w-2xl mx-auto"
+                                        showDismiss={false}
+                                    />
+                                </div>
+                            )}
+
                             {/* Header */}
                             <div className="mb-6 pt-8">
                                 <h1 className="text-2xl font-bold text-gray-900 mb-1 flex items-center">
@@ -246,7 +274,7 @@ export default function FollowPage() {
                             )}
 
                             {/* Users Grid */}
-                            {!loading && (
+                            {!loading && hasProfile && (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-8">
                                     {filteredUsers.length > 0 ? (
                                         filteredUsers.map((user) => (
@@ -342,17 +370,6 @@ export default function FollowPage() {
                                     )}
                                 </div>
                             )}
-                        </div>
-                    </div>
-                </div>
-
-                <UpwardMenu
-                    className="fixed bottom-6 right-6 z-[999]"
-                    onFollowClick={() => router.push("/community/follow")}
-                    onMyPostsClick={() => router.push("/community/write")}
-                    onMyCommentsClick={() => router.push("/community/reply")}
-                    onSavedClick={() => router.push("/community/bookmark")}
-                />
 
                 <ProfileModal
                     isOpen={modalOpen}

@@ -31,6 +31,7 @@ import {CategoryDropdown} from "../components/category-dropdown"
 import '../components/carousel/carousel.css'
 import {motion} from "framer-motion";
 import {useCommunityProfile} from "@/hooks/useCommunityProfile";
+import ProfileRequiredAlert from "@/components/ProfileRequiredAlert";
 
 export interface Category {
     icon: LucideIcon
@@ -132,8 +133,9 @@ export default function FeedPage() {
     const [newComment, setNewComment] = useState("")
     const [visibleComments, setVisibleComments] = useState(5)
     const [activeTab, setActiveTab] = useState<"post" | "comments">("post")
+    const [showProfileAlert, setShowProfileAlert] = useState(false) // 🔥 프로필 알림 상태
     const contentRef = useRef<HTMLDivElement>(null)
-    const {profile: myProfile} = useCommunityProfile();
+    const {profile: myProfile, loading: profileLoading} = useCommunityProfile(); // 🔥 프로필 로딩 상태 추가
     const handleOpenPostDetail = async (post: Post) => {
         console.log('🎯 게시글 상세보기 열기:', post.id);
         setDetailedPost(post);
@@ -247,6 +249,17 @@ export default function FeedPage() {
 
     const userId = getCurrentUserId();
     const router = useRouter()
+
+    // 🔥 커뮤니티 프로필 존재 여부 확인
+    const hasProfile = !profileLoading && myProfile && myProfile.displayName;
+    const showProfileRequired = !profileLoading && !hasProfile && userId;
+
+    // 🔥 프로필 로딩 완료 후 알림 표시 결정
+    useEffect(() => {
+        if (!profileLoading && showProfileRequired) {
+            setShowProfileAlert(true);
+        }
+    }, [profileLoading, showProfileRequired]);
 
     // 검색어 debounce 처리 - 리렌더링 최적화
     useEffect(() => {
@@ -571,6 +584,13 @@ export default function FeedPage() {
 
     // 🔥 수정 6: handleLikeToggle 함수 개선 (에러 핸들링 추가)
     const handleLikeToggle = async (postId: number) => {
+        // 🔥 프로필 체크 추가
+        if (!hasProfile) {
+            alert('좋아요 기능을 사용하려면 먼저 커뮤니티 프로필을 만들어주세요.');
+            setShowProfileAlert(true);
+            return;
+        }
+
         if (!userId) {
             alert('로그인이 필요합니다.');
             return;
@@ -633,6 +653,13 @@ export default function FeedPage() {
 
     // 🔥 수정 7: handleFollowToggle 함수 완전 수정
     const handleFollowToggle = async (authorName: string, targetUserId: number) => {
+        // 🔥 프로필 체크 추가
+        if (!hasProfile) {
+            alert('팔로우 기능을 사용하려면 먼저 커뮤니티 프로필을 만들어주세요.');
+            setShowProfileAlert(true);
+            return;
+        }
+
         console.log('🎯 팔로우 토글 시도:', {authorName, targetUserId, currentUserId: userId});
 
         if (!userId || !targetUserId) {
@@ -751,6 +778,13 @@ export default function FeedPage() {
 
     // 🔥 북마크 토글 함수
     const handleBookmarkToggle = async (postId: number) => {
+        // 🔥 프로필 체크 추가
+        if (!hasProfile) {
+            alert('북마크 기능을 사용하려면 먼저 커뮤니티 프로필을 만들어주세요.');
+            setShowProfileAlert(true);
+            return;
+        }
+
         if (!userId || typeof userId !== 'number') {
             alert('로그인이 필요합니다.');
             return;
@@ -845,6 +879,13 @@ export default function FeedPage() {
 
     // 🔥 완전 수정된 handleCommentSubmit 함수 - 실시간 업데이트
     const handleCommentSubmit = async () => {
+        // 🔥 프로필 체크 추가
+        if (!hasProfile) {
+            alert('댓글 기능을 사용하려면 먼저 커뮤니티 프로필을 만들어주세요.');
+            setShowProfileAlert(true);
+            return;
+        }
+
         if (!newComment.trim() || !detailedPost || typeof userId !== "number") {
             if (!userId) {
                 alert('로그인이 필요합니다.');
@@ -1031,6 +1072,16 @@ export default function FeedPage() {
                 <div className="community-container bg-gradient-to-br from-violet-50 to-indigo-100 pl-6">
                     <div className="community-main" ref={contentRef}>
                         <div className="community-feed-container">
+                            {/* 🔥 프로필 필수 알림 - 배너 형태 */}
+                            {showProfileRequired && showProfileAlert && (
+                                <div className="mb-6">
+                                    <ProfileRequiredAlert 
+                                        variant="banner" 
+                                        onDismiss={() => setShowProfileAlert(false)}
+                                    />
+                                </div>
+                            )}
+
                             {/* 필터 헤더 */}
                             <div className="mb-6 pt-8">
                                 <h1 className="text-2xl font-bold text-gray-900 mb-1 flex items-center">
@@ -1115,65 +1166,93 @@ export default function FeedPage() {
                             {/* 게시글 Carousel */}
                             {posts.length > 0 ? (
                                 <div className="carousel-container-wrapper">
-                                    <Carousel initialActiveIndex={currentPostIndex} onCardClick={handleOpenPostDetail}
-                                              onCommentClick={handleOpenPostComments}>
-                                        {posts.map((post) => (
-                                            <AdaptedPostCard
-                                                key={post.id}
-                                                post={post}
-                                                allCategories={allCategories}
-                                                onCardClick={handleOpenPostDetail}
-                                                onCommentClick={handleOpenPostComments}
-                                                onLike={handleLikeToggle}
-                                                onBookmark={handleBookmarkToggle}
-                                                onFollowToggle={() => handleFollowToggle(post.author.name, post.author.id)}
-                                                isActive={false}
-                                            />
-                                        ))}
-                                    </Carousel>
+                                    {/* 🔥 프로필이 없을 때 오버레이 */}
+                                    <div className="relative">
+                                        {showProfileRequired && (
+                                            <div className="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 rounded-lg flex items-center justify-center">
+                                                <ProfileRequiredAlert 
+                                                    variant="card"
+                                                    className="max-w-md"
+                                                    showDismiss={false}
+                                                />
+                                            </div>
+                                        )}
+                                        
+                                        <div className={showProfileRequired ? "opacity-30 pointer-events-none" : ""}>
+                                            <Carousel initialActiveIndex={currentPostIndex} onCardClick={handleOpenPostDetail}
+                                                      onCommentClick={handleOpenPostComments}>
+                                                {posts.map((post) => (
+                                                    <AdaptedPostCard
+                                                        key={post.id}
+                                                        post={post}
+                                                        allCategories={allCategories}
+                                                        onCardClick={handleOpenPostDetail}
+                                                        onCommentClick={handleOpenPostComments}
+                                                        onLike={handleLikeToggle}
+                                                        onBookmark={handleBookmarkToggle}
+                                                        onFollowToggle={() => handleFollowToggle(post.author.name, post.author.id)}
+                                                        isActive={false}
+                                                        hasProfile={hasProfile}
+                                                        onProfileRequired={() => setShowProfileAlert(true)}
+                                                    />
+                                                ))}
+                                            </Carousel>
+                                        </div>
+                                    </div>
                                 </div>
                             ) : (
                                 <div className="flex flex-col items-center justify-center py-20 text-center">
-                                    <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6">
-                                        <Rss className="h-12 w-12 text-gray-400"/>
-                                    </div>
-                                    <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                                        {loading ? "로딩 중..." : "게시글이 없습니다"}
-                                    </h3>
-                                    <p className="text-gray-500 mb-6 max-w-md">
-                                        {loading ? "잠시만 기다려주세요..." :
-                                            feedMode === "following"
-                                                ? "팔로우한 사용자의 게시글이 없습니다. 더 많은 사람들을 팔로우해보세요!"
-                                                : selectedCategoryKey
-                                                    ? "선택한 카테고리에 게시글이 없습니다. 다른 카테고리를 확인해보세요."
-                                                    : debouncedSearchQuery.trim()
-                                                        ? `'${debouncedSearchQuery}'에 대한 검색 결과가 없습니다. 다른 검색어를 시도해보세요.`
-                                                        : "아직 게시글이 없습니다. 첫 번째 게시글을 작성해보세요!"
-                                        }
-                                    </p>
-                                    {!loading && (
-                                        <Button
-                                            onClick={() => router.push("/community/write")}
-                                            className="bg-[#6366f1] hover:bg-[#6366f1]/90 text-white px-6 py-2"
-                                        >
-                                            게시글 작성하기
-                                        </Button>
-                                    )}
-
-                                    {!loading && process.env.NODE_ENV === 'development' && (
-                                        <div
-                                            className="mt-8 p-4 bg-violet-50 border border-violet-200 rounded-lg max-w-md">
-                                            <p className="text-sm text-violet-800">
-                                                <strong>📝 데모 모드:</strong> 백엔드 서버가 연결되지 않아 목 데이터를 표시 중입니다.
-                                                <br/>실제 서버 연결 시 모든 기능이 정상 작동합니다.
-                                                {feedMode === "following" && (
-                                                    <>
-                                                        <br/><strong>팔로우 피드:</strong> 팔로우한 사용자가 있고 해당 사용자들이 게시글을 작성했는지
-                                                        확인해주세요.
-                                                    </>
-                                                )}
+                                    {/* 🔥 프로필이 없는 경우 우선 표시 */}
+                                    {showProfileRequired ? (
+                                        <ProfileRequiredAlert 
+                                            variant="card"
+                                            className="max-w-lg"
+                                            showDismiss={false}
+                                        />
+                                    ) : (
+                                        <>
+                                            <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6">
+                                                <Rss className="h-12 w-12 text-gray-400"/>
+                                            </div>
+                                            <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                                                {loading ? "로딩 중..." : "게시글이 없습니다"}
+                                            </h3>
+                                            <p className="text-gray-500 mb-6 max-w-md">
+                                                {loading ? "잠시만 기다려주세요..." :
+                                                    feedMode === "following"
+                                                        ? "팔로우한 사용자의 게시글이 없습니다. 더 많은 사람들을 팔로우해보세요!"
+                                                        : selectedCategoryKey
+                                                            ? "선택한 카테고리에 게시글이 없습니다. 다른 카테고리를 확인해보세요."
+                                                            : debouncedSearchQuery.trim()
+                                                                ? `'${debouncedSearchQuery}'에 대한 검색 결과가 없습니다. 다른 검색어를 시도해보세요.`
+                                                                : "아직 게시글이 없습니다. 첫 번째 게시글을 작성해보세요!"
+                                                }
                                             </p>
-                                        </div>
+                                            {!loading && (
+                                                <Button
+                                                    onClick={() => router.push("/community/write")}
+                                                    className="bg-[#6366f1] hover:bg-[#6366f1]/90 text-white px-6 py-2"
+                                                >
+                                                    게시글 작성하기
+                                                </Button>
+                                            )}
+
+                                            {!loading && process.env.NODE_ENV === 'development' && (
+                                                <div
+                                                    className="mt-8 p-4 bg-violet-50 border border-violet-200 rounded-lg max-w-md">
+                                                    <p className="text-sm text-violet-800">
+                                                        <strong>📝 데모 모드:</strong> 백엔드 서버가 연결되지 않아 목 데이터를 표시 중입니다.
+                                                        <br/>실제 서버 연결 시 모든 기능이 정상 작동합니다.
+                                                        {feedMode === "following" && (
+                                                            <>
+                                                                <br/><strong>팔로우 피드:</strong> 팔로우한 사용자가 있고 해당 사용자들이 게시글을 작성했는지
+                                                                확인해주세요.
+                                                            </>
+                                                        )}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </>
                                     )}
                                 </div>
                             )}

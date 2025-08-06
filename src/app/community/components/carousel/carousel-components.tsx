@@ -64,6 +64,8 @@ export interface AdaptedPostCardProps {
   onBookmark?: (postId: number) => void
   onFollowToggle: (authorName: string) => void
   isActive: boolean
+  hasProfile?: boolean  // 🔥 새로 추가
+  onProfileRequired?: () => void  // 🔥 새로 추가
 }
 
 export const AdaptedPostCard = memo<AdaptedPostCardProps>(function AdaptedPostCard({
@@ -75,6 +77,8 @@ export const AdaptedPostCard = memo<AdaptedPostCardProps>(function AdaptedPostCa
   onBookmark,
   onFollowToggle,
   isActive,
+  hasProfile = true,  // 🔥 기본값 true
+  onProfileRequired,  // 🔥 프로필 필수 콜백
 }) {
   const displayCategoryLabel = getCategoryLabel(post, allCategories)
   // 🔥 아바타 데이터 처리 통일
@@ -91,6 +95,12 @@ export const AdaptedPostCard = memo<AdaptedPostCardProps>(function AdaptedPostCa
   const handleLikeClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
     
+    // 🔥 프로필 체크 추가
+    if (!hasProfile) {
+      onProfileRequired?.();
+      return;
+    }
+    
     // 좋아요 애니메이션 시작 (하트 버튼에만)
     setIsLikeAnimating(true)
     
@@ -98,29 +108,50 @@ export const AdaptedPostCard = memo<AdaptedPostCardProps>(function AdaptedPostCa
     
     // 애니메이션 리셋
     setTimeout(() => setIsLikeAnimating(false), 300)
-  }, [onLike, post.id])
+  }, [onLike, post.id, hasProfile, onProfileRequired])
 
   const handleFollowClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
+    
+    // 🔥 프로필 체크 추가
+    if (!hasProfile) {
+      onProfileRequired?.();
+      return;
+    }
+    
     onFollowToggle(post.author.name)
-  }, [onFollowToggle, post.author.name])
+  }, [onFollowToggle, post.author.name, hasProfile, onProfileRequired])
 
   const handleBookmarkClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
+    
+    // 🔥 프로필 체크 추가
+    if (!hasProfile) {
+      onProfileRequired?.();
+      return;
+    }
+    
     if (onBookmark) {
       onBookmark(post.id)
     }
-  }, [onBookmark, post.id])
+  }, [onBookmark, post.id, hasProfile, onProfileRequired])
 
   const handleCommentClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
+    
+    // 🔥 프로필 체크 추가
+    if (!hasProfile) {
+      onProfileRequired?.();
+      return;
+    }
+    
     if (onCommentClick) {
       onCommentClick(post)
     }
-  }, [onCommentClick, post])
+  }, [onCommentClick, post, hasProfile, onProfileRequired])
 
   return (
-    <div className={`card ${isActive ? "cursor-pointer" : ""} relative overflow-hidden`} onClick={handleCardClick}>
+    <div className={`card ${isActive ? "cursor-pointer" : ""} relative overflow-hidden ${!hasProfile ? 'opacity-60' : ''}`} onClick={handleCardClick}>
       {/* 와이파이 스타일 좋아요 효과 */}
       <LikeWaveEffect
         show={showLikeEffect}
@@ -161,11 +192,14 @@ export const AdaptedPostCard = memo<AdaptedPostCardProps>(function AdaptedPostCa
         <button
           onClick={handleFollowClick}
           className={`ml-auto p-1.5 rounded-full text-xs flex items-center transition-colors ${
-            post.author.isFollowing
-              ? "bg-violet-500 text-white hover:bg-violet-600"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            !hasProfile 
+              ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+              : post.author.isFollowing
+                ? "bg-violet-500 text-white hover:bg-violet-600"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
           }`}
-          title={post.author.isFollowing ? "팔로잉" : "팔로우"}
+          title={!hasProfile ? "프로필을 만들어주세요" : post.author.isFollowing ? "팔로잉" : "팔로우"}
+          disabled={!hasProfile}
         >
           {post.author.isFollowing ? <UserCheck size={14} /> : <UserPlus size={14} />}
           <span className="ml-1 hidden sm:inline">{post.author.isFollowing ? "팔로잉" : "팔로우"}</span>
@@ -206,56 +240,57 @@ export const AdaptedPostCard = memo<AdaptedPostCardProps>(function AdaptedPostCa
         <div className="flex items-center gap-3">
           <button
             className={`relative flex items-center gap-1 p-1 transition-all duration-300 transform ${
-              post.likedByMe 
-                ? "text-red-500 scale-105" 
-                : "text-gray-500 hover:text-red-500 hover:scale-105"
+              !hasProfile 
+                ? "text-gray-400 cursor-not-allowed" 
+                : post.likedByMe 
+                  ? "text-red-500 scale-105" 
+                  : "text-gray-500 hover:text-red-500 hover:scale-105"
             } ${isLikeAnimating ? 'animate-pulse' : ''}`}
-            title="좋아요"
+            title={!hasProfile ? "프로필을 만들어주세요" : "좋아요"}
             onClick={handleLikeClick}
+            disabled={!hasProfile}
           >
             <Heart
               size={16}
-              fill={post.likedByMe ? "currentColor" : "none"}
+              fill={post.likedByMe && hasProfile ? "currentColor" : "none"}
               className={`transition-all duration-300 ${
-                post.likedByMe ? 'filter drop-shadow-sm' : ''
+                post.likedByMe && hasProfile ? 'filter drop-shadow-sm' : ''
               }`}
             />
             <span className={`font-medium transition-all duration-300 ${
-              post.likedByMe ? 'text-red-500' : ''
+              post.likedByMe && hasProfile ? 'text-red-500' : ''
             }`}>{post.likes}</span>
           </button>
           <button
-            className="flex items-center gap-1 p-1 text-gray-500 hover:text-violet-500 transition-colors hover:scale-105 transform duration-200"
-            title="댓글"
+            className={`flex items-center gap-1 p-1 transition-colors hover:scale-105 transform duration-200 ${
+              !hasProfile 
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-gray-500 hover:text-violet-500"
+            }`}
+            title={!hasProfile ? "프로필을 만들어주세요" : "댓글"}
             onClick={handleCommentClick}
+            disabled={!hasProfile}
           >
             <MessageCircle size={16} />
             <span>{post.comments}</span>
           </button>
         </div>
         <div className="flex items-center gap-2">
-          {/*<button
-            className="p-1 text-gray-500 hover:text-green-500 transition-colors"
-            title="공유하기"
-            onClick={(e) => {
-              e.stopPropagation()
-              console.log("Share post:", post.id)
-            }}
-          >
-            <Share2 size={16} />
-          </button>*/}
           <button
             className={`p-1 transition-all duration-200 transform hover:scale-105 ${
-              post.bookmarkedByMe 
-                ? "text-orange-500" 
-                : "text-gray-500 hover:text-orange-500"
+              !hasProfile 
+                ? "text-gray-400 cursor-not-allowed"
+                : post.bookmarkedByMe 
+                  ? "text-orange-500" 
+                  : "text-gray-500 hover:text-orange-500"
             }`}
-            title="저장하기"
+            title={!hasProfile ? "프로필을 만들어주세요" : "저장하기"}
             onClick={handleBookmarkClick}
+            disabled={!hasProfile}
           >
             <Bookmark 
               size={16} 
-              fill={post.bookmarkedByMe ? "currentColor" : "none"}
+              fill={post.bookmarkedByMe && hasProfile ? "currentColor" : "none"}
             />
           </button>
         </div>
