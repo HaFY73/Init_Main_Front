@@ -47,16 +47,12 @@ export const uploadImageToServer = async (file: File): Promise<UploadResult> => 
       const result = await response.json()
       console.log('✅ 서버 업로드 성공:', result)
 
-      // 서버에서 반환된 이미지 URL 처리
+      // 🔥 Cloudinary URL은 이미 완전한 URL이므로 그대로 반환
       const imageUrl = result.data?.imageUrl || result.imageUrl || result.url
 
       if (imageUrl) {
-        // 절대 경로로 변환 (필요한 경우)
-        const fullImageUrl = imageUrl.startsWith('http')
-            ? imageUrl
-            : `http://localhost:8080${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`
-
-        return { success: true, imageUrl: fullImageUrl }
+        console.log('✅ 업로드된 이미지 URL:', imageUrl)
+        return { success: true, imageUrl: imageUrl } // 🔥 Cloudinary URL 그대로 사용
       } else {
         return { success: false, error: '서버에서 이미지 URL을 반환하지 않았습니다.' }
       }
