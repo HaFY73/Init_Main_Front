@@ -371,11 +371,22 @@ export default function FollowPage() {
                                 </div>
                             )}
 
-                <ProfileModal
-                    isOpen={modalOpen}
-                    onClose={() => setModalOpen(false)}
-                    userId={selectedUserId}
-                />
+                            <UpwardMenu
+                                className="fixed bottom-6 right-6 z-[999]"
+                                onFollowClick={() => router.push("/community/follow")}
+                                onMyPostsClick={() => router.push("/community/write")}
+                                onMyCommentsClick={() => router.push("/community/reply")}
+                                onSavedClick={() => router.push("/community/bookmark")}
+                            />
+                        </div>
+                    </div>
+
+                    <ProfileModal
+                        isOpen={modalOpen}
+                        onClose={() => setModalOpen(false)}
+                        userId={selectedUserId}
+                    />
+                </div>
             </motion.div>
         </CommunityLayout>
     )
