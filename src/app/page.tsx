@@ -260,9 +260,7 @@ export default function Home() {
                             viewport={{ once: false }}
                         >
                             <div className="w-full h-full bg-gradient-to-br flex items-center justify-center">
-                                <div className="text-center">
-                                    <img src={"/intro.png"} alt={"introduce image"}/>
-                                </div>
+                                <img src={"/intro.png"} alt={"introduce image"}/>
                             </div>
 
                             <motion.div

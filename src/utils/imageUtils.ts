@@ -19,7 +19,7 @@ export interface AvatarData {
 export const getAvatarData = (profileImageUrl?: string | null, displayName?: string | null): AvatarData => {
   console.log('🔍 [getAvatarData] 입력:', { profileImageUrl, displayName });
   
-  // 🔥 더 엄격한 프로필 이미지 유효성 검사
+  // 🔥 더 엄격한 프로필 이미지 유효성 검사 - 백엔드에서 null로 처리되는 경우 포함
   const isValidImageUrl = profileImageUrl && 
       typeof profileImageUrl === 'string' &&
       profileImageUrl.trim() !== '' && 

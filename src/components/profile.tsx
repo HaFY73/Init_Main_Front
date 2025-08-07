@@ -211,9 +211,9 @@ export default function ProfileDialog() {
             console.log('👀 미리보기 URL 생성:', previewUrl)
             setProfileImage(previewUrl)
 
-            // 🔥 프로필 이미지 전용 API 사용
+            // 🔥 프로필 이미지 업로드 (이제 백엔드에서 자동으로 DB 업데이트까지 처리)
             const imageUrl = await uploadProfileImage(userId!, file)
-            console.log('✅ 서버 업로드 성공, 받은 URL:', imageUrl)
+            console.log('✅ 서버 업로드 및 DB 저장 완료, 받은 URL:', imageUrl)
             
             // 🔥 URL 유형 확인
             if (imageUrl.startsWith('http')) {
