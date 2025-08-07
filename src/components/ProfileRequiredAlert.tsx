@@ -97,7 +97,7 @@ export default function ProfileRequiredAlert({
           transition={{ duration: 0.3 }}
           className={className}
         >
-          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl">
+          <div className="bg-white/90 backdrop-blur-md border border-violet-200 rounded-2xl shadow-xl">
             <div className="p-6">
               <div className="flex flex-col items-center text-center space-y-4">
                 <div className="relative">
@@ -110,25 +110,25 @@ export default function ProfileRequiredAlert({
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="text-xl font-bold text-white drop-shadow-lg">
+                  <h3 className="text-xl font-bold text-gray-900">
                     커뮤니티에 참여해보세요!
                   </h3>
-                  <p className="text-white/90 max-w-md drop-shadow-md">
+                  <p className="text-gray-600 max-w-md">
                     프로필을 만들면 다른 사용자들과 소통하고, 
                     팔로우하며, 더 풍부한 커뮤니티 경험을 즐길 수 있어요.
                   </p>
                 </div>
 
                 <div className="flex items-center justify-center gap-6 py-2">
-                  <div className="flex items-center gap-2 text-white/80">
+                  <div className="flex items-center gap-2 text-violet-600">
                     <Heart className="h-4 w-4" />
                     <span className="text-sm font-medium">좋아요</span>
                   </div>
-                  <div className="flex items-center gap-2 text-white/80">
+                  <div className="flex items-center gap-2 text-violet-600">
                     <MessageCircle className="h-4 w-4" />
                     <span className="text-sm font-medium">댓글</span>
                   </div>
-                  <div className="flex items-center gap-2 text-white/80">
+                  <div className="flex items-center gap-2 text-violet-600">
                     <Users className="h-4 w-4" />
                     <span className="text-sm font-medium">팔로우</span>
                   </div>
@@ -146,7 +146,7 @@ export default function ProfileRequiredAlert({
                     <Button
                       onClick={handleDismiss}
                       variant="outline"
-                      className="border-white/30 text-white/90 bg-white/10 hover:bg-white/20"
+                      className="border-gray-300 text-gray-600"
                     >
                       나중에
                     </Button>

@@ -1195,7 +1195,7 @@ export default function FeedPage() {
                                     {/* 🔥 프로필이 없을 때 오버레이 */}
                                     {showProfileRequired && (
                                         <div
-                                            className="absolute inset-0 bg-white/30 backdrop-blur-sm z-10 rounded-lg flex items-center justify-center">
+                                            className="absolute inset-0 bg-white/50 backdrop-blur-sm z-10 rounded-lg flex items-center justify-center">
                                             <ProfileRequiredAlert
                                                 variant="card"
                                                 className="max-w-md"
@@ -1204,7 +1204,7 @@ export default function FeedPage() {
                                         </div>
                                     )}
 
-                                    <div className={showProfileRequired ? "opacity-50 pointer-events-none" : ""}>
+                                    <div className={showProfileRequired ? "opacity-70 pointer-events-none" : ""}>
                                         <Carousel initialActiveIndex={currentPostIndex}
                                                   onCardClick={handleOpenPostDetail}
                                                   onCommentClick={handleOpenPostComments}>
