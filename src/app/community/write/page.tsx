@@ -258,17 +258,23 @@ export default function WritePage() {
         })
 
         try {
-            // 해시태그 처리 - 빈 문자열도 안전하게 처리
+            // 🔥 해시태그 처리 - 백엔드 제약조건 고려한 안전한 처리
             let hashtagsArr: string[] = []
             if (newPost.hashtags && newPost.hashtags.trim()) {
                 hashtagsArr = newPost.hashtags
                     .split(",")
                     .map(t => t.trim())
-                    .filter(Boolean)
+                    .filter(t => t.length > 0) // 빈 문자열 완전 제거
                     .map(t => {
-                        return t.startsWith("#") ? t : `#${t}`
+                        // #이 없으면 추가, 있으면 그대로
+                        const cleaned = t.startsWith("#") ? t : `#${t}`
+                        return cleaned
                     })
+                    .filter(t => t.length > 1 && t !== "#") // "#"만 있거나 빈 태그 제거
+                    .slice(0, 10) // 최대 10개로 제한 (백엔드 제약 고려)
             }
+
+            console.log('🏷️ 처리된 해시태그:', hashtagsArr)
 
             // 카테고리 정보 - 없어도 임시저장 가능
             let jobCategory: string | null = null
@@ -362,14 +368,23 @@ export default function WritePage() {
         })
 
         try {
-            // 해시태그 처리
-            const hashtagsArr = newPost.hashtags
-                .split(",")
-                .map(t => t.trim())
-                .filter(Boolean)
-                .map(t => {
-                    return t.startsWith("#") ? t : `#${t}`
-                })
+            // 🔥 해시태그 처리 - 백엔드 제약조건 고려한 안전한 처리
+            let hashtagsArr: string[] = []
+            if (newPost.hashtags && newPost.hashtags.trim()) {
+                hashtagsArr = newPost.hashtags
+                    .split(",")
+                    .map(t => t.trim())
+                    .filter(t => t.length > 0) // 빈 문자열 완전 제거
+                    .map(t => {
+                        // #이 없으면 추가, 있으면 그대로
+                        const cleaned = t.startsWith("#") ? t : `#${t}`
+                        return cleaned
+                    })
+                    .filter(t => t.length > 1 && t !== "#") // "#"만 있거나 빈 태그 제거
+                    .slice(0, 10) // 최대 10개로 제한 (백엔드 제약 고려)
+            }
+
+            console.log('🏷️ 처리된 해시태그:', hashtagsArr)
 
             // 카테고리 정보
             const categoryInfo = allCategories.find(c => c.key === selectedCategoryKey)
