@@ -1192,19 +1192,16 @@ export default function FeedPage() {
                             {/* 게시글 Carousel */}
                             {posts.length > 0 ? (
                                 <div className="carousel-container-wrapper relative">
-                                    {/* 🔥 프로필이 없을 때 오버레이 */}
-                                    {showProfileRequired && (
-                                        <div
-                                            className="absolute inset-0 bg-white/50 backdrop-blur-sm z-10 rounded-lg flex items-center justify-center">
+                                    {/* 🔥 프로필이 없을 때는 알림 카드만 표시 (오버레이 제거) */}
+                                    {showProfileRequired ? (
+                                        <div className="flex items-center justify-center py-20">
                                             <ProfileRequiredAlert
                                                 variant="card"
                                                 className="max-w-md"
                                                 showDismiss={false}
                                             />
                                         </div>
-                                    )}
-
-                                    <div className={showProfileRequired ? "opacity-70 pointer-events-none" : ""}>
+                                    ) : (
                                         <Carousel initialActiveIndex={currentPostIndex}
                                                   onCardClick={handleOpenPostDetail}
                                                   onCommentClick={handleOpenPostComments}>
@@ -1224,7 +1221,7 @@ export default function FeedPage() {
                                                 />
                                             ))}
                                         </Carousel>
-                                    </div>
+                                    )}
                                 </div>
                             ) : (
                                 <div className="flex flex-col items-center justify-center py-20 text-center">
