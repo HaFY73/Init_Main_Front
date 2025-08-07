@@ -153,6 +153,7 @@ export default function ProfileRequiredAlert({
                   )}
                 </div>
               </div>
+            </div>
           </div>
         </motion.div>
       </AnimatePresence>
