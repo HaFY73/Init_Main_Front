@@ -991,7 +991,7 @@ export default function WritePage() {
                                                             }))}
                                                         />
                                                     </div>
-                                                    <p className="text-xs text-gray-500">예: #취업팁, #면접준비, #포트폴리오</p>
+                                                    <p className="text-xs text-gray-500">예: 취업팁, 면접준비, 포트폴리오</p>
                                                 </div>
 
                                                 {/* 이미지 업로드 */}
