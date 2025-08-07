@@ -241,96 +241,175 @@ export default function WritePage() {
         setDisplayCategoryText("카테고리 선택")
     }, [])
 
-    // 🔥 완전 수정된 handleSavePost 함수 - 백엔드 API 스펙에 맞춤
-    const handleSavePost = useCallback(async (status: "draft" | "published") => {
+    // 🔥 임시저장 전용 함수 - 더 안전한 처리
+    const handleSaveDraft = useCallback(async () => {
         if (!userId) {
             alert("로그인이 필요합니다.")
             return
         }
 
-        // 🔥 발행하는 경우에만 필수 검증
-        if (status === "published") {
-            if (!newPost.content.trim()) {
-                alert("발행하려면 게시글 내용을 입력해주세요.")
-                return
-            }
-
-            if (!selectedCategoryKey) {
-                alert("발행하려면 카테고리를 선택해주세요.")
-                return
-            }
-        }
-
-        // 🔥 임시저장의 경우 빈 내용도 허용하되, 최소한의 검증
-        if (status === "draft") {
-            // 내용과 카테고리가 모두 비어있으면 안내
-            if (!newPost.content.trim() && !selectedCategoryKey) {
-                const confirmed = confirm("내용과 카테고리가 모두 비어있습니다. 그래도 임시저장하시겠습니까?")
-                if (!confirmed) return
-            }
-        }
-
-        // 해시태그 처리 - 더 안전한 처리
-        const hashtagsArr = newPost.hashtags
-            .split(",")
-            .map(t => t.trim())
-            .filter(Boolean)
-            .map(t => {
-                // 이미 #로 시작하는 태그는 그대로, 아닌 것은 #를 추가
-                return t.startsWith("#") ? t : `#${t}`
-            })
-
-        // 🔥 백엔드 CreatePostData 형식에 맞춰 데이터 준비
-        const categoryInfo = allCategories.find(c => c.key === selectedCategoryKey)
-        const isJobCategory = categoryInfo?.type === "job"
-
-        const postData: CreatePostData = {
-            content: newPost.content.trim(),
-            imageUrl: newPost.image || null,
-            // 🔥 백엔드 스펙에 맞춰 jobCategory 또는 topicCategory 중 하나만 설정
-            jobCategory: isJobCategory ? selectedCategoryKey : null,
-            topicCategory: !isJobCategory ? selectedCategoryKey : null,
-            status: status.toUpperCase() as "DRAFT" | "PUBLISHED",
-            hashtags: hashtagsArr
-        }
-
-        console.log('🔄 게시글 저장 요청:', {
+        console.log('💾 임시저장 시작:', {
             userId,
-            status,
-            postData,
+            content: newPost.content,
+            category: selectedCategoryKey,
+            hashtags: newPost.hashtags,
+            image: newPost.image,
             editingPost: editingPost?.id
         })
 
         try {
+            // 해시태그 처리 - 빈 문자열도 안전하게 처리
+            let hashtagsArr: string[] = []
+            if (newPost.hashtags && newPost.hashtags.trim()) {
+                hashtagsArr = newPost.hashtags
+                    .split(",")
+                    .map(t => t.trim())
+                    .filter(Boolean)
+                    .map(t => {
+                        return t.startsWith("#") ? t : `#${t}`
+                    })
+            }
+
+            // 카테고리 정보 - 없어도 임시저장 가능
+            let jobCategory: string | null = null
+            let topicCategory: string | null = null
+            
+            if (selectedCategoryKey) {
+                const categoryInfo = allCategories.find(c => c.key === selectedCategoryKey)
+                if (categoryInfo) {
+                    if (categoryInfo.type === "job") {
+                        jobCategory = selectedCategoryKey
+                    } else {
+                        topicCategory = selectedCategoryKey
+                    }
+                }
+            }
+
+            const postData: CreatePostData = {
+                content: newPost.content || "", // 빈 내용도 허용
+                imageUrl: newPost.image || null,
+                jobCategory,
+                topicCategory,
+                status: "DRAFT",
+                hashtags: hashtagsArr
+            }
+
+            console.log('📤 임시저장 데이터:', postData)
+
             if (editingPost) {
                 // 수정 모드
-                console.log('📝 게시글 수정 중...')
+                await updatePost(editingPost.id, userId, postData)
+                alert("임시저장이 완료되었습니다!")
+            } else {
+                // 생성 모드
+                await createPost(postData, userId)
+                alert("임시저장이 완료되었습니다!")
+            }
+
+            // 임시저장 목록 새로고침
+            await loadDraftPosts()
+            
+            // 임시저장 탭으로 이동
+            setActiveTab("drafts")
+
+            console.log('✅ 임시저장 완료')
+
+        } catch (err: any) {
+            console.error("❌ 임시저장 실패:", err)
+            
+            let errorMessage = "임시저장에 실패했습니다."
+            if (err.message) {
+                if (err.message.includes('401')) {
+                    errorMessage = "로그인이 만료되었습니다. 다시 로그인해주세요."
+                } else if (err.message.includes('403')) {
+                    errorMessage = "게시글 작성 권한이 없습니다."
+                } else if (err.message.includes('500')) {
+                    errorMessage = "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+                } else {
+                    errorMessage = `임시저장 오류: ${err.message}`
+                }
+            }
+            
+            alert(errorMessage)
+        }
+    }, [userId, newPost, selectedCategoryKey, editingPost, loadDraftPosts])
+
+    // 🔥 발행 전용 함수 - 필수 검증 포함
+    const handlePublishPost = useCallback(async () => {
+        if (!userId) {
+            alert("로그인이 필요합니다.")
+            return
+        }
+
+        // 발행 시 필수 검증
+        if (!newPost.content.trim()) {
+            alert("발행하려면 게시글 내용을 입력해주세요.")
+            return
+        }
+
+        if (!selectedCategoryKey) {
+            alert("발행하려면 카테고리를 선택해주세요.")
+            return
+        }
+
+        console.log('📢 게시글 발행 시작:', {
+            userId,
+            content: newPost.content,
+            category: selectedCategoryKey,
+            hashtags: newPost.hashtags,
+            image: newPost.image,
+            editingPost: editingPost?.id
+        })
+
+        try {
+            // 해시태그 처리
+            const hashtagsArr = newPost.hashtags
+                .split(",")
+                .map(t => t.trim())
+                .filter(Boolean)
+                .map(t => {
+                    return t.startsWith("#") ? t : `#${t}`
+                })
+
+            // 카테고리 정보
+            const categoryInfo = allCategories.find(c => c.key === selectedCategoryKey)
+            const isJobCategory = categoryInfo?.type === "job"
+
+            const postData: CreatePostData = {
+                content: newPost.content.trim(),
+                imageUrl: newPost.image || null,
+                jobCategory: isJobCategory ? selectedCategoryKey : null,
+                topicCategory: !isJobCategory ? selectedCategoryKey : null,
+                status: "PUBLISHED",
+                hashtags: hashtagsArr
+            }
+
+            console.log('📤 발행 데이터:', postData)
+
+            if (editingPost) {
+                // 수정 모드
                 await updatePost(editingPost.id, userId, postData)
                 alert("글이 수정되었습니다!")
             } else {
                 // 생성 모드
-                console.log('✏️ 새 게시글 생성 중...')
                 await createPost(postData, userId)
-                alert(status === "published" ? "글이 발행되었습니다!" : "글이 임시저장되었습니다!")
+                alert("글이 발행되었습니다!")
             }
 
             resetForm()
-            setActiveTab(status === "draft" ? "drafts" : "published")
+            
+            // 발행된 글 목록 새로고침
+            await loadPublishedPosts()
+            
+            // 발행됨 탭으로 이동
+            setActiveTab("published")
 
-            // 목록 새로고침
-            if (status === "draft") {
-                await loadDraftPosts()
-            } else {
-                await loadPublishedPosts()
-            }
-
-            console.log('✅ 게시글 저장 완료')
+            console.log('✅ 게시글 발행 완료')
 
         } catch (err: any) {
-            console.error("❌ 글 저장 실패:", err)
+            console.error("❌ 게시글 발행 실패:", err)
 
-            // 더 상세한 에러 메시지 제공
-            let errorMessage = "글 저장에 실패했습니다."
+            let errorMessage = "글 발행에 실패했습니다."
             if (err.message) {
                 if (err.message.includes('400')) {
                     errorMessage = "입력 데이터에 오류가 있습니다. 모든 필드를 확인해주세요."
@@ -341,13 +420,13 @@ export default function WritePage() {
                 } else if (err.message.includes('500')) {
                     errorMessage = "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
                 } else {
-                    errorMessage = `오류: ${err.message}`
+                    errorMessage = `발행 오류: ${err.message}`
                 }
             }
 
             alert(errorMessage)
         }
-    }, [userId, newPost, selectedCategoryKey, resetForm, loadDraftPosts, loadPublishedPosts, editingPost])
+    }, [userId, newPost, selectedCategoryKey, editingPost, resetForm, loadPublishedPosts])
 
     const handleEditPost = useCallback((post: Post) => {
         console.log('📝 게시글 수정 모드 진입:', post)
@@ -930,13 +1009,13 @@ export default function WritePage() {
                                                 <div className="space-x-2">
                                                     <Button
                                                         variant="outline"
-                                                        onClick={() => handleSavePost("draft")}
+                                                        onClick={handleSaveDraft}
                                                         disabled={isUploading}
                                                     >
                                                         임시저장
                                                     </Button>
                                                     <Button
-                                                        onClick={() => handleSavePost("published")}
+                                                        onClick={handlePublishPost}
                                                         disabled={!newPost.content.trim() || !selectedCategoryKey || isUploading}
                                                         className="bg-[#6366f1] hover:bg-[#6366f1]/90"
                                                     >
@@ -1029,13 +1108,13 @@ export default function WritePage() {
                                                 <div className="space-x-2">
                                                     <Button
                                                         variant="outline"
-                                                        onClick={() => handleSavePost("draft")}
+                                                        onClick={handleSaveDraft}
                                                         disabled={isUploading}
                                                     >
                                                         임시저장
                                                     </Button>
                                                     <Button
-                                                        onClick={() => handleSavePost("published")}
+                                                        onClick={handlePublishPost}
                                                         disabled={!newPost.content.trim() || !selectedCategoryKey || isUploading}
                                                         className="bg-[#6366f1] hover:bg-[#6366f1]/90"
                                                     >
