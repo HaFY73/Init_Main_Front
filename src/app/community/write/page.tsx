@@ -258,23 +258,41 @@ export default function WritePage() {
         })
 
         try {
-            // 🔥 해시태그 처리 - 백엔드 제약조건 고려한 안전한 처리
+            // 🔥 해시태그 처리 - 더욱 안전하고 엄격한 처리
             let hashtagsArr: string[] = []
-            if (newPost.hashtags && newPost.hashtags.trim()) {
-                hashtagsArr = newPost.hashtags
+            
+            // 해시태그가 있는 경우에만 처리
+            if (newPost.hashtags && newPost.hashtags.trim().length > 0) {
+                console.log('🏷️ 원본 해시태그 입력:', newPost.hashtags)
+                
+                const processedTags = newPost.hashtags
                     .split(",")
                     .map(t => t.trim())
-                    .filter(t => t.length > 0) // 빈 문자열 완전 제거
+                    .filter(t => t && t.length > 0) // null, undefined, 빈 문자열 제거
                     .map(t => {
-                        // #이 없으면 추가, 있으면 그대로
-                        const cleaned = t.startsWith("#") ? t : `#${t}`
+                        // 특수문자 제거 및 정리
+                        let cleaned = t.replace(/[^\w가-힣#]/g, '') // 한글, 영숫자, # 만 허용
+                        
+                        // #이 없으면 추가
+                        if (!cleaned.startsWith("#")) {
+                            cleaned = `#${cleaned}`
+                        }
+                        
                         return cleaned
                     })
-                    .filter(t => t.length > 1 && t !== "#") // "#"만 있거나 빈 태그 제거
-                    .slice(0, 10) // 최대 10개로 제한 (백엔드 제약 고려)
+                    .filter(t => t && t.length > 1 && t !== "#") // 유효한 태그만
+                    .filter((tag, index, self) => self.indexOf(tag) === index) // 중복 제거
+                    .slice(0, 5) // 최대 5개로 제한
+                
+                console.log('🏷️ 처리된 해시태그:', processedTags)
+                
+                // 유효한 태그가 있을 때만 배열에 추가
+                if (processedTags.length > 0) {
+                    hashtagsArr = processedTags
+                }
             }
-
-            console.log('🏷️ 처리된 해시태그:', hashtagsArr)
+            
+            console.log('🏷️ 최종 해시태그 배열:', hashtagsArr)
 
             // 카테고리 정보 - 없어도 임시저장 가능
             let jobCategory: string | null = null
@@ -368,23 +386,41 @@ export default function WritePage() {
         })
 
         try {
-            // 🔥 해시태그 처리 - 백엔드 제약조건 고려한 안전한 처리
+            // 🔥 해시태그 처리 - 더욱 안전하고 엄격한 처리
             let hashtagsArr: string[] = []
-            if (newPost.hashtags && newPost.hashtags.trim()) {
-                hashtagsArr = newPost.hashtags
+            
+            // 해시태그가 있는 경우에만 처리
+            if (newPost.hashtags && newPost.hashtags.trim().length > 0) {
+                console.log('🏷️ 원본 해시태그 입력:', newPost.hashtags)
+                
+                const processedTags = newPost.hashtags
                     .split(",")
                     .map(t => t.trim())
-                    .filter(t => t.length > 0) // 빈 문자열 완전 제거
+                    .filter(t => t && t.length > 0) // null, undefined, 빈 문자열 제거
                     .map(t => {
-                        // #이 없으면 추가, 있으면 그대로
-                        const cleaned = t.startsWith("#") ? t : `#${t}`
+                        // 특수문자 제거 및 정리
+                        let cleaned = t.replace(/[^\w가-힣#]/g, '') // 한글, 영숫자, # 만 허용
+                        
+                        // #이 없으면 추가
+                        if (!cleaned.startsWith("#")) {
+                            cleaned = `#${cleaned}`
+                        }
+                        
                         return cleaned
                     })
-                    .filter(t => t.length > 1 && t !== "#") // "#"만 있거나 빈 태그 제거
-                    .slice(0, 10) // 최대 10개로 제한 (백엔드 제약 고려)
+                    .filter(t => t && t.length > 1 && t !== "#") // 유효한 태그만
+                    .filter((tag, index, self) => self.indexOf(tag) === index) // 중복 제거
+                    .slice(0, 5) // 최대 5개로 제한
+                
+                console.log('🏷️ 처리된 해시태그:', processedTags)
+                
+                // 유효한 태그가 있을 때만 배열에 추가
+                if (processedTags.length > 0) {
+                    hashtagsArr = processedTags
+                }
             }
-
-            console.log('🏷️ 처리된 해시태그:', hashtagsArr)
+            
+            console.log('🏷️ 최종 해시태그 배열:', hashtagsArr)
 
             // 카테고리 정보
             const categoryInfo = allCategories.find(c => c.key === selectedCategoryKey)
