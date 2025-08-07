@@ -99,7 +99,7 @@ export function UpwardMenu({
   };
 
   return (
-      <div className={`fixed bottom-20 z-50 ${className ?? "right-6"}`} ref={menuRef}>
+      <div className={`fixed bottom-20 sm:bottom-6 z-[9999] ${className ?? "right-4 sm:right-6"}`} ref={menuRef}>
         <div className="flex flex-col-reverse items-center gap-3 mb-4">
           {menuItems.map((item, index) => {
             const IconComponent = item.icon

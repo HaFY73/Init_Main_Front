@@ -307,7 +307,8 @@ export default function GlobalSidebar() {
           <nav className={styles.nav}>
             <ul className={styles.menuList}>
               {menuItems.map((item) => {
-                const isActive = pathname === item.href;
+                // 🔥 하위 경로도 활성화되도록 수정
+                const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
                 const Icon = item.icon;
                 return (
                     <li key={item.id} className={styles.menuItem}>
