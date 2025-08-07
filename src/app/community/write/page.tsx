@@ -14,7 +14,7 @@ import {
     getUserPublishedPosts,
     type CreatePostData
 } from "@/lib/post-api"
-import {uploadImageSimple} from "@/utils/imageUpload"
+import {uploadImage} from "@/lib/profile-api"
 import {getPostImageUrl, handleImageError} from "@/utils/imageUtils"
 import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
@@ -84,19 +84,19 @@ const allCategories: Category[] = [
 const useImageUpload = () => {
     const [isUploading, setIsUploading] = useState(false)
 
-    const uploadImage = useCallback(async (file: File): Promise<string> => {
+    const uploadImageFile = useCallback(async (file: File): Promise<string> => {
         setIsUploading(true)
 
         try {
             console.log('🔄 이미지 업로드 시작:', file.name)
 
-            const result = await uploadImageSimple(file)
+            const result = await uploadImage(file)
 
-            if (result.success && result.imageUrl) {
+            if (result) {
                 console.log('✅ 이미지 업로드 성공')
-                return result.imageUrl
+                return result
             } else {
-                throw new Error(result.error || '이미지 업로드에 실패했습니다.')
+                throw new Error('이미지 업로드에 실패했습니다.')
             }
         } catch (error) {
             console.error('❌ 이미지 업로드 에러:', error)
@@ -106,7 +106,7 @@ const useImageUpload = () => {
         }
     }, [])
 
-    return {uploadImage, isUploading}
+    return {uploadImageFile, isUploading}
 }
 
 // 🔥 수정된 usePosts 훅 - 백엔드 API에 맞춤
@@ -195,7 +195,7 @@ export default function WritePage() {
     const userId = getCurrentUserId()
     const router = useRouter()
     const fileInputRef = useRef<HTMLInputElement>(null)
-    const {uploadImage, isUploading} = useImageUpload()
+    const {uploadImageFile, isUploading} = useImageUpload()
     const {
         drafts,
         published,
@@ -248,14 +248,26 @@ export default function WritePage() {
             return
         }
 
-        if (!newPost.content.trim()) {
-            alert("게시글 내용을 입력해주세요.")
-            return
+        // 🔥 발행하는 경우에만 필수 검증
+        if (status === "published") {
+            if (!newPost.content.trim()) {
+                alert("발행하려면 게시글 내용을 입력해주세요.")
+                return
+            }
+
+            if (!selectedCategoryKey) {
+                alert("발행하려면 카테고리를 선택해주세요.")
+                return
+            }
         }
 
-        if (!selectedCategoryKey) {
-            alert("카테고리를 선택해주세요.")
-            return
+        // 🔥 임시저장의 경우 빈 내용도 허용하되, 최소한의 검증
+        if (status === "draft") {
+            // 내용과 카테고리가 모두 비어있으면 안내
+            if (!newPost.content.trim() && !selectedCategoryKey) {
+                const confirmed = confirm("내용과 카테고리가 모두 비어있습니다. 그래도 임시저장하시겠습니까?")
+                if (!confirmed) return
+            }
         }
 
         // 해시태그 처리 - 더 안전한 처리
@@ -416,7 +428,7 @@ export default function WritePage() {
             console.log('🔄 이미지 업로드 시작:', file.name)
 
             // 서버에 실제 업로드
-            const serverImageUrl = await uploadImage(file)
+            const serverImageUrl = await uploadImageFile(file)
 
             // 서버 업로드 성공시 실제 URL로 교체
             setNewPost(prev => ({
@@ -436,7 +448,7 @@ export default function WritePage() {
             // 업로드 실패시 이미지 제거
             setNewPost(prev => ({...prev, image: null}))
         }
-    }, [uploadImage])
+    }, [uploadImageFile])
 
     // 컴포넌트 언마운트시 Object URL 정리
     useEffect(() => {
@@ -919,7 +931,7 @@ export default function WritePage() {
                                                     <Button
                                                         variant="outline"
                                                         onClick={() => handleSavePost("draft")}
-                                                        disabled={!newPost.content.trim() || !selectedCategoryKey || isUploading}
+                                                        disabled={isUploading}
                                                     >
                                                         임시저장
                                                     </Button>
@@ -1018,7 +1030,7 @@ export default function WritePage() {
                                                     <Button
                                                         variant="outline"
                                                         onClick={() => handleSavePost("draft")}
-                                                        disabled={!newPost.content.trim() || !selectedCategoryKey || isUploading}
+                                                        disabled={isUploading}
                                                     >
                                                         임시저장
                                                     </Button>
