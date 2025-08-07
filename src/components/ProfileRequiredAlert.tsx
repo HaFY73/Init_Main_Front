@@ -97,7 +97,7 @@ export default function ProfileRequiredAlert({
           transition={{ duration: 0.3 }}
           className={className}
         >
-          <Card className="bg-gradient-to-br from-violet-50 to-purple-50 border-violet-200">
+          <Card className="bg-white/80 backdrop-blur-md border-violet-200 shadow-xl">
             <CardContent className="p-6">
               <div className="flex flex-col items-center text-center space-y-4">
                 <div className="relative">
