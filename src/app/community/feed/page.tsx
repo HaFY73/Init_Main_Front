@@ -12,7 +12,7 @@ import {
     deleteComment, toggleFollow, checkFollowStatus, type PostResponse, type CommentResponse, type ApiResponse
 } from "@/lib/post-api"
 import {getCurrentUserId} from "@/utils/auth"
-import {getFullImageUrl, getAvatarData, getPostImageUrl} from "@/utils/imageUtils"
+import {getAvatarData, getPostImageUrl} from "@/utils/imageUtils"
 import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
@@ -1103,22 +1103,22 @@ export default function FeedPage() {
                 initial={{opacity: 0, y: 30}}
                 animate={{opacity: 1, y: 0}}
                 transition={{duration: 0.6, ease: "easeOut"}}
-                className="flex flex-1 flex-col min-h-screen bg-gradient-to-br from-violet-50 to-indigo-100 pl-6"
+                className="flex flex-1 flex-col min-h-screen bg-gradient-to-br from-violet-50 to-indigo-100 px-2 sm:px-4 md:pl-6"
             >
-                <div className="community-container bg-gradient-to-br from-violet-50 to-indigo-100 pl-6">
+                <div className="community-container bg-gradient-to-br from-violet-50 to-indigo-100 px-2 sm:px-4 md:pl-6">
                     <div className="community-main" ref={contentRef}>
                         <div className="community-feed-container">
                             {/* 필터 헤더 */}
-                            <div className="mb-6 pt-8">
-                                <h1 className="text-2xl font-bold text-gray-900 mb-1 flex items-center">
-                                    <Rss className="mr-2 h-6 w-6"/>
+                            <div className="mb-4 sm:mb-6 pt-4 sm:pt-6 md:pt-8">
+                                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 flex items-center">
+                                    <Rss className="mr-2 h-5 w-5 sm:h-6 sm:w-6"/>
                                     피드
                                 </h1>
-                                <p className="text-gray-500">커뮤니티의 최신 소식을 확인하고 이야기를 나눠보세요.</p>
+                                <p className="text-sm sm:text-base text-gray-500">커뮤니티의 최신 소식을 확인하고 이야기를 나눠보세요.</p>
                             </div>
 
                             {/* 카테고리 & 검색 */}
-                            <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                            <div className="flex flex-col md:flex-row justify-between items-center mb-4 sm:mb-6 md:mb-8 gap-4">
                                 <div
                                     className="flex justify-center md:justify-start gap-2 order-2 md:order-1 w-full md:w-auto md:flex-grow">
                                     <CategoryDropdown
@@ -1164,7 +1164,7 @@ export default function FeedPage() {
                             </div>
 
                             {/* 전체 / 팔로우 탭 */}
-                            <div className="mb-8 flex justify-center">
+                            <div className="mb-4 sm:mb-6 md:mb-8 flex justify-center">
                                 <div className="filter-toggle">
                                     <button
                                         className={`filter-button ${feedMode === "all" ? "active" : ""}`}
