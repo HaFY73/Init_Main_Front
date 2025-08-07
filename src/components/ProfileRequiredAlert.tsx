@@ -97,8 +97,8 @@ export default function ProfileRequiredAlert({
           transition={{ duration: 0.3 }}
           className={className}
         >
-          <Card className="bg-white/80 backdrop-blur-md border-violet-200 shadow-xl">
-            <CardContent className="p-6">
+          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl">
+            <div className="p-6">
               <div className="flex flex-col items-center text-center space-y-4">
                 <div className="relative">
                   <div className="w-16 h-16 bg-gradient-to-br from-violet-500 to-purple-600 rounded-full flex items-center justify-center">
@@ -110,25 +110,25 @@ export default function ProfileRequiredAlert({
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="text-xl font-bold text-gray-900">
+                  <h3 className="text-xl font-bold text-white drop-shadow-lg">
                     커뮤니티에 참여해보세요!
                   </h3>
-                  <p className="text-gray-600 max-w-md">
+                  <p className="text-white/90 max-w-md drop-shadow-md">
                     프로필을 만들면 다른 사용자들과 소통하고, 
                     팔로우하며, 더 풍부한 커뮤니티 경험을 즐길 수 있어요.
                   </p>
                 </div>
 
                 <div className="flex items-center justify-center gap-6 py-2">
-                  <div className="flex items-center gap-2 text-violet-600">
+                  <div className="flex items-center gap-2 text-white/80">
                     <Heart className="h-4 w-4" />
                     <span className="text-sm font-medium">좋아요</span>
                   </div>
-                  <div className="flex items-center gap-2 text-violet-600">
+                  <div className="flex items-center gap-2 text-white/80">
                     <MessageCircle className="h-4 w-4" />
                     <span className="text-sm font-medium">댓글</span>
                   </div>
-                  <div className="flex items-center gap-2 text-violet-600">
+                  <div className="flex items-center gap-2 text-white/80">
                     <Users className="h-4 w-4" />
                     <span className="text-sm font-medium">팔로우</span>
                   </div>
@@ -146,15 +146,14 @@ export default function ProfileRequiredAlert({
                     <Button
                       onClick={handleDismiss}
                       variant="outline"
-                      className="border-gray-300 text-gray-600"
+                      className="border-white/30 text-white/90 bg-white/10 hover:bg-white/20"
                     >
                       나중에
                     </Button>
                   )}
                 </div>
               </div>
-            </CardContent>
-          </Card>
+          </div>
         </motion.div>
       </AnimatePresence>
     )
