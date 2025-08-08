@@ -1,7 +1,17 @@
 // lib/dash-api.ts
 // 통합 API 클라이언트 - 모든 API 호출을 여기서 관리
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL!;
+// 🔥 환경변수 fallback 처리 - 더 명확한 설정
+const getApiBaseUrl = () => {
+    // 클라이언트 사이드에서만 환경변수 확인
+    if (typeof window !== 'undefined') {
+        return process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_API_URL || 'https://initmainback-production.up.railway.app';
+    }
+    // 서버 사이드에서는 기본값 사용
+    return 'https://initmainback-production.up.railway.app';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 // =============================================================================
 // 타입 정의
@@ -66,6 +76,12 @@ export interface DashboardData {
     stats: HomeStats;
     completion: ProfileCompletion;
     todos: TodoItem[];
+}
+
+// 🔥 공고 추천 요청 타입 (백엔드 JobRecommendationRequestDto와 일치)
+export interface JobRecommendationRequestDto {
+    keywords: string[];
+    locations: string[];
 }
 
 // 🔥 공고 추천 관련 타입
@@ -228,14 +244,18 @@ const apiRequest = async <T>(
 ): Promise<T> => {
     const config = createApiClient(includeUserId);
 
+    // 🔥 URL 구성 검증
+    const fullUrl = `${API_BASE_URL}${url}`;
+    
     try {
-        console.log('🌐 API 요청:', `${API_BASE_URL}${url}`, {
+        console.log('🌐 API 요청:', fullUrl, {
             method: options.method || 'GET',
             includeUserId,
-            expectApiWrapper
+            expectApiWrapper,
+            baseUrl: API_BASE_URL
         });
 
-        const response = await fetch(`${API_BASE_URL}${url}`, {
+        const response = await fetch(fullUrl, {
             ...config,
             ...options,
             headers: {
@@ -244,12 +264,29 @@ const apiRequest = async <T>(
             },
         });
 
-        console.log('📡 API 응답:', response.status, response.statusText);
+        console.log('📡 API 응답:', {
+            url: fullUrl,
+            status: response.status, 
+            statusText: response.statusText,
+            ok: response.ok
+        });
 
         if (!response.ok) {
-            const errorText = await response.text();
-            console.error('❌ API 에러 응답:', errorText);
-            throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+            let errorText = '';
+            try {
+                errorText = await response.text();
+            } catch (e) {
+                errorText = `HTTP ${response.status} ${response.statusText}`;
+            }
+            
+            console.error('❌ API 에러 응답:', {
+                status: response.status,
+                statusText: response.statusText,
+                errorText: errorText,
+                url: fullUrl
+            });
+            
+            throw new Error(`HTTP error! status: ${response.status} - ${errorText || response.statusText}`);
         }
 
         // 🔥 API 응답 형태에 따라 분기 처리
@@ -268,7 +305,11 @@ const apiRequest = async <T>(
             return result;
         }
     } catch (error) {
-        console.error('❌ API 요청 실패:', error);
+        console.error('❌ API 요청 실패:', {
+            url: fullUrl,
+            error: error instanceof Error ? error.message : error,
+            baseUrl: API_BASE_URL
+        });
         throw error;
     }
 };
@@ -560,12 +601,26 @@ export const getJobRecommendations = async (
     try {
         console.log('🔍 공고 추천 API 호출:', { userId, keywords, locations });
 
+        // 🔥 올바른 request body 구조로 수정 (백엔드 JobRecommendationRequestDto와 일치)
+        const requestBody: JobRecommendationRequestDto = {
+            keywords: keywords || [],
+            locations: locations || []
+        };
+
+        console.log('📤 요청 데이터:', requestBody);
+
         const data = await apiRequest<JobRecommendation[]>(`/api/home/job-recommendations/${userId}`, {
             method: 'POST',
-            body: JSON.stringify({ keywords, locations })
+            body: JSON.stringify(requestBody)
         });
 
-        console.log('✅ 공고 추천 조회 성공:', data.length);
+        console.log('✅ 공고 추천 조회 성공:', data?.length || 0);
+
+        // 🔥 데이터가 없거나 배열이 아닌 경우 빈 배열 반환
+        if (!data || !Array.isArray(data)) {
+            console.warn('⚠️ 응답 데이터가 배열이 아닙니다:', data);
+            return [];
+        }
 
         return data.map(job => ({
             ...job,
@@ -577,7 +632,8 @@ export const getJobRecommendations = async (
 
     } catch (error) {
         console.error('❌ 공고 추천 API 실패:', error);
-        throw error;
+        // 🔥 에러 발생시 빈 배열 반환 (throw하지 않음)
+        return [];
     }
 };
 

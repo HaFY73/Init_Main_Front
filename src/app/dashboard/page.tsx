@@ -16,8 +16,15 @@ import { useAuth } from "@/hooks/useAuth"
 import { useRouter } from "next/navigation"
 import EnhancedJobRecommendations from '@/components/EnhancedJobRecommendations'
 
-// API 기본 URL
-const API_BASE_URL = "https://initmainback-production.up.railway.app/api/home";
+// API 기본 URL - 환경변수 사용
+const getApiBaseUrl = () => {
+    if (typeof window !== 'undefined') {
+        return process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_API_URL || 'https://initmainback-production.up.railway.app';
+    }
+    return 'https://initmainback-production.up.railway.app';
+};
+
+const API_BASE_URL = `${getApiBaseUrl()}/api/home`;
 
 // 유틸리티 함수
 const cn = (...inputs: (string | undefined | null | boolean)[]) => {
@@ -92,13 +99,21 @@ const getAuthHeaders = () => {
     };
 };
 
-// 에러 처리 헬퍼
+// 에러 처리 헬퍼 - CORS 및 기타 에러 상세 정보 포함
 const handleApiError = async (response: Response) => {
     console.log('🔍 API 응답 상태 확인:', {
         status: response.status,
         statusText: response.statusText,
-        ok: response.ok
+        ok: response.ok,
+        url: response.url,
+        type: response.type
     });
+
+    // CORS 에러 감지
+    if (response.type === 'opaque' || response.type === 'opaqueredirect') {
+        console.error('🚫 CORS 에러 가능성:', response.url);
+        throw new Error('CORS error: 서버와의 통신에 문제가 있습니다.');
+    }
 
     if (response.status === 401) {
         console.log('🚫 인증 만료, 로그인 페이지로 이동');
@@ -108,6 +123,15 @@ const handleApiError = async (response: Response) => {
         localStorage.removeItem('userName');
         window.location.href = '/login';
         throw new Error('Authentication failed');
+    }
+
+    if (response.status === 405) {
+        console.error('🚫 Method Not Allowed:', {
+            url: response.url,
+            status: response.status,
+            statusText: response.statusText
+        });
+        throw new Error(`Method Not Allowed: ${response.url}`);
     }
 
     if (response.ok) {
@@ -213,11 +237,14 @@ const api = {
 
     // All data
     getAllData: async (userId: number) => {
+        console.log('📊 전체 데이터 API 호출:', `${API_BASE_URL}/all/${userId}`);
         const response = await fetch(`${API_BASE_URL}/all/${userId}`, {
             headers: getAuthHeaders()
         });
         await handleApiError(response);
-        return response.json();
+        const result = await response.json();
+        console.log('✅ 전체 데이터 응답:', result);
+        return result;
     }
 };
 

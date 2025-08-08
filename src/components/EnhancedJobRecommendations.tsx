@@ -522,6 +522,7 @@ const EnhancedJobRecommendations = React.memo(({
     // 추천 공고 가져오기 (통합 API 사용)
     const fetchRecommendations = async () => {
         if (isParentLoading || !conditions || conditions.jobs.length === 0) {
+            console.log('🔍 추천 공고 가져오기 스킵:', { isParentLoading, conditions });
             setRecommendations([])
             return
         }
@@ -530,11 +531,25 @@ const EnhancedJobRecommendations = React.memo(({
         setRecommendationsError(null)
 
         try {
+            console.log('🔍 추천 공고 API 호출 시작:', { 
+                userId, 
+                jobs: conditions.jobs, 
+                locations: conditions.locations 
+            });
+
             const data = await api.getJobRecommendations(userId, conditions.jobs, conditions.locations)
-            setRecommendations(data)
+            
+            console.log('✅ 추천 공고 데이터 수신:', { 
+                dataType: typeof data, 
+                isArray: Array.isArray(data), 
+                length: data?.length 
+            });
+
+            setRecommendations(data || [])
         } catch (err) {
             console.error('❌ 공고 추천 API 호출 실패:', err)
             setRecommendationsError('공고를 불러오는데 실패했습니다.')
+            setRecommendations([]) // 🔥 에러시 빈 배열로 설정
         } finally {
             setRecommendationsLoading(false)
         }
@@ -589,6 +604,17 @@ const EnhancedJobRecommendations = React.memo(({
     }
 
     useEffect(() => {
+        console.log('🔧 EnhancedJobRecommendations useEffect:', {
+            activeTab,
+            userId,
+            isParentLoading,
+            conditions: conditions?.jobs,
+            environment: {
+                NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+                NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL
+            }
+        });
+
         if (activeTab === 'recommendations') {
             fetchRecommendations()
         } else if (activeTab === 'search' && searchJobs.length === 0) {
