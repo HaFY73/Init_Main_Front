@@ -103,18 +103,18 @@ const PhoneInput = ({ value, onChange, ...props }: {
 
 // --- UI Components with Dark Mode Support ---
 const Card = ({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-    <div className={`bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 ${className || ''}`} {...props}>
+    <div className={`bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm ${className || ''}`} {...props}>
         {children}
     </div>
 )
 const Button = ({ className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
-    <button className={`inline-flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none hover:shadow-md active:scale-95 ${className || ''}`} {...props} />
+    <button className={`inline-flex items-center justify-center rounded-xl text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ${className || ''}`} {...props} />
 )
 
 // 🔥 Input 컴포넌트에 다크 모드 스타일 적용
 const Input = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
     <input
-        className={`flex h-12 w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-4 py-3 text-sm placeholder:text-gray-500 dark:placeholder:text-gray-400 focus-visible:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm hover:shadow-md focus:shadow-lg ${props.className || ''}`}
+        className={`flex h-12 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-4 py-3 text-sm placeholder:text-gray-500 dark:placeholder:text-gray-400 focus-visible:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 ${props.className || ''}`}
         {...props}
     />
 )
@@ -122,7 +122,7 @@ const Input = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
 // 🔥 Textarea 컴포넌트에 다크 모드 스타일 적용 및 우선순위 조정
 const Textarea = (props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => (
     <textarea
-        className={`flex min-h-[120px] w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-4 py-3 text-sm placeholder:text-gray-500 dark:placeholder:text-gray-400 focus-visible:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 resize-y shadow-sm hover:shadow-md focus:shadow-lg ${props.className || ''}`}
+        className={`flex min-h-[120px] w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-4 py-3 text-sm placeholder:text-gray-500 dark:placeholder:text-gray-400 focus-visible:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 resize-y ${props.className || ''}`}
         {...props}
     />
 )
@@ -277,86 +277,12 @@ function Section({ title, icon, children, isActive, onClick }: { title: string; 
     );
 }
 
-// 🔥 GenericForm 컴포넌트 - 필수 필드 검증 추가
+// 🔥 GenericForm 컴포넌트 - Select와 Textarea에 다크 모드 스타일 적용
 const GenericForm = ({ title, onSave, onClose, fields, initialData }: any) => {
     const [data, setData] = useState(initialData.length > 0 ? initialData : [{id: Date.now().toString()}]);
-    const [errors, setErrors] = useState<{[key: string]: string}>({});
-
-    const updateField = (index: number, fieldName: string, value: any) => { 
-        const newData = [...data]; 
-        newData[index] = { ...newData[index], [fieldName]: value }; 
-        setData(newData); 
-        
-        // 🔥 에러 클리어
-        if (errors[`${index}-${fieldName}`]) {
-            const newErrors = {...errors};
-            delete newErrors[`${index}-${fieldName}`];
-            setErrors(newErrors);
-        }
-    };
-
+    const updateField = (index: number, fieldName: string, value: any) => { const newData = [...data]; newData[index] = { ...newData[index], [fieldName]: value }; setData(newData); };
     const addItem = () => setData([...data, {id: Date.now().toString()}]);
     const removeItem = (index: number) => { if (data.length > 1) { setData(data.filter((_: any, i: number) => i !== index)); } };
-
-    // 🔥 필수 필드 검증 함수
-    const validateData = () => {
-        const newErrors: {[key: string]: string} = {};
-        let hasErrors = false;
-
-        data.forEach((item: any, index: number) => {
-            // 모든 필드가 비어있으면 해당 항목 전체를 무시
-            const hasAnyData = fields.some((field: any) => {
-                const value = item[field.name];
-                return value && value.toString().trim() !== '';
-            });
-
-            if (!hasAnyData) {
-                return; // 빈 항목은 검증하지 않음
-            }
-
-            // 필수 필드 검증
-            fields.forEach((field: any) => {
-                const value = item[field.name];
-                const isEmpty = !value || value.toString().trim() === '';
-
-                // 업무 경력, 학력, 프로젝트, 활동에서 날짜 필드는 필수
-                if (['work', 'education', 'projects', 'activities'].some(section => title.includes(section) || title === '업무 경력' || title === '학력' || title === '프로젝트' || title === '활동 & 경험')) {
-                    if ((field.name === 'startDate' || field.name === 'endDate') && isEmpty) {
-                        newErrors[`${index}-${field.name}`] = `${field.label}는 필수입니다.`;
-                        hasErrors = true;
-                    }
-                }
-
-                // 회사명, 학교명, 프로젝트명 등 주요 필드는 필수
-                if (['company', 'school', 'name', 'position', 'major'].includes(field.name) && isEmpty) {
-                    newErrors[`${index}-${field.name}`] = `${field.label}는 필수입니다.`;
-                    hasErrors = true;
-                }
-            });
-        });
-
-        setErrors(newErrors);
-        return !hasErrors;
-    };
-
-    const handleSave = () => {
-        // 🔥 빈 항목 필터링
-        const filteredData = data.filter((item: any) => {
-            return fields.some((field: any) => {
-                const value = item[field.name];
-                return value && value.toString().trim() !== '';
-            });
-        });
-
-        // 🔥 검증 수행
-        if (!validateData()) {
-            alert('필수 항목을 모두 입력해주세요.');
-            return;
-        }
-
-        onSave(filteredData);
-    };
-
     return (
         <div className="space-y-6">
             {data.map((item: any, index: number) => (
@@ -365,18 +291,12 @@ const GenericForm = ({ title, onSave, onClose, fields, initialData }: any) => {
                     {data.length > 1 && (<Button className="absolute top-2 right-2 text-red-500 hover:text-red-600" onClick={() => removeItem(index)}><Trash2 className="w-4 h-4" /></Button>)}
                     {fields.map((field: any) => (
                         <div key={field.name} className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                {field.label}
-                                {/* 🔥 필수 필드 표시 */}
-                                {(['company', 'school', 'name', 'position', 'major', 'startDate', 'endDate'].includes(field.name)) && (
-                                    <span className="text-red-500 ml-1">*</span>
-                                )}
-                            </label>
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{field.label}</label>
                             {field.type === 'select' ? (
                                 <select
                                     value={item[field.name] || ''}
                                     onChange={(e) => updateField(index, field.name, e.target.value)}
-                                    className={`flex h-12 w-full rounded-md border ${errors[`${index}-${field.name}`] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-4 py-3 text-sm focus-visible:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50`}
+                                    className="flex h-12 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-4 py-3 text-sm focus-visible:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
                                 >
                                     <option value="" disabled>{field.placeholder || '선택하세요'}</option>
                                     {field.options.map((option: string) => (
@@ -384,31 +304,16 @@ const GenericForm = ({ title, onSave, onClose, fields, initialData }: any) => {
                                     ))}
                                 </select>
                             ) : field.name === 'description' ? (
-                                <Textarea 
-                                    placeholder={field.placeholder} 
-                                    value={item[field.name] || ''} 
-                                    onChange={(e) => updateField(index, field.name, e.target.value)} 
-                                    className={`min-h-[100px] w-full resize-y !bg-white dark:!bg-gray-800 ${errors[`${index}-${field.name}`] ? '!border-red-500' : '!border-gray-300 dark:!border-gray-600'} !text-gray-900 dark:!text-gray-100`} 
-                                />
+                                <Textarea placeholder={field.placeholder} value={item[field.name] || ''} onChange={(e) => updateField(index, field.name, e.target.value)} className="min-h-[100px] w-full resize-y !bg-white dark:!bg-gray-800 !border-gray-300 dark:!border-gray-600 !text-gray-900 dark:!text-gray-100" />
                             ) : (
-                                <Input 
-                                    type={field.type || 'text'} 
-                                    placeholder={field.placeholder} 
-                                    value={item[field.name] || ''} 
-                                    onChange={(e) => updateField(index, field.name, e.target.value)} 
-                                    className={errors[`${index}-${field.name}`] ? 'border-red-500' : ''}
-                                />
-                            )}
-                            {/* 🔥 에러 메시지 표시 */}
-                            {errors[`${index}-${field.name}`] && (
-                                <p className="text-red-500 text-xs mt-1">{errors[`${index}-${field.name}`]}</p>
+                                <Input type={field.type || 'text'} placeholder={field.placeholder} value={item[field.name] || ''} onChange={(e) => updateField(index, field.name, e.target.value)} />
                             )}
                         </div>
                     ))}
                 </div>
             ))}
             <div className="flex justify-center"><Button className="w-full text-indigo-600 border-indigo-200 hover:bg-indigo-50 px-4 py-2" onClick={addItem}><Plus className="w-4 h-4 mr-2" /> {title} 추가</Button></div>
-            <div className="flex justify-end gap-2 pt-4 border-t dark:border-gray-700"><Button className="px-4 py-2" onClick={onClose}>취소</Button><Button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2" onClick={handleSave}>저장</Button></div>
+            <div className="flex justify-end gap-2 pt-4 border-t dark:border-gray-700"><Button className="px-4 py-2" onClick={onClose}>취소</Button><Button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2" onClick={() => onSave(data)}>저장</Button></div>
         </div>
     );
 };
@@ -845,18 +750,81 @@ export default function SpecManagementView() {
                     setProjects(data);
                     setActiveSection(null);
                     break;
-                case 'activities':
-                    // 🔥 활동 추가 검증
-                    for (const item of data) {
-                        if (!item.name || !item.organization || !item.startDate || !item.endDate) {
-                            alert('활동은 활동명, 기관명, 시작일, 종료일이 모두 필수입니다.');
-                            return;
-                        }
-                        if (!item.startDate.match(/^\d{4}-\d{2}-\d{2}$/) || !item.endDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                            alert('날짜는 YYYY-MM-DD 형식으로 입력해주세요.');
-                            return;
-                        }
+    // handleSave 함수를 async로 변경하고 API 호출 추가
+    const handleSave = async (sectionId: string, data: any, secondaryData?: any) => {
+        if (!userId) return;
+
+        try {
+            let alertMessage = "정보가 성공적으로 저장되었습니다!";
+            const currentUserId = parseInt(userId); // 🔥 실제 사용자 ID 사용
+
+            switch (sectionId) {
+                case 'profile':
+                    await api.updateProfile(currentUserId, data);
+                    setProfile(data);
+                    if (secondaryData) {
+                        await api.updateSkills(currentUserId, secondaryData);
+                        setSkills(secondaryData);
+                        alertMessage = "프로필과 스킬 정보가 성공적으로 저장되었습니다!";
                     }
+                    setIsProfileEditOpen(false);
+                    break;
+                case 'introduction':
+                    const updatedProfile = { ...profile, introduction: data };
+                    await api.updateProfile(currentUserId, updatedProfile);
+                    setProfile(updatedProfile);
+                    break;
+                case 'stats_experience':
+                    const newStats1 = { ...careerStats, experience: data };
+                    await api.updateCareerStats(currentUserId, newStats1);
+                    setCareerStats(newStats1);
+                    break;
+                case 'stats_workRecords':
+                    const newStats2 = { ...careerStats, workRecords: data };
+                    await api.updateCareerStats(currentUserId, newStats2);
+                    setCareerStats(newStats2);
+                    break;
+                case 'stats_careerGoal':
+                    const newStats3 = { ...careerStats, careerGoal: data };
+                    await api.updateCareerStats(currentUserId, newStats3);
+                    setCareerStats(newStats3);
+                    break;
+                case 'work':
+                    await api.updateWorkExperiences(currentUserId, data);
+                    setWorkExperiences(data);
+                    setActiveSection(null);
+                    break;
+                case 'education':
+                    await api.updateEducations(currentUserId, data);
+                    setEducations(data);
+                    setActiveSection(null);
+                    break;
+                case 'skills':
+                    await api.updateSkills(currentUserId, data);
+                    setSkills(data);
+                    setActiveSection(null);
+                    break;
+                case 'certificates':
+                    await api.updateCertificates(currentUserId, data);
+                    setCertificates(data);
+                    setActiveSection(null);
+                    break;
+                case 'links':
+                    await api.updateLinks(currentUserId, data);
+                    setLinks(data);
+                    setActiveSection(null);
+                    break;
+                case 'languages':
+                    await api.updateLanguages(currentUserId, data);
+                    setLanguages(data);
+                    setActiveSection(null);
+                    break;
+                case 'projects':
+                    await api.updateProjects(currentUserId, data);
+                    setProjects(data);
+                    setActiveSection(null);
+                    break;
+                case 'activities':
                     await api.updateActivities(currentUserId, data);
                     setActivities(data);
                     setActiveSection(null);
@@ -870,16 +838,6 @@ export default function SpecManagementView() {
                             alert('병역 구분이 "군필" 또는 "복무중"인 경우, 입대일과 전역일을 모두 입력해야 합니다.');
                             return; // 함수 실행을 중단하여 저장 요청을 보내지 않음
                         }
-
-                        // 🔥 날짜가 있는 경우 형식 검증
-                        if (item.startDate && !item.startDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                            alert('입대일은 YYYY-MM-DD 형식으로 입력해주세요.');
-                            return;
-                        }
-                        if (item.endDate && !item.endDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                            alert('전역일은 YYYY-MM-DD 형식으로 입력해주세요.');
-                            return;
-                        }
                     }
                     await api.updateMilitary(currentUserId, data);
                     setMilitary(data);
@@ -888,12 +846,8 @@ export default function SpecManagementView() {
             }
             alert(alertMessage);
         } catch (error) {
+            alert('저장에 실패했습니다. 다시 시도해주세요.');
             console.error('Save failed:', error);
-            if (error instanceof Error) {
-                alert(`저장에 실패했습니다: ${error.message}`);
-            } else {
-                alert('저장에 실패했습니다. 다시 시도해주세요.');
-            }
         }
     };
 
