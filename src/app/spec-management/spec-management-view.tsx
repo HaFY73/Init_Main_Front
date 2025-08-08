@@ -347,7 +347,7 @@ const ProfileEditPanel = ({ isOpen, onClose, profileData, initialSkills, onSave 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/80 p-4"><motion.div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto" initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/80 ml-0 md:ml-64"><motion.div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto" initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }}>
             <div className="flex items-center justify-between mb-6"><h2 className="text-xl font-semibold dark:text-gray-100">프로필 수정</h2><Button onClick={onClose}><X className="w-5 h-5" /></Button></div>
             <div className="space-y-6">
                 <div><label className="text-sm font-medium block mb-2 text-gray-700 dark:text-gray-300">이름</label><Input value={editedProfile.name} onChange={(e) => handleChange('name', e.target.value)} /></div>
@@ -501,7 +501,7 @@ const TemplateSelector = ({ isOpen, onClose, currentTemplate, onSelectTemplate }
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/80 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/80 backdrop-blur-sm p-4 md:translate-x-[140px]">
 
             <motion.div
                 className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5 max-w-4xl w-full"
@@ -793,7 +793,7 @@ export default function SpecManagementView() {
     // 인증 로딩 중
     if (authLoading) {
         return (
-            <main className="bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
+            <main className="ml-64 md:ml-0 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
                 <div className="max-w-none lg:max-w-7xl mx-auto space-y-8 w-full">
                     <div className="flex items-center justify-center h-64">
                         <div className="text-center">
@@ -809,7 +809,7 @@ export default function SpecManagementView() {
     // 인증되지 않음
     if (!isAuthenticated || !userId) {
         return (
-            <main className="bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
+            <main className="ml-0 md:ml-64 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
                 <div className="max-w-none lg:max-w-7xl mx-auto space-y-8 w-full">
                     <div className="flex items-center justify-center h-64">
                         <div className="text-center">
@@ -824,7 +824,7 @@ export default function SpecManagementView() {
     // 로딩 상태 처리
     if (isLoading) {
         return (
-            <main className="bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
+            <main className="ml-0 md:ml-64 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
                 <div className="max-w-none lg:max-w-7xl mx-auto space-y-8 w-full">
                     <div className="flex items-center justify-center h-64">
                         <div className="text-center">
@@ -840,7 +840,7 @@ export default function SpecManagementView() {
     // 에러 상태 처리
     if (error) {
         return (
-            <main className="bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
+            <main className="ml-0 md:ml-64 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
                 <div className="max-w-none lg:max-w-7xl mx-auto space-y-8 w-full">
                     <div className="flex items-center justify-center h-64">
                         <div className="text-center">
@@ -877,7 +877,7 @@ export default function SpecManagementView() {
             ]
         },
         { id: "skills", title: "스킬", icon: <Code className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />, data: skills },
-        { id: "certificates", title: "자격증", icon: <FileCheck className="w-5 h-5 text-amber-600 dark:text-amber-400" />, data: certificates, fields: [{name: 'name', label: '자격증명'}, {name: 'issuer', label: '발급기관'}, {name: 'acquisitionDate', label: '취득일', type: 'date'}] },
+        { id: "certificates", title: "자격증", icon: <FileCheck className="w-5 h-5 text-amber-600 dark:text-amber-400" />, data: certificates, fields: [{name: 'name', label: '자격증명'}, {name: 'organization1', label: '발급기관'}, {name: 'acquisitionDate', label: '취득일', type: 'date'}] },
         { id: "projects", title: "프로젝트", icon: <Folder className="w-5 h-5 text-pink-600 dark:text-pink-400" />, data: projects, fields: [{name: 'name', label: '프로젝트명'}, {name: 'description', label: '설명'}, {name: 'startDate', label: '시작일', type: 'date'}, {name: 'endDate', label: '종료일', type: 'date'}] },
         { id: "activities", title: "활동 & 경험", icon: <Award className="w-5 h-5 text-orange-600 dark:text-orange-400" />, data: activities, fields: [{name: 'name', label: '활동명'}, {name: 'organization', label: '기관/단체명'}, {name: 'startDate', label: '시작일', type: 'date'}, {name: 'endDate', label: '종료일', type: 'date'}]},
         { id: "links", title: "링크", icon: <LinkIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />, data: links, fields: [{name: 'title', label: '링크 제목'}, {name: 'url', label: 'URL'}] },
@@ -911,7 +911,7 @@ export default function SpecManagementView() {
     const allDataForPdf = { profile, skills, workExperiences, educations, certificates, links, projects, activities };
 
     return (
-        <main className="bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
+        <main className="ml-0 md:ml-64 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
             <div className="max-w-none lg:max-w-7xl mx-auto space-y-8 w-full">
                 <div className="flex items-center justify-between">
                     <h1 className="flex items-center text-3xl font-bold text-gray-800 dark:text-gray-100">
