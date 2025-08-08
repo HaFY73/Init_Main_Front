@@ -18,175 +18,17 @@ import BookmarkList from "./bookmark-list"
 import SimpleCalendar from "./SimpleCalendar"
 import {useAuth} from "@/hooks/useAuth"
 import {useRouter} from 'next/navigation'
+import { 
+    api, 
+    JobPostingDto, 
+    JobBookmarkDto, 
+    CreateJobPostingRequest, 
+    CreateJobBookmarkRequest 
+} from "@/lib/dash-api"
 
-// API 타입 정의
-interface JobPostingDto {
-    id: number;
-    title: string;
-    startDate: string;
-    endDate: string;
-    location?: string;
-    position?: string;
-    salary?: string;
-    color?: string;
-    status: 'ACTIVE' | 'EXPIRED' | 'UPCOMING' | 'CLOSED';
-    description?: string;
-    company?: string;
-    department?: string;
-    experienceLevel?: string;
-    employmentType?: string;
-    createdAt: string;
-    updatedAt: string;
-}
+// 통합 API 사용으로 타입 정의 제거 (dash-api.ts에서 import)
 
-interface JobBookmarkDto {
-    id: number;
-    userId?: number;
-    jobPosting: JobPostingDto;
-    memo?: string;
-    status: 'ACTIVE' | 'ARCHIVED' | 'DELETED';
-    createdAt: string;
-}
-
-interface CreateJobPostingRequest {
-    title: string;
-    startDate: string;
-    endDate: string;
-    location?: string;
-    position?: string;
-    salary?: string;
-    color?: string;
-    description?: string;
-    company?: string;
-    department?: string;
-    experienceLevel?: string;
-    employmentType?: string;
-}
-
-interface CreateJobBookmarkRequest {
-    userId: number;
-    jobPostingId: number;
-    memo?: string;
-}
-
-interface ApiResponse<T> {
-    success: boolean;
-    message?: string;
-    data: T;
-    errorCode?: string;
-}
-
-// API 서비스 클래스
-class JobPostingApi {
-    private API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/job-calendar`;
-
-
-    private async request<T>(endpoint: string, options?: RequestInit & { userId?: string }): Promise<T> {
-        const url = `${this.API_BASE_URL}${endpoint}`;
-
-        const defaultHeaders: Record<string, string> = {
-            'Content-Type': 'application/json',
-        };
-
-        if (options?.userId) {
-            defaultHeaders['x-user-id'] = options.userId;
-        }
-
-        const response = await fetch(url, {
-            headers: {
-                ...defaultHeaders,
-                ...options?.headers,
-            },
-            ...options,
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const result: ApiResponse<T> = await response.json();
-
-        if (!result.success) {
-            throw new Error(result.message || 'API 요청 실패');
-        }
-
-        return result.data;
-    }
-
-    async getBookmarksByUserId(userId: number): Promise<JobBookmarkDto[]> {
-        return this.request<JobBookmarkDto[]>(`/bookmarks/user/${userId}`, {
-            userId: userId.toString()
-        });
-    }
-
-    async createJobPosting(request: CreateJobPostingRequest, userId: number): Promise<JobPostingDto> {
-        return this.request<JobPostingDto>('/job-postings', {
-            method: 'POST',
-            body: JSON.stringify(request),
-            userId: userId.toString()
-        });
-    }
-
-    async updateJobPosting(id: number, request: CreateJobPostingRequest, userId: number): Promise<JobPostingDto> {
-        return this.request<JobPostingDto>(`/job-postings/${id}`, {
-            method: 'PUT',
-            body: JSON.stringify(request),
-            userId: userId.toString()
-        });
-    }
-
-    async createBookmark(request: CreateJobBookmarkRequest): Promise<JobBookmarkDto> {
-        return this.request<JobBookmarkDto>('/bookmarks', {
-            method: 'POST',
-            body: JSON.stringify(request),
-            userId: request.userId.toString()
-        });
-    }
-
-    async deleteBookmarkByUserAndJob(userId: number, jobPostingId: number): Promise<void> {
-        return this.request<void>(`/bookmarks/user/${userId}/job/${jobPostingId}`, {
-            method: 'DELETE',
-            userId: userId.toString()
-        });
-    }
-
-    // 유틸리티 메소드
-    static dateToISOString(date: Date): string {
-        return date.toISOString().split('T')[0];
-    }
-
-    static convertDatesToStrings(request: {
-        title: string;
-        start: Date;
-        end: Date;
-        position?: string;
-        location?: string;
-        salary?: string;
-        color?: string;
-        description?: string;
-        company?: string;
-        department?: string;
-        experienceLevel?: string;
-        employmentType?: string;
-    }): CreateJobPostingRequest {
-        return {
-            title: request.title,
-            startDate: this.dateToISOString(request.start),
-            endDate: this.dateToISOString(request.end),
-            position: request.position,
-            location: request.location,
-            salary: request.salary,
-            color: request.color,
-            description: request.description,
-            company: request.company,
-            department: request.department,
-            experienceLevel: request.experienceLevel,
-            employmentType: request.employmentType,
-        };
-    }
-}
-
-const jobPostingApi = new JobPostingApi();
+// 통합 API 사용으로 내부 API 클래스 제거
 
 // 간단한 토스트 함수
 const toast = ({title, description, variant}: {
@@ -281,14 +123,14 @@ export default function JobCalendarView() {
         };
     };
 
-    // 북마크 데이터 로드
+    // 북마크 데이터 로드 (통합 API 사용)
     const loadBookmarks = async () => {
         if (!userId) return
 
         try {
             setLoading(true);
             setError(null);
-            const bookmarks = await jobPostingApi.getBookmarksByUserId(parseInt(userId));
+            const bookmarks = await api.getBookmarksByUserId(parseInt(userId));
             const companies = bookmarks.map(convertBookmarkToCompany);
             setBookmarkedCompanies(companies);
         } catch (err) {
@@ -311,13 +153,13 @@ export default function JobCalendarView() {
         }
     }, [isAuthenticated, userId]);
 
-    // 북마크 삭제
+    // 북마크 삭제 (통합 API 사용)
     const handleDeleteCompany = async (id: string) => {
         if (!userId) return
 
         try {
             const jobPostingId = parseInt(id);
-            await jobPostingApi.deleteBookmarkByUserAndJob(parseInt(userId), jobPostingId);
+            await api.deleteBookmarkByUserAndJob(parseInt(userId), jobPostingId);
             setBookmarkedCompanies((prev) => prev.filter((company) => company.id !== id));
             toast({
                 title: "성공",
@@ -340,7 +182,7 @@ export default function JobCalendarView() {
         setShowEventDetails(false)
     }
 
-    // 편집 저장
+    // 편집 저장 (통합 API 사용)
     const handleSaveEdit = async () => {
         if (!editingCompany || !userId) return
 
@@ -364,7 +206,7 @@ export default function JobCalendarView() {
 
         try {
             const jobPostingId = parseInt(editingCompany.id);
-            const updateRequest = JobPostingApi.convertDatesToStrings({
+            const updateRequest = api.convertDatesToStrings({
                 title: editingCompany.title,
                 start: editingCompany.start,
                 end: editingCompany.end,
@@ -375,7 +217,7 @@ export default function JobCalendarView() {
                 company: editingCompany.title,
             });
 
-            await jobPostingApi.updateJobPosting(jobPostingId, updateRequest, parseInt(userId));
+            await api.updateJobPosting(jobPostingId, updateRequest, parseInt(userId));
 
             // 로컬 상태 업데이트
             const today = new Date()
@@ -435,7 +277,7 @@ export default function JobCalendarView() {
         setShowBookmarkModal(false)
     }
 
-    // 공고 추가
+    // 공고 추가 (통합 API 사용)
     const handleAddCompany = async () => {
         if (!userId) return
 
@@ -471,7 +313,7 @@ export default function JobCalendarView() {
             const randomColor = colors[Math.floor(Math.random() * colors.length)]
 
             // 1. 채용공고 생성
-            const createJobRequest = JobPostingApi.convertDatesToStrings({
+            const createJobRequest = api.convertDatesToStrings({
                 title: newCompany.title.trim(),
                 start: newCompany.start,
                 end: newCompany.end,
@@ -482,10 +324,10 @@ export default function JobCalendarView() {
                 company: newCompany.company || newCompany.title.trim(),
             });
 
-            const createdJob = await jobPostingApi.createJobPosting(createJobRequest, parseInt(userId));
+            const createdJob = await api.createJobPosting(createJobRequest, parseInt(userId));
 
             // 2. 북마크 생성
-            await jobPostingApi.createBookmark({
+            await api.createBookmark({
                 userId: parseInt(userId),
                 jobPostingId: createdJob.id,
             });

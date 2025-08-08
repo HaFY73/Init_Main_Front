@@ -23,43 +23,14 @@ import {
     ChevronRight,
     Star
 } from "lucide-react"
+import { api, JobRecommendation, PublicJobPosting, PublicJobSearchRequest } from "@/lib/dash-api"
 
-// 기존 대시보드 타입들 사용
-interface JobRecommendation {
-    id: string;
-    title: string;
-    company: string;
-    location: string;
-    experience: string;
-    education: string;
-    employmentType: string;
+// 기존 대시보드 타입들을 dash-api.ts에서 import
+interface ConditionsData {
+    jobs: string[];
+    locations: string[];
     salary: string;
-    deadline: string;
-    url: string;
-    keywords: string[];
-    postedDate: string;
-    matchScore: number;
-    description?: string;
-    requirements?: string;
-    benefits?: string;
-    recruitCount?: string;
-}
-
-// 공공데이터 API 응답 타입
-interface PublicJobPosting {
-    recrutPblntSn: string
-    instNm: string
-    recrutPbancTtl: string
-    recrutSeNm: string
-    hireTypeNmLst: string
-    workRgnNmLst: string
-    acbgCondNmLst: string
-    pbancBgngYmd: string
-    pbancEndYmd: string
-    srcUrl: string
-    recrutNope: number
-    aplyQlfcCn: string
-    decimalDay: number
+    others: string[];
 }
 
 interface SearchFilters {
@@ -69,13 +40,6 @@ interface SearchFilters {
     recrutSe: string
     acbgCondLst: string[]
     ncsCdLst: string[]
-}
-
-interface ConditionsData {
-    jobs: string[];
-    locations: string[];
-    salary: string;
-    others: string[];
 }
 
 // 필터 옵션들
@@ -127,86 +91,8 @@ const FILTER_OPTIONS = {
     ]
 }
 
-// 토큰 가져오기 헬퍼
-const getAuthToken = () => {
-    return localStorage.getItem('authToken') || localStorage.getItem('accessToken');
-}
-
-// 공공데이터 API 호출 함수
-const searchPublicJobs = async (filters: SearchFilters, pageNo: number = 1) => {
-    const token = getAuthToken()
-
-    if (!token) {
-        throw new Error('인증 토큰이 없습니다.')
-    }
-
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/public-jobs/search`, {
-
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            keywords: filters.title ? [filters.title] : [],
-            locations: filters.workRgnLst,
-            pageNo,
-            numOfRows: 20,
-            ...(filters.hireTypeLst.length > 0 && { hireTypeLst: filters.hireTypeLst }),
-            ...(filters.recrutSe && { recrutSe: filters.recrutSe }),
-            ...(filters.acbgCondLst.length > 0 && { acbgCondLst: filters.acbgCondLst }),
-            ...(filters.ncsCdLst.length > 0 && { ncsCdLst: filters.ncsCdLst }),
-        })
-    })
-
-    if (!response.ok) {
-        throw new Error('검색에 실패했습니다.')
-    }
-
-    return response.json()
-}
-
-// 기존 추천 API 호출 함수 (dash-api.ts에서)
-const getJobRecommendations = async (
-    userId: number,
-    keywords: string[],
-    locations: string[]
-): Promise<JobRecommendation[]> => {
-    try {
-        const token = getAuthToken()
-
-        if (!token) {
-            throw new Error('인증 토큰이 없습니다.')
-        }
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/home/job-recommendations/${userId}`, {
-
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ keywords, locations })
-        })
-
-        if (!response.ok) {
-            throw new Error('추천 공고를 불러오는데 실패했습니다.')
-        }
-
-        const data = await response.json()
-
-        return data.map((job: any) => ({
-            ...job,
-            deadline: job.deadline || '정보 없음',
-            postedDate: job.postedDate || '',
-            id: job.id || `${job.company}-${job.title}-${Math.random()}`,
-            url: job.url || '#'
-        }))
-    } catch (error) {
-        console.error('Failed to fetch job recommendations:', error)
-        throw error
-    }
-}
+// 통합 API 사용으로 개별 함수들 제거
+// api.searchPublicJobs와 api.getJobRecommendations 사용
 
 // 필터 모달 컴포넌트
 const FilterModal = ({
@@ -633,7 +519,7 @@ const EnhancedJobRecommendations = React.memo(({
         ncsCdLst: []
     })
 
-    // 추천 공고 가져오기 (기존 로직)
+    // 추천 공고 가져오기 (통합 API 사용)
     const fetchRecommendations = async () => {
         if (isParentLoading || !conditions || conditions.jobs.length === 0) {
             setRecommendations([])
@@ -644,7 +530,7 @@ const EnhancedJobRecommendations = React.memo(({
         setRecommendationsError(null)
 
         try {
-            const data = await getJobRecommendations(userId, conditions.jobs, conditions.locations)
+            const data = await api.getJobRecommendations(userId, conditions.jobs, conditions.locations)
             setRecommendations(data)
         } catch (err) {
             console.error('❌ 공고 추천 API 호출 실패:', err)
@@ -654,13 +540,24 @@ const EnhancedJobRecommendations = React.memo(({
         }
     }
 
-    // 공고 검색하기
+    // 공고 검색하기 (통합 API 사용)
     const handleSearch = async (searchFilters: SearchFilters = filters, page: number = 1) => {
         setSearchLoading(true)
         setSearchError(null)
 
         try {
-            const result = await searchPublicJobs(searchFilters, page)
+            const searchRequest: PublicJobSearchRequest = {
+                keywords: searchFilters.title ? [searchFilters.title] : [],
+                locations: searchFilters.workRgnLst,
+                pageNo: page,
+                numOfRows: 20,
+                ...(searchFilters.hireTypeLst.length > 0 && { hireTypeLst: searchFilters.hireTypeLst }),
+                ...(searchFilters.recrutSe && { recrutSe: searchFilters.recrutSe }),
+                ...(searchFilters.acbgCondLst.length > 0 && { acbgCondLst: searchFilters.acbgCondLst }),
+                ...(searchFilters.ncsCdLst.length > 0 && { ncsCdLst: searchFilters.ncsCdLst }),
+            }
+
+            const result = await api.searchPublicJobs(searchRequest)
             setSearchJobs(result.result || [])
             setTotalCount(result.totalCount || 0)
             setCurrentPage(page)

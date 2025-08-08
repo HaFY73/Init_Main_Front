@@ -1,8 +1,7 @@
 // lib/dash-api.ts
-// 홈 대시보드 페이지 API 클라이언트 (공고 검색 기능 추가)
+// 통합 API 클라이언트 - 모든 API 호출을 여기서 관리
 
-//const API_BASE_URL = 'http://localhost:8080';
-const API_BASE_URL  = process.env.NEXT_PUBLIC_BASE_URL!;
+const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL!;
 
 // =============================================================================
 // 타입 정의
@@ -69,13 +68,7 @@ export interface DashboardData {
     todos: TodoItem[];
 }
 
-export interface ApiResponse<T> {
-    success: boolean;
-    data: T;
-    message?: string;
-}
-
-// 🔥 공고 추천 관련 타입 추가
+// 🔥 공고 추천 관련 타입
 export interface JobRecommendation {
     id: string;
     title: string;
@@ -96,7 +89,7 @@ export interface JobRecommendation {
     recruitCount?: string;
 }
 
-// 🔥 공고 검색 관련 타입 추가
+// 🔥 공고 검색 관련 타입
 export interface PublicJobPosting {
     recrutPblntSn: string
     instNm: string
@@ -131,21 +124,65 @@ export interface PublicJobSearchResponse {
     result: PublicJobPosting[]
 }
 
+// 🔥 Job Calendar 관련 타입 추가
+export interface JobPostingDto {
+    id: number;
+    title: string;
+    startDate: string;
+    endDate: string;
+    location?: string;
+    position?: string;
+    salary?: string;
+    color?: string;
+    status: 'ACTIVE' | 'EXPIRED' | 'UPCOMING' | 'CLOSED';
+    description?: string;
+    company?: string;
+    department?: string;
+    experienceLevel?: string;
+    employmentType?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface JobBookmarkDto {
+    id: number;
+    userId?: number;
+    jobPosting: JobPostingDto;
+    memo?: string;
+    status: 'ACTIVE' | 'ARCHIVED' | 'DELETED';
+    createdAt: string;
+}
+
+export interface CreateJobPostingRequest {
+    title: string;
+    startDate: string;
+    endDate: string;
+    location?: string;
+    position?: string;
+    salary?: string;
+    color?: string;
+    description?: string;
+    company?: string;
+    department?: string;
+    experienceLevel?: string;
+    employmentType?: string;
+}
+
+export interface CreateJobBookmarkRequest {
+    userId: number;
+    jobPostingId: number;
+    memo?: string;
+}
+
+export interface ApiResponse<T> {
+    success: boolean;
+    message?: string;
+    data: T;
+    errorCode?: string;
+}
+
 // 백엔드 응답 타입 (enum 형태)
 export type ApplicationStatusEnum = 'APPLIED' | 'DOCUMENT_PASSED' | 'FINAL_PASSED' | 'REJECTED';
-
-export interface BackendApplicationData {
-    id: number;
-    company: string;
-    category: string;
-    status: ApplicationStatusEnum;
-}
-
-export interface BackendTodoItem {
-    id: number;
-    text: string;
-    completed: boolean;
-}
 
 // =============================================================================
 // HTTP 클라이언트 설정
@@ -156,15 +193,24 @@ interface ApiClientConfig {
     credentials: RequestCredentials;
 }
 
-const createApiClient = (): ApiClientConfig => {
+// 🔥 통합된 API 클라이언트 생성 함수
+const createApiClient = (includeUserId?: string): ApiClientConfig => {
     const defaultHeaders: Record<string, string> = {
         'Content-Type': 'application/json',
     };
 
     // JWT 토큰이 있다면 헤더에 추가
-    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+    const token = typeof window !== 'undefined' 
+        ? (localStorage.getItem('authToken') || localStorage.getItem('accessToken'))
+        : null;
+    
     if (token) {
         defaultHeaders.Authorization = `Bearer ${token}`;
+    }
+
+    // 🔥 Job Calendar API용 x-user-id 헤더 추가
+    if (includeUserId) {
+        defaultHeaders['x-user-id'] = includeUserId;
     }
 
     return {
@@ -173,9 +219,14 @@ const createApiClient = (): ApiClientConfig => {
     };
 };
 
-// HTTP 요청 헬퍼 함수
-const apiRequest = async <T>(url: string, options: RequestInit = {}): Promise<T> => {
-    const config = createApiClient();
+// 🔥 통합 HTTP 요청 헬퍼 함수
+const apiRequest = async <T>(
+    url: string, 
+    options: RequestInit = {}, 
+    includeUserId?: string,
+    expectApiWrapper: boolean = false
+): Promise<T> => {
+    const config = createApiClient(includeUserId);
 
     try {
         const response = await fetch(`${API_BASE_URL}${url}`, {
@@ -191,18 +242,18 @@ const apiRequest = async <T>(url: string, options: RequestInit = {}): Promise<T>
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        // 🔥 공고 추천 API는 ApiResponse 래퍼 없이 직접 배열을 반환하므로 분기 처리
-        if (url.includes('/job-recommendations/') || url.includes('/public-jobs/')) {
+        // 🔥 API 응답 형태에 따라 분기 처리
+        if (expectApiWrapper) {
+            // Job Calendar API - ApiResponse 래퍼 사용
+            const data: ApiResponse<T> = await response.json();
+            if (!data.success) {
+                throw new Error(data.message || '요청이 실패했습니다.');
+            }
+            return data.data;
+        } else {
+            // Home API, Public Jobs API - 직접 반환
             return await response.json();
         }
-
-        const data: ApiResponse<T> = await response.json();
-
-        if (!data.success) {
-            throw new Error(data.message || '요청이 실패했습니다.');
-        }
-
-        return data.data;
     } catch (error) {
         console.error('API 요청 실패:', error);
         throw error;
@@ -210,54 +261,25 @@ const apiRequest = async <T>(url: string, options: RequestInit = {}): Promise<T>
 };
 
 // =============================================================================
-// 대시보드 API 함수들
+// Home API 함수들 (기존 유지)
 // =============================================================================
 
-/**
- * 전체 대시보드 데이터 조회 (페이지 로드시 사용)
- */
-export const getDashboardData = async (): Promise<DashboardData> => {
-    const backendData = await apiRequest<any>('/api/home/dashboard');
-    return transformDashboardData(backendData);
-};
-
-// =============================================================================
-// 프로필 관련 API
-// =============================================================================
-
-/**
- * 사용자 ID 가져오기 헬퍼 함수
- */
-const getUserId = (): string => {
+export const getUserId = (): string => {
     if (typeof window === 'undefined') return '1'; // SSR 환경
     return localStorage.getItem('userId') || '1';
 };
 
-/**
- * 프로필 데이터 조회
- */
 export const getProfileData = async (): Promise<ProfileData> => {
     const userId = getUserId();
     console.log('🔍 프로필 조회 API 호출:', userId);
 
     try {
-        const response = await fetch(`${API_BASE_URL}/api/home/profile/${userId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('authToken') || localStorage.getItem('accessToken')}`
-            },
-            credentials: 'include'
+        const data = await apiRequest<any>(`/api/home/profile/${userId}`, {
+            method: 'GET'
         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
         console.log('✅ 프로필 조회 성공:', data);
 
-        // 백엔드 응답을 프론트엔드 형식으로 변환
         return {
             name: data.name || '',
             email: data.email || '',
@@ -270,73 +292,40 @@ export const getProfileData = async (): Promise<ProfileData> => {
     }
 };
 
-/**
- * 프로필 데이터 저장
- */
 export const updateProfileData = async (profileData: ProfileData): Promise<void> => {
     const userId = getUserId();
     console.log('💾 프로필 저장 API 호출:', { userId, profileData });
 
     try {
-        // 프론트엔드 데이터를 백엔드 형식으로 변환
         const backendData = {
             name: profileData.name,
             email: profileData.email,
             careerType: profileData.career,
             jobTitle: profileData.job,
-            matching: true // 기본값
+            matching: true
         };
 
-        const response = await fetch(`${API_BASE_URL}/api/home/profile/${userId}`, {
-            method: 'POST', // 백엔드는 POST 메서드 사용
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('authToken') || localStorage.getItem('accessToken')}`
-            },
-            credentials: 'include',
+        await apiRequest(`/api/home/profile/${userId}`, {
+            method: 'POST',
             body: JSON.stringify(backendData)
         });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('❌ 프로필 저장 실패 응답:', errorText);
-            throw new Error(`프로필 저장 실패: ${response.status} - ${errorText}`);
-        }
-
-        const result = await response.json();
-        console.log('✅ 프로필 저장 성공:', result);
+        console.log('✅ 프로필 저장 성공');
     } catch (error) {
         console.error('❌ 프로필 저장 실패:', error);
         throw error;
     }
 };
 
-// =============================================================================
-// 희망 조건 관련 API
-// =============================================================================
-
-/**
- * 희망 조건 데이터 조회
- */
 export const getDesiredConditions = async (): Promise<ConditionsData> => {
     const userId = getUserId();
     console.log('🔍 희망조건 조회 API 호출:', userId);
 
     try {
-        const response = await fetch(`${API_BASE_URL}/api/home/conditions/${userId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('authToken') || localStorage.getItem('accessToken')}`
-            },
-            credentials: 'include'
+        const data = await apiRequest<any>(`/api/home/conditions/${userId}`, {
+            method: 'GET'
         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
         console.log('✅ 희망조건 조회 성공:', data);
 
         return {
@@ -351,71 +340,39 @@ export const getDesiredConditions = async (): Promise<ConditionsData> => {
     }
 };
 
-/**
- * 희망 조건 데이터 저장
- */
 export const updateDesiredConditions = async (conditionsData: ConditionsData): Promise<void> => {
     const userId = getUserId();
     console.log('💾 희망조건 저장 API 호출:', { userId, conditionsData });
 
     try {
-        const response = await fetch(`${API_BASE_URL}/api/home/conditions/${userId}`, {
-            method: 'POST', // 백엔드는 POST 메서드 사용
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('authToken') || localStorage.getItem('accessToken')}`
-            },
-            credentials: 'include',
+        await apiRequest(`/api/home/conditions/${userId}`, {
+            method: 'POST',
             body: JSON.stringify(conditionsData)
         });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('❌ 희망조건 저장 실패 응답:', errorText);
-            throw new Error(`희망조건 저장 실패: ${response.status} - ${errorText}`);
-        }
-
-        const result = await response.json();
-        console.log('✅ 희망조건 저장 성공:', result);
+        console.log('✅ 희망조건 저장 성공');
     } catch (error) {
         console.error('❌ 희망조건 저장 실패:', error);
         throw error;
     }
 };
 
-// =============================================================================
-// 지원 현황 관련 API
-// =============================================================================
-
-/**
- * 지원 현황 데이터 조회
- */
 export const getApplications = async (): Promise<ApplicationData[]> => {
     const userId = getUserId();
     console.log('🔍 지원현황 조회 API 호출:', userId);
 
     try {
-        const response = await fetch(`${API_BASE_URL}/api/home/applications/${userId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('authToken') || localStorage.getItem('accessToken')}`
-            },
-            credentials: 'include'
+        const data = await apiRequest<any[]>(`/api/home/applications/${userId}`, {
+            method: 'GET'
         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
         console.log('✅ 지원현황 조회 성공:', data);
 
         return data.map((app: any) => ({
             id: app.id,
             company: app.company,
             category: app.category,
-            status: app.status // 백엔드에서 이미 한글로 변환되어 옴
+            status: app.status
         }));
     } catch (error) {
         console.error('❌ 지원현황 조회 실패:', error);
@@ -423,38 +380,22 @@ export const getApplications = async (): Promise<ApplicationData[]> => {
     }
 };
 
-/**
- * 지원 현황 데이터 저장
- */
 export const updateApplications = async (applications: ApplicationData[]): Promise<void> => {
+    const userId = getUserId();
     console.log('💾 지원현황 저장 API 호출:', applications);
 
     try {
-        // 백엔드는 batch update를 사용하고 userId를 각 항목에 포함해야 함
-        const userId = parseInt(getUserId());
         const applicationsWithUserId = applications.map(app => ({
             ...app,
-            userId: userId
+            userId: parseInt(userId)
         }));
 
-        const response = await fetch(`${API_BASE_URL}/api/home/applications/batch`, {
+        await apiRequest(`/api/home/applications/batch/${userId}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('authToken') || localStorage.getItem('accessToken')}`
-            },
-            credentials: 'include',
             body: JSON.stringify(applicationsWithUserId)
         });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('❌ 지원현황 저장 실패 응답:', errorText);
-            throw new Error(`지원현황 저장 실패: ${response.status} - ${errorText}`);
-        }
-
-        const result = await response.json();
-        console.log('✅ 지원현황 저장 성공:', result);
+        console.log('✅ 지원현황 저장 성공');
     } catch (error) {
         console.error('❌ 지원현황 저장 실패:', error);
         throw error;
@@ -462,114 +403,214 @@ export const updateApplications = async (applications: ApplicationData[]): Promi
 };
 
 // =============================================================================
-// 통계 데이터 관련 API
-// =============================================================================
-
-/**
- * 홈 통계 데이터 조회
- */
-export const getHomeStats = async (): Promise<HomeStats> => {
-    return await apiRequest<HomeStats>('/api/home/stats');
-};
-
-// =============================================================================
-// 프로필 완성도 관련 API
-// =============================================================================
-
-/**
- * 프로필 완성도 조회
- */
-export const getProfileCompletion = async (): Promise<ProfileCompletion> => {
-    return await apiRequest<ProfileCompletion>('/api/home/completion');
-};
-
-// =============================================================================
 // 🔥 공고 추천 관련 API
 // =============================================================================
 
-/**
- * 공고 추천 데이터 조회
- */
 export const getJobRecommendations = async (
     userId: number,
     keywords: string[],
     locations: string[]
 ): Promise<JobRecommendation[]> => {
     try {
+        console.log('🔍 공고 추천 API 호출:', { userId, keywords, locations });
+
         const data = await apiRequest<JobRecommendation[]>(`/api/home/job-recommendations/${userId}`, {
             method: 'POST',
-            body: JSON.stringify({
-                keywords: keywords,
-                locations: locations
-            })
+            body: JSON.stringify({ keywords, locations })
         });
 
-        // 백엔드에서 LocalDate를 문자열로 변환해서 오므로 추가 처리
+        console.log('✅ 공고 추천 조회 성공:', data.length);
+
         return data.map(job => ({
             ...job,
             deadline: job.deadline || '정보 없음',
             postedDate: job.postedDate || '',
             id: job.id || `${job.company}-${job.title}-${Math.random()}`,
-            // URL이 null이면 빈 문자열로 처리
             url: job.url || '#'
         }));
 
     } catch (error) {
-        console.error('Failed to fetch job recommendations:', error);
+        console.error('❌ 공고 추천 API 실패:', error);
         throw error;
     }
 };
 
 // =============================================================================
-// 🔥 공고 검색 관련 API (새로 추가)
+// 🔥 공고 검색 관련 API
 // =============================================================================
 
-/**
- * 공공데이터포털 채용정보 검색
- */
 export const searchPublicJobs = async (
     searchParams: PublicJobSearchRequest
 ): Promise<PublicJobSearchResponse> => {
-    const config = createApiClient()
-
     try {
         console.log('📡 공공데이터 채용정보 검색 요청:', searchParams);
 
-        const response = await fetch(`${API_BASE_URL}/api/public-jobs/search`, {
+        const result = await apiRequest<PublicJobSearchResponse>('/api/public-jobs/search', {
             method: 'POST',
-            ...config,
-            headers: {
-                ...config.headers,
-                'Content-Type': 'application/json'
-            },
             body: JSON.stringify(searchParams)
-        })
+        });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`)
-        }
-
-        const result = await response.json()
         console.log('✅ 공공데이터 채용정보 검색 성공:', {
             totalCount: result.totalCount,
             resultCount: result.result?.length || 0
         });
 
-        return result
+        return result;
 
     } catch (error) {
-        console.error('❌ 공고 검색 API 실패:', error)
-        throw error
+        console.error('❌ 공고 검색 API 실패:', error);
+        throw error;
     }
-}
+};
+
+// =============================================================================
+// 🔥 Job Calendar API 함수들
+// =============================================================================
+
+// 북마크 관련 API
+export const getBookmarksByUserId = async (userId: number): Promise<JobBookmarkDto[]> => {
+    try {
+        console.log('🔍 북마크 조회 API 호출:', userId);
+
+        const data = await apiRequest<JobBookmarkDto[]>(
+            `/api/job-calendar/bookmarks/user/${userId}`, 
+            { method: 'GET' },
+            userId.toString(),
+            true // ApiResponse 래퍼 사용
+        );
+
+        console.log('✅ 북마크 조회 성공:', data.length);
+        return data;
+    } catch (error) {
+        console.error('❌ 북마크 조회 실패:', error);
+        throw error;
+    }
+};
+
+export const createJobPosting = async (request: CreateJobPostingRequest, userId: number): Promise<JobPostingDto> => {
+    try {
+        console.log('📝 공고 생성 API 호출:', { request, userId });
+
+        const data = await apiRequest<JobPostingDto>(
+            '/api/job-calendar/job-postings',
+            {
+                method: 'POST',
+                body: JSON.stringify(request)
+            },
+            userId.toString(),
+            true // ApiResponse 래퍼 사용
+        );
+
+        console.log('✅ 공고 생성 성공:', data);
+        return data;
+    } catch (error) {
+        console.error('❌ 공고 생성 실패:', error);
+        throw error;
+    }
+};
+
+export const updateJobPosting = async (id: number, request: CreateJobPostingRequest, userId: number): Promise<JobPostingDto> => {
+    try {
+        console.log('🔄 공고 수정 API 호출:', { id, request, userId });
+
+        const data = await apiRequest<JobPostingDto>(
+            `/api/job-calendar/job-postings/${id}`,
+            {
+                method: 'PUT',
+                body: JSON.stringify(request)
+            },
+            userId.toString(),
+            true // ApiResponse 래퍼 사용
+        );
+
+        console.log('✅ 공고 수정 성공:', data);
+        return data;
+    } catch (error) {
+        console.error('❌ 공고 수정 실패:', error);
+        throw error;
+    }
+};
+
+export const createBookmark = async (request: CreateJobBookmarkRequest): Promise<JobBookmarkDto> => {
+    try {
+        console.log('📌 북마크 생성 API 호출:', request);
+
+        const data = await apiRequest<JobBookmarkDto>(
+            '/api/job-calendar/bookmarks',
+            {
+                method: 'POST',
+                body: JSON.stringify(request)
+            },
+            request.userId.toString(),
+            true // ApiResponse 래퍼 사용
+        );
+
+        console.log('✅ 북마크 생성 성공:', data);
+        return data;
+    } catch (error) {
+        console.error('❌ 북마크 생성 실패:', error);
+        throw error;
+    }
+};
+
+export const deleteBookmarkByUserAndJob = async (userId: number, jobPostingId: number): Promise<void> => {
+    try {
+        console.log('🗑️ 북마크 삭제 API 호출:', { userId, jobPostingId });
+
+        await apiRequest<void>(
+            `/api/job-calendar/bookmarks/user/${userId}/job/${jobPostingId}`,
+            { method: 'DELETE' },
+            userId.toString(),
+            true // ApiResponse 래퍼 사용
+        );
+
+        console.log('✅ 북마크 삭제 성공');
+    } catch (error) {
+        console.error('❌ 북마크 삭제 실패:', error);
+        throw error;
+    }
+};
 
 // =============================================================================
 // 유틸리티 함수들
 // =============================================================================
 
-/**
- * 에러 처리 유틸리티
- */
+// 날짜 변환 유틸리티
+export const dateToISOString = (date: Date): string => {
+    return date.toISOString().split('T')[0];
+};
+
+export const convertDatesToStrings = (request: {
+    title: string;
+    start: Date;
+    end: Date;
+    position?: string;
+    location?: string;
+    salary?: string;
+    color?: string;
+    description?: string;
+    company?: string;
+    department?: string;
+    experienceLevel?: string;
+    employmentType?: string;
+}): CreateJobPostingRequest => {
+    return {
+        title: request.title,
+        startDate: dateToISOString(request.start),
+        endDate: dateToISOString(request.end),
+        position: request.position,
+        location: request.location,
+        salary: request.salary,
+        color: request.color,
+        description: request.description,
+        company: request.company,
+        department: request.department,
+        experienceLevel: request.experienceLevel,
+        employmentType: request.employmentType,
+    };
+};
+
+// 에러 처리 유틸리티
 export const handleApiError = (error: Error): string => {
     if (error.message.includes('401')) {
         return '로그인이 필요합니다.';
@@ -584,158 +625,40 @@ export const handleApiError = (error: Error): string => {
     }
 };
 
-/**
- * 지원 상태를 한글로 변환하는 유틸리티
- */
-export const getStatusDisplayName = (status: ApplicationStatusEnum): ApplicationData['status'] => {
-    const statusMap: Record<ApplicationStatusEnum, ApplicationData['status']> = {
-        'APPLIED': '지원 완료',
-        'DOCUMENT_PASSED': '서류 합격',
-        'FINAL_PASSED': '최종 합격',
-        'REJECTED': '불합격'
-    };
-    return statusMap[status] || '지원 완료';
-};
+// =============================================================================
+// 🔥 통합 API 객체
+// =============================================================================
 
-/**
- * 한글 상태를 영문으로 변환하는 유틸리티
- */
-export const getStatusEnumValue = (displayName: ApplicationData['status']): ApplicationStatusEnum => {
-    const statusMap: Record<ApplicationData['status'], ApplicationStatusEnum> = {
-        '지원 완료': 'APPLIED',
-        '서류 합격': 'DOCUMENT_PASSED',
-        '최종 합격': 'FINAL_PASSED',
-        '불합격': 'REJECTED'
-    };
-    return statusMap[displayName] || 'APPLIED';
-};
-
-/**
- * 데이터 변환 유틸리티: 백엔드 데이터를 프론트엔드 형식으로 변환
- */
-export const transformDashboardData = (backendData: any): DashboardData => {
-    return {
-        profile: backendData.profile || { name: '', email: '', career: '신입', job: '개발자' },
-        conditions: backendData.conditions || { jobs: [], locations: [], salary: '0', others: [] },
-        applications: (backendData.applications || []).map((app: BackendApplicationData) => ({
-            ...app,
-            status: getStatusDisplayName(app.status)
-        })),
-        stats: backendData.stats || {
-            totalApplications: 0,
-            documentPassed: 0,
-            finalPassed: 0,
-            rejected: 0,
-            totalResumes: 0,
-            totalCoverLetters: 0,
-            bookmarkedCompanies: 0,
-            deadlineSoon: 0
-        },
-        completion: backendData.completion || {
-            basicInfo: false,
-            desiredConditions: false,
-            workExperience: false,
-            education: false,
-            certificates: false,
-            languages: false,
-            skills: false,
-            links: false,
-            military: false,
-            portfolio: false
-        },
-        todos: (backendData.todos || []).map((todo: BackendTodoItem) => ({
-            id: todo.id,
-            text: todo.text,
-            completed: todo.completed
-        }))
-    };
-};
-
-/**
- * 데이터 변환 유틸리티: 프론트엔드 데이터를 백엔드 형식으로 변환
- */
-export const transformApplicationsForBackend = (frontendApplications: ApplicationData[]): BackendApplicationData[] => {
-    return frontendApplications.map(app => ({
-        ...app,
-        status: getStatusEnumValue(app.status)
-    }));
+export const api = {
+    // Home API
+    getProfileData,
+    updateProfileData,
+    getDesiredConditions,
+    updateDesiredConditions,
+    getApplications,
+    updateApplications,
+    
+    // Job Recommendations
+    getJobRecommendations,
+    
+    // Public Jobs Search
+    searchPublicJobs,
+    
+    // Job Calendar
+    getBookmarksByUserId,
+    createJobPosting,
+    updateJobPosting,
+    createBookmark,
+    deleteBookmarkByUserAndJob,
+    
+    // Utilities
+    dateToISOString,
+    convertDatesToStrings,
+    handleApiError
 };
 
 // =============================================================================
-// 🔥 검색 필터 옵션들
-// =============================================================================
-
-export const JOB_SEARCH_FILTERS = {
-    regions: [
-        { code: "101000", name: "서울" },
-        { code: "102000", name: "부산" },
-        { code: "103000", name: "대구" },
-        { code: "104000", name: "인천" },
-        { code: "105000", name: "광주" },
-        { code: "106000", name: "대전" },
-        { code: "107000", name: "울산" },
-        { code: "108000", name: "세종" },
-        { code: "109000", name: "경기" },
-        { code: "110000", name: "강원" },
-        { code: "111000", name: "충북" },
-        { code: "112000", name: "충남" },
-        { code: "113000", name: "전북" },
-        { code: "114000", name: "전남" },
-        { code: "115000", name: "경북" },
-        { code: "116000", name: "경남" },
-        { code: "117000", name: "제주" }
-    ],
-    employmentTypes: [
-        { code: "R1010", name: "정규직" },
-        { code: "R1020", name: "무기계약직" },
-        { code: "R1030", name: "기간제" },
-        { code: "R1040", name: "비정규직" },
-        { code: "R1050", name: "기타" }
-    ],
-    recruitmentTypes: [
-        { code: "R2010", name: "신입" },
-        { code: "R2020", name: "경력" },
-        { code: "R2030", name: "인턴" },
-        { code: "R2040", name: "기타" }
-    ],
-    educationLevels: [
-        { code: "R7010", name: "학력무관" },
-        { code: "R7020", name: "고등학교졸업" },
-        { code: "R7030", name: "대학교졸업(2,3년)" },
-        { code: "R7040", name: "대학교졸업(4년)" },
-        { code: "R7050", name: "대학원졸업(석사)" },
-        { code: "R7060", name: "대학원졸업(박사)" }
-    ],
-    ncsClassifications: [
-        { code: "01", name: "사업관리" },
-        { code: "02", name: "경영·회계·사무" },
-        { code: "03", name: "금융·보험" },
-        { code: "04", name: "교육·자연·사회과학" },
-        { code: "05", name: "법률·경찰·소방·교도·국방" },
-        { code: "06", name: "보건·의료" },
-        { code: "07", name: "사회복지·종교" },
-        { code: "08", name: "문화·예술·디자인·방송" },
-        { code: "09", name: "운전·운송" },
-        { code: "10", name: "영업판매" },
-        { code: "11", name: "경비·청소" },
-        { code: "12", name: "이용·숙박·여행·오락·스포츠" },
-        { code: "13", name: "음식서비스" },
-        { code: "14", name: "건설" },
-        { code: "15", name: "기계" },
-        { code: "16", name: "재료" },
-        { code: "17", name: "화학" },
-        { code: "18", name: "섬유·의복" },
-        { code: "19", name: "전기·전자" },
-        { code: "20", name: "정보통신" },
-        { code: "21", name: "식품가공" },
-        { code: "22", name: "인쇄·목재·가구·공예" },
-        { code: "23", name: "환경·에너지·안전" },
-        { code: "24", name: "농림어업" }
-    ]
-};
-
-// =============================================================================
-// React Query용 쿼리 키들 (선택사항)
+// React Query용 쿼리 키들
 // =============================================================================
 
 export const QUERY_KEYS = {
@@ -747,108 +670,6 @@ export const QUERY_KEYS = {
     completion: ['completion'] as const,
     todos: ['todos'] as const,
     jobRecommendations: ['jobRecommendations'] as const,
-    publicJobSearch: ['publicJobSearch'] as const, // 🔥 추가
+    publicJobSearch: ['publicJobSearch'] as const,
+    jobCalendarBookmarks: ['jobCalendarBookmarks'] as const,
 } as const;
-
-// =============================================================================
-// 캐시 관련 유틸리티 (선택사항)
-// =============================================================================
-
-interface CacheData {
-    data: DashboardData;
-    timestamp: number;
-    expiry: number;
-}
-
-/**
- * 로컬 스토리지에 대시보드 데이터 캐시
- */
-export const cacheDashboardData = (data: DashboardData): void => {
-    if (typeof window !== 'undefined') {
-        try {
-            const cacheData: CacheData = {
-                data,
-                timestamp: Date.now(),
-                expiry: Date.now() + (5 * 60 * 1000) // 5분 캐시
-            };
-            localStorage.setItem('dashboardCache', JSON.stringify(cacheData));
-        } catch (error) {
-            console.warn('캐시 저장 실패:', error);
-        }
-    }
-};
-
-/**
- * 로컬 스토리지에서 대시보드 데이터 캐시 조회
- */
-export const getCachedDashboardData = (): DashboardData | null => {
-    if (typeof window !== 'undefined') {
-        try {
-            const cached = localStorage.getItem('dashboardCache');
-            if (cached) {
-                const { data, expiry }: CacheData = JSON.parse(cached);
-                if (Date.now() < expiry) {
-                    return data;
-                } else {
-                    localStorage.removeItem('dashboardCache');
-                }
-            }
-        } catch (error) {
-            console.warn('캐시 조회 실패:', error);
-        }
-    }
-    return null;
-};
-
-/**
- * 캐시 삭제
- */
-export const clearDashboardCache = (): void => {
-    if (typeof window !== 'undefined') {
-        localStorage.removeItem('dashboardCache');
-    }
-};
-
-// =============================================================================
-// 커스텀 훅 (선택사항)
-// =============================================================================
-
-/**
- * 대시보드 데이터를 위한 커스텀 훅 타입
- */
-export interface UseDashboardDataReturn {
-    data: DashboardData | null;
-    loading: boolean;
-    error: string | null;
-    refetch: () => Promise<void>;
-}
-
-/**
- * API 호출 상태 타입
- */
-export interface ApiCallState<T> {
-    data: T | null;
-    loading: boolean;
-    error: string | null;
-}
-
-// =============================================================================
-// 🔥 API 객체로 내보내기 (기존 컴포넌트 호환성)
-// =============================================================================
-
-export const api = {
-    // 기존 API 함수들
-    getDashboardData,
-    getProfileData,
-    updateProfileData,
-    getDesiredConditions,
-    updateDesiredConditions,
-    getApplications,
-    updateApplications,
-    getHomeStats,
-    getProfileCompletion,
-    getJobRecommendations,
-
-    // 🔥 새로운 공고 검색 API 추가
-    searchPublicJobs,
-};
