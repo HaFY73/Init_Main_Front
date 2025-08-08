@@ -103,18 +103,18 @@ const PhoneInput = ({ value, onChange, ...props }: {
 
 // --- UI Components with Dark Mode Support ---
 const Card = ({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-    <div className={`bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm ${className || ''}`} {...props}>
+    <div className={`bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm ${className}`} {...props}>
         {children}
     </div>
 )
 const Button = ({ className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
-    <button className={`inline-flex items-center justify-center rounded-xl text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ${className || ''}`} {...props} />
+    <button className={`inline-flex items-center justify-center rounded-xl text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ${className}`} {...props} />
 )
 
 // 🔥 Input 컴포넌트에 다크 모드 스타일 적용
 const Input = (props: React.InputHTMLAttributes<HTMLInputElement>) => (
     <input
-        className={`flex h-12 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-4 py-3 text-sm placeholder:text-gray-500 dark:placeholder:text-gray-400 focus-visible:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 ${props.className || ''}`}
+        className={`flex h-12 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-4 py-3 text-sm placeholder:text-gray-500 dark:placeholder:text-gray-400 focus-visible:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 ${props.className}`}
         {...props}
     />
 )
@@ -347,8 +347,7 @@ const ProfileEditPanel = ({ isOpen, onClose, profileData, initialSkills, onSave 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/80 p-4">
-            <motion.div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto" initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/80 ml-0 md:ml-64"><motion.div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto" initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }}>
             <div className="flex items-center justify-between mb-6"><h2 className="text-xl font-semibold dark:text-gray-100">프로필 수정</h2><Button onClick={onClose}><X className="w-5 h-5" /></Button></div>
             <div className="space-y-6">
                 <div><label className="text-sm font-medium block mb-2 text-gray-700 dark:text-gray-300">이름</label><Input value={editedProfile.name} onChange={(e) => handleChange('name', e.target.value)} /></div>
@@ -502,7 +501,8 @@ const TemplateSelector = ({ isOpen, onClose, currentTemplate, onSelectTemplate }
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/80 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/80 backdrop-blur-sm p-4 md:translate-x-[140px]">
+
             <motion.div
                 className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5 max-w-4xl w-full"
                 initial={{ y: 50, opacity: 0 }}
@@ -634,122 +634,6 @@ export default function SpecManagementView() {
         loadUserData();
     }, [userId]); // 🔥 userId 의존성 추가
 
-    // handleSave 함수를 async로 변경하고 API 호출 추가 + 검증 강화
-    const handleSave = async (sectionId: string, data: any, secondaryData?: any) => {
-        if (!userId) return;
-
-        try {
-            let alertMessage = "정보가 성공적으로 저장되었습니다!";
-            const currentUserId = parseInt(userId); // 🔥 실제 사용자 ID 사용
-
-            // 🔥 섹션별 추가 검증
-            switch (sectionId) {
-                case 'profile':
-                    await api.updateProfile(currentUserId, data);
-                    setProfile(data);
-                    if (secondaryData) {
-                        await api.updateSkills(currentUserId, secondaryData);
-                        setSkills(secondaryData);
-                        alertMessage = "프로필과 스킬 정보가 성공적으로 저장되었습니다!";
-                    }
-                    setIsProfileEditOpen(false);
-                    break;
-                case 'introduction':
-                    const updatedProfile = { ...profile, introduction: data };
-                    await api.updateProfile(currentUserId, updatedProfile);
-                    setProfile(updatedProfile);
-                    break;
-                case 'stats_experience':
-                    const newStats1 = { ...careerStats, experience: data };
-                    await api.updateCareerStats(currentUserId, newStats1);
-                    setCareerStats(newStats1);
-                    break;
-                case 'stats_workRecords':
-                    const newStats2 = { ...careerStats, workRecords: data };
-                    await api.updateCareerStats(currentUserId, newStats2);
-                    setCareerStats(newStats2);
-                    break;
-                case 'stats_careerGoal':
-                    const newStats3 = { ...careerStats, careerGoal: data };
-                    await api.updateCareerStats(currentUserId, newStats3);
-                    setCareerStats(newStats3);
-                    break;
-                case 'work':
-                    // 🔥 업무 경력 추가 검증
-                    for (const item of data) {
-                        if (!item.company || !item.position || !item.startDate || !item.endDate) {
-                            alert('업무 경력은 회사명, 직책, 시작일, 종료일이 모두 필수입니다.');
-                            return;
-                        }
-                        // 날짜 형식 검증
-                        if (!item.startDate.match(/^\d{4}-\d{2}-\d{2}$/) || !item.endDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                            alert('날짜는 YYYY-MM-DD 형식으로 입력해주세요.');
-                            return;
-                        }
-                    }
-                    await api.updateWorkExperiences(currentUserId, data);
-                    setWorkExperiences(data);
-                    setActiveSection(null);
-                    break;
-                case 'education':
-                    // 🔥 학력 추가 검증
-                    for (const item of data) {
-                        if (!item.school || !item.major || !item.degree || !item.startDate || !item.endDate) {
-                            alert('학력은 학교명, 전공, 학위, 입학일, 졸업일이 모두 필수입니다.');
-                            return;
-                        }
-                        if (!item.startDate.match(/^\d{4}-\d{2}-\d{2}$/) || !item.endDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                            alert('날짜는 YYYY-MM-DD 형식으로 입력해주세요.');
-                            return;
-                        }
-                    }
-                    await api.updateEducations(currentUserId, data);
-                    setEducations(data);
-                    setActiveSection(null);
-                    break;
-                case 'skills':
-                    await api.updateSkills(currentUserId, data);
-                    setSkills(data);
-                    setActiveSection(null);
-                    break;
-                case 'certificates':
-                    // 🔥 자격증 검증
-                    for (const item of data) {
-                        if (!item.name || !item.issuer || !item.acquisitionDate) {
-                            alert('자격증은 자격증명, 발급기관, 취득일이 모두 필수입니다.');
-                            return;
-                        }
-                    }
-                    await api.updateCertificates(currentUserId, data);
-                    setCertificates(data);
-                    setActiveSection(null);
-                    break;
-                case 'links':
-                    await api.updateLinks(currentUserId, data);
-                    setLinks(data);
-                    setActiveSection(null);
-                    break;
-                case 'languages':
-                    await api.updateLanguages(currentUserId, data);
-                    setLanguages(data);
-                    setActiveSection(null);
-                    break;
-                case 'projects':
-                    // 🔥 프로젝트 추가 검증
-                    for (const item of data) {
-                        if (!item.name || !item.startDate || !item.endDate) {
-                            alert('프로젝트는 프로젝트명, 시작일, 종료일이 모두 필수입니다.');
-                            return;
-                        }
-                        if (!item.startDate.match(/^\d{4}-\d{2}-\d{2}$/) || !item.endDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                            alert('날짜는 YYYY-MM-DD 형식으로 입력해주세요.');
-                            return;
-                        }
-                    }
-                    await api.updateProjects(currentUserId, data);
-                    setProjects(data);
-                    setActiveSection(null);
-                    break;
     // handleSave 함수를 async로 변경하고 API 호출 추가
     const handleSave = async (sectionId: string, data: any, secondaryData?: any) => {
         if (!userId) return;
@@ -909,7 +793,7 @@ export default function SpecManagementView() {
     // 인증 로딩 중
     if (authLoading) {
         return (
-            <main className="bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8">
+            <main className="ml-64 md:ml-0 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
                 <div className="max-w-none lg:max-w-7xl mx-auto space-y-8 w-full">
                     <div className="flex items-center justify-center h-64">
                         <div className="text-center">
@@ -925,7 +809,7 @@ export default function SpecManagementView() {
     // 인증되지 않음
     if (!isAuthenticated || !userId) {
         return (
-            <main className="bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8">
+            <main className="ml-0 md:ml-64 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
                 <div className="max-w-none lg:max-w-7xl mx-auto space-y-8 w-full">
                     <div className="flex items-center justify-center h-64">
                         <div className="text-center">
@@ -940,7 +824,7 @@ export default function SpecManagementView() {
     // 로딩 상태 처리
     if (isLoading) {
         return (
-            <main className="bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8">
+            <main className="ml-0 md:ml-64 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
                 <div className="max-w-none lg:max-w-7xl mx-auto space-y-8 w-full">
                     <div className="flex items-center justify-center h-64">
                         <div className="text-center">
@@ -956,7 +840,7 @@ export default function SpecManagementView() {
     // 에러 상태 처리
     if (error) {
         return (
-            <main className="bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8">
+            <main className="ml-0 md:ml-64 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
                 <div className="max-w-none lg:max-w-7xl mx-auto space-y-8 w-full">
                     <div className="flex items-center justify-center h-64">
                         <div className="text-center">
@@ -1027,7 +911,7 @@ export default function SpecManagementView() {
     const allDataForPdf = { profile, skills, workExperiences, educations, certificates, links, projects, activities };
 
     return (
-        <main className="bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8">
+        <main className="ml-0 md:ml-64 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
             <div className="max-w-none lg:max-w-7xl mx-auto space-y-8 w-full">
                 <div className="flex items-center justify-between">
                     <h1 className="flex items-center text-3xl font-bold text-gray-800 dark:text-gray-100">
