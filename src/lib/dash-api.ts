@@ -3,8 +3,52 @@
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL!;
 
+export const updateApplications = async (applications: ApplicationData[]): Promise<void> => {
+    const userId = getUserId();
+    console.log('💾 지원현황 저장 API 호출:', applications);
+
+    try {
+        const applicationsWithUserId = applications.map(app => ({
+            ...app,
+            userId: parseInt(userId)
+        }));
+
+        await apiRequest(`/api/home/applications/batch/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(applicationsWithUserId)
+        });
+
+        console.log('✅ 지원현황 저장 성공');
+    } catch (error) {
+        console.error('❌ 지원현황 저장 실패:', error);
+        throw error;
+    }
+};
+
 // =============================================================================
 // 타입 정의
+export const updateApplications = async (applications: ApplicationData[]): Promise<void> => {
+    const userId = getUserId();
+    console.log('💾 지원현황 저장 API 호출:', applications);
+
+    try {
+        const applicationsWithUserId = applications.map(app => ({
+            ...app,
+            userId: parseInt(userId)
+        }));
+
+        await apiRequest(`/api/home/applications/batch/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(applicationsWithUserId)
+        });
+
+        console.log('✅ 지원현황 저장 성공');
+    } catch (error) {
+        console.error('❌ 지원현황 저장 실패:', error);
+        throw error;
+    }
+};
+
 // =============================================================================
 
 export interface ProfileData {
@@ -184,8 +228,52 @@ export interface ApiResponse<T> {
 // 백엔드 응답 타입 (enum 형태)
 export type ApplicationStatusEnum = 'APPLIED' | 'DOCUMENT_PASSED' | 'FINAL_PASSED' | 'REJECTED';
 
+export const updateApplications = async (applications: ApplicationData[]): Promise<void> => {
+    const userId = getUserId();
+    console.log('💾 지원현황 저장 API 호출:', applications);
+
+    try {
+        const applicationsWithUserId = applications.map(app => ({
+            ...app,
+            userId: parseInt(userId)
+        }));
+
+        await apiRequest(`/api/home/applications/batch/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(applicationsWithUserId)
+        });
+
+        console.log('✅ 지원현황 저장 성공');
+    } catch (error) {
+        console.error('❌ 지원현황 저장 실패:', error);
+        throw error;
+    }
+};
+
 // =============================================================================
 // HTTP 클라이언트 설정
+export const updateApplications = async (applications: ApplicationData[]): Promise<void> => {
+    const userId = getUserId();
+    console.log('💾 지원현황 저장 API 호출:', applications);
+
+    try {
+        const applicationsWithUserId = applications.map(app => ({
+            ...app,
+            userId: parseInt(userId)
+        }));
+
+        await apiRequest(`/api/home/applications/batch/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(applicationsWithUserId)
+        });
+
+        console.log('✅ 지원현황 저장 성공');
+    } catch (error) {
+        console.error('❌ 지원현황 저장 실패:', error);
+        throw error;
+    }
+};
+
 // =============================================================================
 
 interface ApiClientConfig {
@@ -219,7 +307,7 @@ const createApiClient = (includeUserId?: string): ApiClientConfig => {
     };
 };
 
-// 🔥 통합 HTTP 요청 헬퍼 함수
+// 🔥 통합 HTTP 요청 헬퍼 함수 - 에러 처리 강화
 const apiRequest = async <T>(
     url: string, 
     options: RequestInit = {}, 
@@ -229,6 +317,12 @@ const apiRequest = async <T>(
     const config = createApiClient(includeUserId);
 
     try {
+        console.log('🌐 API 요청:', `${API_BASE_URL}${url}`, {
+            method: options.method || 'GET',
+            includeUserId,
+            expectApiWrapper
+        });
+
         const response = await fetch(`${API_BASE_URL}${url}`, {
             ...config,
             ...options,
@@ -238,30 +332,81 @@ const apiRequest = async <T>(
             },
         });
 
+        console.log('📡 API 응답:', response.status, response.statusText);
+
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorText = await response.text();
+            console.error('❌ API 에러 응답:', errorText);
+            throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
         }
 
         // 🔥 API 응답 형태에 따라 분기 처리
         if (expectApiWrapper) {
             // Job Calendar API - ApiResponse 래퍼 사용
             const data: ApiResponse<T> = await response.json();
+            console.log('📦 ApiResponse 래퍼:', data.success, data.message);
             if (!data.success) {
                 throw new Error(data.message || '요청이 실패했습니다.');
             }
             return data.data;
         } else {
             // Home API, Public Jobs API - 직접 반환
-            return await response.json();
+            const result = await response.json();
+            console.log('📄 직접 응답:', typeof result, Array.isArray(result) ? `배열(${result.length}개)` : '객체');
+            return result;
         }
     } catch (error) {
-        console.error('API 요청 실패:', error);
+        console.error('❌ API 요청 실패:', error);
+        throw error;
+    }
+};
+
+export const updateApplications = async (applications: ApplicationData[]): Promise<void> => {
+    const userId = getUserId();
+    console.log('💾 지원현황 저장 API 호출:', applications);
+
+    try {
+        const applicationsWithUserId = applications.map(app => ({
+            ...app,
+            userId: parseInt(userId)
+        }));
+
+        await apiRequest(`/api/home/applications/batch/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(applicationsWithUserId)
+        });
+
+        console.log('✅ 지원현황 저장 성공');
+    } catch (error) {
+        console.error('❌ 지원현황 저장 실패:', error);
         throw error;
     }
 };
 
 // =============================================================================
 // Home API 함수들 (기존 유지)
+export const updateApplications = async (applications: ApplicationData[]): Promise<void> => {
+    const userId = getUserId();
+    console.log('💾 지원현황 저장 API 호출:', applications);
+
+    try {
+        const applicationsWithUserId = applications.map(app => ({
+            ...app,
+            userId: parseInt(userId)
+        }));
+
+        await apiRequest(`/api/home/applications/batch/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(applicationsWithUserId)
+        });
+
+        console.log('✅ 지원현황 저장 성공');
+    } catch (error) {
+        console.error('❌ 지원현황 저장 실패:', error);
+        throw error;
+    }
+};
+
 // =============================================================================
 
 export const getUserId = (): string => {
@@ -288,7 +433,13 @@ export const getProfileData = async (): Promise<ProfileData> => {
         };
     } catch (error) {
         console.error('❌ 프로필 조회 실패:', error);
-        throw error;
+        // 404/405 에러 시 기본값 반환
+        return {
+            name: '',
+            email: '',
+            career: '신입',
+            job: ''
+        };
     }
 };
 
@@ -336,7 +487,13 @@ export const getDesiredConditions = async (): Promise<ConditionsData> => {
         };
     } catch (error) {
         console.error('❌ 희망조건 조회 실패:', error);
-        throw error;
+        // 404/405 에러 시 기본값 반환
+        return {
+            jobs: [],
+            locations: [],
+            salary: '0',
+            others: []
+        };
     }
 };
 
@@ -376,6 +533,171 @@ export const getApplications = async (): Promise<ApplicationData[]> => {
         }));
     } catch (error) {
         console.error('❌ 지원현황 조회 실패:', error);
+        // 404/405 에러 시 빈 배열 반환
+        return [];
+    }
+};
+
+export const updateApplications = async (applications: ApplicationData[]): Promise<void> => {
+    const userId = getUserId();
+    console.log('💾 지원현황 저장 API 호출:', applications);
+
+    try {
+        const applicationsWithUserId = applications.map(app => ({
+            ...app,
+            userId: parseInt(userId)
+        }));
+
+        await apiRequest(`/api/home/applications/batch/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(applicationsWithUserId)
+        });
+
+        console.log('✅ 지원현황 저장 성공');
+    } catch (error) {
+        console.error('❌ 지원현황 저장 실패:', error);
+        throw error;
+    }
+};
+
+// =============================================================================
+// 통계 및 기타 Home API 함수들
+export const updateApplications = async (applications: ApplicationData[]): Promise<void> => {
+    const userId = getUserId();
+    console.log('💾 지원현황 저장 API 호출:', applications);
+
+    try {
+        const applicationsWithUserId = applications.map(app => ({
+            ...app,
+            userId: parseInt(userId)
+        }));
+
+        await apiRequest(`/api/home/applications/batch/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(applicationsWithUserId)
+        });
+
+        console.log('✅ 지원현황 저장 성공');
+    } catch (error) {
+        console.error('❌ 지원현황 저장 실패:', error);
+        throw error;
+    }
+};
+
+// =============================================================================
+
+export const getHomeStats = async (): Promise<HomeStats> => {
+    const userId = getUserId();
+    console.log('📊 통계 조회 API 호출:', userId);
+
+    try {
+        const data = await apiRequest<any>(`/api/home/stats/${userId}`, {
+            method: 'GET'
+        });
+
+        console.log('✅ 통계 조회 성공:', data);
+
+        return {
+            totalApplications: data.totalApplications || 0,
+            documentPassed: data.documentPassed || 0,
+            finalPassed: data.finalPassed || 0,
+            rejected: data.rejected || 0,
+            totalResumes: data.totalResumes || 0,
+            totalCoverLetters: data.totalCoverLetters || 0,
+            bookmarkedCompanies: data.bookmarkedCompanies || 0,
+            deadlineSoon: data.deadlineSoon || 0
+        };
+    } catch (error) {
+        console.error('❌ 통계 조회 실패:', error);
+        // 에러 시 기본 통계 반환
+        return {
+            totalApplications: 0,
+            documentPassed: 0,
+            finalPassed: 0,
+            rejected: 0,
+            totalResumes: 0,
+            totalCoverLetters: 0,
+            bookmarkedCompanies: 0,
+            deadlineSoon: 0
+        };
+    }
+};
+
+export const getProfileCompletion = async (): Promise<ProfileCompletion> => {
+    const userId = getUserId();
+    console.log('🔍 프로필 완성도 조회 API 호출:', userId);
+
+    try {
+        const data = await apiRequest<any>(`/api/home/completion/${userId}`, {
+            method: 'GET'
+        });
+
+        console.log('✅ 프로필 완성도 조회 성공:', data);
+
+        return {
+            basicInfo: data.basicInfo || false,
+            desiredConditions: data.desiredConditions || false,
+            workExperience: data.workExperience || false,
+            education: data.education || false,
+            certificates: data.certificates || false,
+            languages: data.languages || false,
+            skills: data.skills || false,
+            links: data.links || false,
+            military: data.military || false,
+            portfolio: data.portfolio || false,
+            completionPercentage: data.completionPercentage || 0
+        };
+    } catch (error) {
+        console.error('❌ 프로필 완성도 조회 실패:', error);
+        // 에러 시 기본값 반환
+        return {
+            basicInfo: false,
+            desiredConditions: false,
+            workExperience: false,
+            education: false,
+            certificates: false,
+            languages: false,
+            skills: false,
+            links: false,
+            military: false,
+            portfolio: false,
+            completionPercentage: 0
+        };
+    }
+};
+
+export const getDashboardData = async (): Promise<DashboardData> => {
+    console.log('🔍 전체 대시보드 데이터 조회 시작');
+
+    try {
+        // 병렬로 모든 데이터 요청 (에러가 나도 다른 데이터는 계속 로드)
+        const [profile, conditions, applications, stats, completion] = await Promise.allSettled([
+            getProfileData(),
+            getDesiredConditions(), 
+            getApplications(),
+            getHomeStats(),
+            getProfileCompletion()
+        ]);
+
+        const result: DashboardData = {
+            profile: profile.status === 'fulfilled' ? profile.value : { name: '', email: '', career: '신입', job: '' },
+            conditions: conditions.status === 'fulfilled' ? conditions.value : { jobs: [], locations: [], salary: '0', others: [] },
+            applications: applications.status === 'fulfilled' ? applications.value : [],
+            stats: stats.status === 'fulfilled' ? stats.value : {
+                totalApplications: 0, documentPassed: 0, finalPassed: 0, rejected: 0,
+                totalResumes: 0, totalCoverLetters: 0, bookmarkedCompanies: 0, deadlineSoon: 0
+            },
+            completion: completion.status === 'fulfilled' ? completion.value : {
+                basicInfo: false, desiredConditions: false, workExperience: false, education: false,
+                certificates: false, languages: false, skills: false, links: false, military: false, portfolio: false
+            },
+            todos: [] // TODO 기능이 구현되면 추가
+        };
+
+        console.log('✅ 전체 대시보드 데이터 조회 완료');
+        return result;
+    } catch (error) {
+        console.error('❌ 전체 대시보드 데이터 조회 실패:', error);
         throw error;
     }
 };
@@ -404,6 +726,28 @@ export const updateApplications = async (applications: ApplicationData[]): Promi
 
 // =============================================================================
 // 🔥 공고 추천 관련 API
+export const updateApplications = async (applications: ApplicationData[]): Promise<void> => {
+    const userId = getUserId();
+    console.log('💾 지원현황 저장 API 호출:', applications);
+
+    try {
+        const applicationsWithUserId = applications.map(app => ({
+            ...app,
+            userId: parseInt(userId)
+        }));
+
+        await apiRequest(`/api/home/applications/batch/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(applicationsWithUserId)
+        });
+
+        console.log('✅ 지원현황 저장 성공');
+    } catch (error) {
+        console.error('❌ 지원현황 저장 실패:', error);
+        throw error;
+    }
+};
+
 // =============================================================================
 
 export const getJobRecommendations = async (
@@ -435,8 +779,52 @@ export const getJobRecommendations = async (
     }
 };
 
+export const updateApplications = async (applications: ApplicationData[]): Promise<void> => {
+    const userId = getUserId();
+    console.log('💾 지원현황 저장 API 호출:', applications);
+
+    try {
+        const applicationsWithUserId = applications.map(app => ({
+            ...app,
+            userId: parseInt(userId)
+        }));
+
+        await apiRequest(`/api/home/applications/batch/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(applicationsWithUserId)
+        });
+
+        console.log('✅ 지원현황 저장 성공');
+    } catch (error) {
+        console.error('❌ 지원현황 저장 실패:', error);
+        throw error;
+    }
+};
+
 // =============================================================================
 // 🔥 공고 검색 관련 API
+export const updateApplications = async (applications: ApplicationData[]): Promise<void> => {
+    const userId = getUserId();
+    console.log('💾 지원현황 저장 API 호출:', applications);
+
+    try {
+        const applicationsWithUserId = applications.map(app => ({
+            ...app,
+            userId: parseInt(userId)
+        }));
+
+        await apiRequest(`/api/home/applications/batch/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(applicationsWithUserId)
+        });
+
+        console.log('✅ 지원현황 저장 성공');
+    } catch (error) {
+        console.error('❌ 지원현황 저장 실패:', error);
+        throw error;
+    }
+};
+
 // =============================================================================
 
 export const searchPublicJobs = async (
@@ -463,11 +851,55 @@ export const searchPublicJobs = async (
     }
 };
 
+export const updateApplications = async (applications: ApplicationData[]): Promise<void> => {
+    const userId = getUserId();
+    console.log('💾 지원현황 저장 API 호출:', applications);
+
+    try {
+        const applicationsWithUserId = applications.map(app => ({
+            ...app,
+            userId: parseInt(userId)
+        }));
+
+        await apiRequest(`/api/home/applications/batch/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(applicationsWithUserId)
+        });
+
+        console.log('✅ 지원현황 저장 성공');
+    } catch (error) {
+        console.error('❌ 지원현황 저장 실패:', error);
+        throw error;
+    }
+};
+
 // =============================================================================
 // 🔥 Job Calendar API 함수들
+export const updateApplications = async (applications: ApplicationData[]): Promise<void> => {
+    const userId = getUserId();
+    console.log('💾 지원현황 저장 API 호출:', applications);
+
+    try {
+        const applicationsWithUserId = applications.map(app => ({
+            ...app,
+            userId: parseInt(userId)
+        }));
+
+        await apiRequest(`/api/home/applications/batch/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(applicationsWithUserId)
+        });
+
+        console.log('✅ 지원현황 저장 성공');
+    } catch (error) {
+        console.error('❌ 지원현황 저장 실패:', error);
+        throw error;
+    }
+};
+
 // =============================================================================
 
-// 북마크 관련 API
+// 북마크 관련 API - 에러 처리 강화
 export const getBookmarksByUserId = async (userId: number): Promise<JobBookmarkDto[]> => {
     try {
         console.log('🔍 북마크 조회 API 호출:', userId);
@@ -483,7 +915,8 @@ export const getBookmarksByUserId = async (userId: number): Promise<JobBookmarkD
         return data;
     } catch (error) {
         console.error('❌ 북마크 조회 실패:', error);
-        throw error;
+        // 404/401 에러 시 빈 배열 반환 (에러를 throw하지 않음)
+        return [];
     }
 };
 
@@ -571,8 +1004,52 @@ export const deleteBookmarkByUserAndJob = async (userId: number, jobPostingId: n
     }
 };
 
+export const updateApplications = async (applications: ApplicationData[]): Promise<void> => {
+    const userId = getUserId();
+    console.log('💾 지원현황 저장 API 호출:', applications);
+
+    try {
+        const applicationsWithUserId = applications.map(app => ({
+            ...app,
+            userId: parseInt(userId)
+        }));
+
+        await apiRequest(`/api/home/applications/batch/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(applicationsWithUserId)
+        });
+
+        console.log('✅ 지원현황 저장 성공');
+    } catch (error) {
+        console.error('❌ 지원현황 저장 실패:', error);
+        throw error;
+    }
+};
+
 // =============================================================================
 // 유틸리티 함수들
+export const updateApplications = async (applications: ApplicationData[]): Promise<void> => {
+    const userId = getUserId();
+    console.log('💾 지원현황 저장 API 호출:', applications);
+
+    try {
+        const applicationsWithUserId = applications.map(app => ({
+            ...app,
+            userId: parseInt(userId)
+        }));
+
+        await apiRequest(`/api/home/applications/batch/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(applicationsWithUserId)
+        });
+
+        console.log('✅ 지원현황 저장 성공');
+    } catch (error) {
+        console.error('❌ 지원현황 저장 실패:', error);
+        throw error;
+    }
+};
+
 // =============================================================================
 
 // 날짜 변환 유틸리티
@@ -625,8 +1102,52 @@ export const handleApiError = (error: Error): string => {
     }
 };
 
+export const updateApplications = async (applications: ApplicationData[]): Promise<void> => {
+    const userId = getUserId();
+    console.log('💾 지원현황 저장 API 호출:', applications);
+
+    try {
+        const applicationsWithUserId = applications.map(app => ({
+            ...app,
+            userId: parseInt(userId)
+        }));
+
+        await apiRequest(`/api/home/applications/batch/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(applicationsWithUserId)
+        });
+
+        console.log('✅ 지원현황 저장 성공');
+    } catch (error) {
+        console.error('❌ 지원현황 저장 실패:', error);
+        throw error;
+    }
+};
+
 // =============================================================================
 // 🔥 통합 API 객체
+export const updateApplications = async (applications: ApplicationData[]): Promise<void> => {
+    const userId = getUserId();
+    console.log('💾 지원현황 저장 API 호출:', applications);
+
+    try {
+        const applicationsWithUserId = applications.map(app => ({
+            ...app,
+            userId: parseInt(userId)
+        }));
+
+        await apiRequest(`/api/home/applications/batch/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(applicationsWithUserId)
+        });
+
+        console.log('✅ 지원현황 저장 성공');
+    } catch (error) {
+        console.error('❌ 지원현황 저장 실패:', error);
+        throw error;
+    }
+};
+
 // =============================================================================
 
 export const api = {
@@ -637,6 +1158,9 @@ export const api = {
     updateDesiredConditions,
     getApplications,
     updateApplications,
+    getHomeStats,
+    getProfileCompletion,
+    getDashboardData,
     
     // Job Recommendations
     getJobRecommendations,
@@ -657,8 +1181,52 @@ export const api = {
     handleApiError
 };
 
+export const updateApplications = async (applications: ApplicationData[]): Promise<void> => {
+    const userId = getUserId();
+    console.log('💾 지원현황 저장 API 호출:', applications);
+
+    try {
+        const applicationsWithUserId = applications.map(app => ({
+            ...app,
+            userId: parseInt(userId)
+        }));
+
+        await apiRequest(`/api/home/applications/batch/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(applicationsWithUserId)
+        });
+
+        console.log('✅ 지원현황 저장 성공');
+    } catch (error) {
+        console.error('❌ 지원현황 저장 실패:', error);
+        throw error;
+    }
+};
+
 // =============================================================================
 // React Query용 쿼리 키들
+export const updateApplications = async (applications: ApplicationData[]): Promise<void> => {
+    const userId = getUserId();
+    console.log('💾 지원현황 저장 API 호출:', applications);
+
+    try {
+        const applicationsWithUserId = applications.map(app => ({
+            ...app,
+            userId: parseInt(userId)
+        }));
+
+        await apiRequest(`/api/home/applications/batch/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify(applicationsWithUserId)
+        });
+
+        console.log('✅ 지원현황 저장 성공');
+    } catch (error) {
+        console.error('❌ 지원현황 저장 실패:', error);
+        throw error;
+    }
+};
+
 // =============================================================================
 
 export const QUERY_KEYS = {
