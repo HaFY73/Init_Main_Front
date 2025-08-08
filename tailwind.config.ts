@@ -48,6 +48,12 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      spacing: {
+        '280': '280px',
+      },
+      margin: {
+        '280': '280px',
+      },
     },
   },
   darkMode: "class",

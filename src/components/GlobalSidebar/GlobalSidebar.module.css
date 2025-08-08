@@ -394,8 +394,21 @@
 /* ================================================================
    반응형 디자인 - 모바일
    ================================================================ */
+/* 태블릿 이상에서는 사이드바 항상 표시 */
+@media (min-width: 769px) {
+  .mobileMenuButton {
+    display: none !important;
+  }
+  
+  .sidebar {
+    transform: translateX(0) !important;
+    position: fixed;
+    overflow-y: auto;
+  }
+}
+
 /* 휴대폰 가로 모드 전용 */
-@media (max-width: 968px) and (max-height: 500px) and (orientation: landscape) {
+@media (max-width: 768px) and (max-height: 500px) and (orientation: landscape) {
   .mobileMenuButton {
     display: flex; /* 가로 모드에서도 햄버거 메뉴 사용 */
   }
