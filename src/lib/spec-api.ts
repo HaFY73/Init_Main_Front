@@ -24,6 +24,8 @@ export interface ProfileData {
   careerLevel: string;
   jobTitle: string;
   introduction: string;
+  birthDate?: string; // 생년월일 추가
+  skills?: string[]; // 스킬 배열 추가
 }
 
 export interface CareerStats {
@@ -134,6 +136,7 @@ interface BackendEducation {
 interface BackendCertificate {
   id?: number;
   name: string;
+  organization1?: string; // 백엔드 실제 필드명 추가
   organization?: string;
   issuer?: string;
   acquisitionDate: string;
@@ -149,7 +152,10 @@ interface BackendLanguage {
   id?: number;
   language?: string;
   name?: string;
-  level: string;
+  level: number; // string → number로 변경
+  testName?: string;
+  score?: string;
+  acquisitionDate?: string;
 }
 
 interface BackendProject {
@@ -204,14 +210,39 @@ const apiCall = async <T>(endpoint: string, options: RequestInit = {}): Promise<
   }
 
   try {
+    console.log('🔍 Spec API 호출:', `${BASE_URL}${endpoint}`, {
+      method: options.method || 'GET',
+      hasToken: !!token
+    });
+
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       ...options,
       headers
     });
 
-    const responseBody = await response.json() as SpecApiResponse<T>;
+    console.log('📡 Spec API 응답:', {
+      status: response.status,
+      statusText: response.statusText,
+      ok: response.ok,
+      url: response.url
+    });
+
+    let responseBody;
+    try {
+      responseBody = await response.json() as SpecApiResponse<T>;
+    } catch (parseError) {
+      console.error('❌ JSON 파싱 실패:', parseError);
+      throw new Error('서버 응답을 파싱할 수 없습니다.');
+    }
 
     if (!response.ok) {
+      console.error('❌ API 응답 에러:', {
+        status: response.status,
+        statusText: response.statusText,
+        message: responseBody.message,
+        endpoint
+      });
+
       if (response.status === 401) {
         if (typeof window !== 'undefined') {
           localStorage.clear();
@@ -221,9 +252,13 @@ const apiCall = async <T>(endpoint: string, options: RequestInit = {}): Promise<
       throw new Error(responseBody.message || `API 호출 실패: ${response.status}`);
     }
 
+    console.log('✅ Spec API 성공:', responseBody.success);
     return responseBody;
   } catch (error) {
-    console.error('API 호출 중 오류 발생:', error);
+    console.error('❌ API 호출 중 오류 발생:', {
+      endpoint,
+      error: error instanceof Error ? error.message : error
+    });
     throw error;
   }
 };
@@ -260,9 +295,10 @@ const transformBackendData = (backendData: BackendSpecData): UserSpecData => {
       id: edu.id?.toString() || Date.now().toString()
     })),
     certificates: (backendData.certificates || []).map((cert: BackendCertificate) => ({
-      ...cert,
       id: cert.id?.toString() || Date.now().toString(),
-      issuer: cert.organization || cert.issuer || ""
+      name: cert.name,
+      issuer: cert.organization1 || cert.organization || cert.issuer || "", // organization1 우선 사용
+      acquisitionDate: cert.acquisitionDate
     })),
     links: (backendData.links || []).map((link: BackendLink) => ({
       ...link,
@@ -301,9 +337,24 @@ export const fetchUserSpec = async (userId: number): Promise<UserSpecData> => {
 };
 
 export const updateProfile = async (userId: number, profileData: ProfileData): Promise<ProfileData> => {
+  // 🔥 프로필 데이터 검증 및 정제
+  const validatedProfile = {
+    name: profileData.name?.trim() || "",
+    email: profileData.email?.trim() || "",
+    phone: profileData.phone?.trim() || "",
+    location: profileData.location?.trim() || "",
+    careerLevel: profileData.careerLevel?.trim() || "",
+    jobTitle: profileData.jobTitle?.trim() || "",
+    introduction: profileData.introduction?.trim() || "",
+    birthDate: profileData.birthDate || null, // 생년월일 추가
+    skills: profileData.skills || [] // 스킬 배열 추가
+  };
+
+  console.log('📤 프로필 데이터 전송:', validatedProfile);
+
   const result = await apiCall<ProfileData>(`/spec/${userId}/profile`, {
     method: 'PUT',
-    body: JSON.stringify(profileData),
+    body: JSON.stringify(validatedProfile),
   });
   if (!result.success) {
     throw new Error(result.message || '프로필 업데이트에 실패했습니다.');
@@ -323,9 +374,38 @@ export const updateSkills = async (userId: number, skills: string[]): Promise<st
 };
 
 export const updateWorkExperiences = async (userId: number, experiences: WorkExperience[]): Promise<WorkExperience[]> => {
+  // 🔥 데이터 검증 및 정제
+  const validatedExperiences = experiences.map((exp, index) => {
+    // 필수 필드 검증 - 더 유연하게 처리
+    if (!exp.company?.trim() || !exp.position?.trim()) {
+      throw new Error(`${index + 1}번째 경력의 회사명과 직책은 필수입니다.`);
+    }
+
+    // 날짜 형식 검증 (날짜가 있는 경우에만)
+    if (exp.startDate && !exp.startDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      throw new Error(`${index + 1}번째 경력의 시작일 형식이 올바르지 않습니다. (YYYY-MM-DD)`);
+    }
+    if (exp.endDate && !exp.endDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      throw new Error(`${index + 1}번째 경력의 종료일 형식이 올바르지 않습니다. (YYYY-MM-DD)`);
+    }
+
+    return {
+      company: exp.company.trim(),
+      position: exp.position.trim(),
+      department: exp.department?.trim() || "",
+      startDate: exp.startDate || null,
+      endDate: exp.endDate || null,
+      isCurrent: exp.isCurrent || false,
+      description: exp.description?.trim() || "",
+      displayOrder: index
+    };
+  });
+
+  console.log('📤 업무 경력 데이터 전송:', validatedExperiences);
+
   const result = await apiCall<WorkExperience[]>(`/spec/${userId}/careers`, {
     method: 'PUT',
-    body: JSON.stringify(experiences),
+    body: JSON.stringify(validatedExperiences),
   });
   if (!result.success) {
     throw new Error(result.message || '업무 경력 업데이트에 실패했습니다.');
@@ -334,9 +414,40 @@ export const updateWorkExperiences = async (userId: number, experiences: WorkExp
 };
 
 export const updateEducations = async (userId: number, educations: Education[]): Promise<Education[]> => {
+  // 🔥 데이터 검증 및 정제
+  const validatedEducations = educations.map((edu, index) => {
+    // 필수 필드 검증 - 더 유연하게 처리
+    if (!edu.school?.trim() || !edu.major?.trim() || !edu.degree?.trim()) {
+      throw new Error(`${index + 1}번째 학력의 학교명, 전공, 학위는 필수입니다.`);
+    }
+
+    // 날짜 형식 검증 (날짜가 있는 경우에만)
+    if (edu.startDate && !edu.startDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      throw new Error(`${index + 1}번째 학력의 입학일 형식이 올바르지 않습니다. (YYYY-MM-DD)`);
+    }
+    if (edu.endDate && !edu.endDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      throw new Error(`${index + 1}번째 학력의 졸업일 형식이 올바르지 않습니다. (YYYY-MM-DD)`);
+    }
+
+    return {
+      school: edu.school.trim(),
+      major: edu.major.trim(),
+      degree: edu.degree.trim(),
+      startDate: edu.startDate || null,
+      endDate: edu.endDate || null,
+      isCurrent: edu.isCurrent || false,
+      gpa: edu.gpa || null,
+      maxGpa: edu.maxGpa || null,
+      description: edu.description?.trim() || "",
+      displayOrder: index
+    };
+  });
+
+  console.log('📤 학력 데이터 전송:', validatedEducations);
+
   const result = await apiCall<Education[]>(`/spec/${userId}/educations`, {
     method: 'PUT',
-    body: JSON.stringify(educations),
+    body: JSON.stringify(validatedEducations),
   });
   if (!result.success) {
     throw new Error(result.message || '학력 업데이트에 실패했습니다.');
@@ -345,10 +456,15 @@ export const updateEducations = async (userId: number, educations: Education[]):
 };
 
 export const updateCertificates = async (userId: number, certificates: Certificate[]): Promise<Certificate[]> => {
+  // 🔥 백엔드 필드명과 일치하도록 변환
   const backendCerts = certificates.map(cert => ({
-    ...cert,
-    organization: cert.issuer
+    name: cert.name,
+    organization1: cert.issuer, // issuer -> organization1으로 변환
+    acquisitionDate: cert.acquisitionDate,
+    displayOrder: 0 // 기본값 추가
   }));
+
+  console.log('📤 자격증 데이터 전송:', backendCerts);
 
   const result = await apiCall<Certificate[]>(`/spec/${userId}/certificates`, {
     method: 'PUT',
@@ -372,10 +488,16 @@ export const updateLinks = async (userId: number, links: Link[]): Promise<Link[]
 };
 
 export const updateLanguages = async (userId: number, languages: Language[]): Promise<Language[]> => {
-  const backendLanguages = languages.map(lang => ({
-    ...lang,
-    name: lang.language
+  const backendLanguages = languages.map((lang, index) => ({
+    name: lang.language?.trim() || "",
+    level: parseInt(lang.level) || 1, // 숫자로 변환
+    testName: lang.testName?.trim() || "",
+    score: lang.score?.trim() || "",
+    acquisitionDate: lang.acquisitionDate || null,
+    displayOrder: index
   }));
+
+  console.log('📤 어학 데이터 전송:', backendLanguages);
 
   const result = await apiCall<Language[]>(`/spec/${userId}/languages`, {
     method: 'PUT',
@@ -388,9 +510,21 @@ export const updateLanguages = async (userId: number, languages: Language[]): Pr
 };
 
 export const updateProjects = async (userId: number, projects: Project[]): Promise<Project[]> => {
+  const validatedProjects = projects.map((proj, index) => ({
+    name: proj.name?.trim() || "",
+    description: proj.description?.trim() || "",
+    startDate: proj.startDate || null,
+    endDate: proj.endDate || null,
+    technologies: proj.technologies?.trim() || "",
+    url: proj.url?.trim() || "",
+    displayOrder: index
+  }));
+
+  console.log('📤 프로젝트 데이터 전송:', validatedProjects);
+
   const result = await apiCall<Project[]>(`/spec/${userId}/projects`, {
     method: 'PUT',
-    body: JSON.stringify(projects),
+    body: JSON.stringify(validatedProjects),
   });
   if (!result.success) {
     throw new Error(result.message || '프로젝트 업데이트에 실패했습니다.');

@@ -277,12 +277,86 @@ function Section({ title, icon, children, isActive, onClick }: { title: string; 
     );
 }
 
-// 🔥 GenericForm 컴포넌트 - Select와 Textarea에 다크 모드 스타일 적용
+// 🔥 GenericForm 컴포넌트 - 필수 필드 검증 추가
 const GenericForm = ({ title, onSave, onClose, fields, initialData }: any) => {
     const [data, setData] = useState(initialData.length > 0 ? initialData : [{id: Date.now().toString()}]);
-    const updateField = (index: number, fieldName: string, value: any) => { const newData = [...data]; newData[index] = { ...newData[index], [fieldName]: value }; setData(newData); };
+    const [errors, setErrors] = useState<{[key: string]: string}>({});
+
+    const updateField = (index: number, fieldName: string, value: any) => { 
+        const newData = [...data]; 
+        newData[index] = { ...newData[index], [fieldName]: value }; 
+        setData(newData); 
+        
+        // 🔥 에러 클리어
+        if (errors[`${index}-${fieldName}`]) {
+            const newErrors = {...errors};
+            delete newErrors[`${index}-${fieldName}`];
+            setErrors(newErrors);
+        }
+    };
+
     const addItem = () => setData([...data, {id: Date.now().toString()}]);
     const removeItem = (index: number) => { if (data.length > 1) { setData(data.filter((_: any, i: number) => i !== index)); } };
+
+    // 🔥 필수 필드 검증 함수
+    const validateData = () => {
+        const newErrors: {[key: string]: string} = {};
+        let hasErrors = false;
+
+        data.forEach((item: any, index: number) => {
+            // 모든 필드가 비어있으면 해당 항목 전체를 무시
+            const hasAnyData = fields.some((field: any) => {
+                const value = item[field.name];
+                return value && value.toString().trim() !== '';
+            });
+
+            if (!hasAnyData) {
+                return; // 빈 항목은 검증하지 않음
+            }
+
+            // 필수 필드 검증
+            fields.forEach((field: any) => {
+                const value = item[field.name];
+                const isEmpty = !value || value.toString().trim() === '';
+
+                // 업무 경력, 학력, 프로젝트, 활동에서 날짜 필드는 필수
+                if (['work', 'education', 'projects', 'activities'].some(section => title.includes(section) || title === '업무 경력' || title === '학력' || title === '프로젝트' || title === '활동 & 경험')) {
+                    if ((field.name === 'startDate' || field.name === 'endDate') && isEmpty) {
+                        newErrors[`${index}-${field.name}`] = `${field.label}는 필수입니다.`;
+                        hasErrors = true;
+                    }
+                }
+
+                // 회사명, 학교명, 프로젝트명 등 주요 필드는 필수
+                if (['company', 'school', 'name', 'position', 'major'].includes(field.name) && isEmpty) {
+                    newErrors[`${index}-${field.name}`] = `${field.label}는 필수입니다.`;
+                    hasErrors = true;
+                }
+            });
+        });
+
+        setErrors(newErrors);
+        return !hasErrors;
+    };
+
+    const handleSave = () => {
+        // 🔥 빈 항목 필터링
+        const filteredData = data.filter((item: any) => {
+            return fields.some((field: any) => {
+                const value = item[field.name];
+                return value && value.toString().trim() !== '';
+            });
+        });
+
+        // 🔥 검증 수행
+        if (!validateData()) {
+            alert('필수 항목을 모두 입력해주세요.');
+            return;
+        }
+
+        onSave(filteredData);
+    };
+
     return (
         <div className="space-y-6">
             {data.map((item: any, index: number) => (
@@ -291,12 +365,18 @@ const GenericForm = ({ title, onSave, onClose, fields, initialData }: any) => {
                     {data.length > 1 && (<Button className="absolute top-2 right-2 text-red-500 hover:text-red-600" onClick={() => removeItem(index)}><Trash2 className="w-4 h-4" /></Button>)}
                     {fields.map((field: any) => (
                         <div key={field.name} className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{field.label}</label>
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                {field.label}
+                                {/* 🔥 필수 필드 표시 */}
+                                {(['company', 'school', 'name', 'position', 'major', 'startDate', 'endDate'].includes(field.name)) && (
+                                    <span className="text-red-500 ml-1">*</span>
+                                )}
+                            </label>
                             {field.type === 'select' ? (
                                 <select
                                     value={item[field.name] || ''}
                                     onChange={(e) => updateField(index, field.name, e.target.value)}
-                                    className="flex h-12 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-4 py-3 text-sm focus-visible:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
+                                    className={`flex h-12 w-full rounded-md border ${errors[`${index}-${field.name}`] ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-4 py-3 text-sm focus-visible:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50`}
                                 >
                                     <option value="" disabled>{field.placeholder || '선택하세요'}</option>
                                     {field.options.map((option: string) => (
@@ -304,16 +384,31 @@ const GenericForm = ({ title, onSave, onClose, fields, initialData }: any) => {
                                     ))}
                                 </select>
                             ) : field.name === 'description' ? (
-                                <Textarea placeholder={field.placeholder} value={item[field.name] || ''} onChange={(e) => updateField(index, field.name, e.target.value)} className="min-h-[100px] w-full resize-y !bg-white dark:!bg-gray-800 !border-gray-300 dark:!border-gray-600 !text-gray-900 dark:!text-gray-100" />
+                                <Textarea 
+                                    placeholder={field.placeholder} 
+                                    value={item[field.name] || ''} 
+                                    onChange={(e) => updateField(index, field.name, e.target.value)} 
+                                    className={`min-h-[100px] w-full resize-y !bg-white dark:!bg-gray-800 ${errors[`${index}-${field.name}`] ? '!border-red-500' : '!border-gray-300 dark:!border-gray-600'} !text-gray-900 dark:!text-gray-100`} 
+                                />
                             ) : (
-                                <Input type={field.type || 'text'} placeholder={field.placeholder} value={item[field.name] || ''} onChange={(e) => updateField(index, field.name, e.target.value)} />
+                                <Input 
+                                    type={field.type || 'text'} 
+                                    placeholder={field.placeholder} 
+                                    value={item[field.name] || ''} 
+                                    onChange={(e) => updateField(index, field.name, e.target.value)} 
+                                    className={errors[`${index}-${field.name}`] ? 'border-red-500' : ''}
+                                />
+                            )}
+                            {/* 🔥 에러 메시지 표시 */}
+                            {errors[`${index}-${field.name}`] && (
+                                <p className="text-red-500 text-xs mt-1">{errors[`${index}-${field.name}`]}</p>
                             )}
                         </div>
                     ))}
                 </div>
             ))}
             <div className="flex justify-center"><Button className="w-full text-indigo-600 border-indigo-200 hover:bg-indigo-50 px-4 py-2" onClick={addItem}><Plus className="w-4 h-4 mr-2" /> {title} 추가</Button></div>
-            <div className="flex justify-end gap-2 pt-4 border-t dark:border-gray-700"><Button className="px-4 py-2" onClick={onClose}>취소</Button><Button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2" onClick={() => onSave(data)}>저장</Button></div>
+            <div className="flex justify-end gap-2 pt-4 border-t dark:border-gray-700"><Button className="px-4 py-2" onClick={onClose}>취소</Button><Button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2" onClick={handleSave}>저장</Button></div>
         </div>
     );
 };
@@ -634,7 +729,7 @@ export default function SpecManagementView() {
         loadUserData();
     }, [userId]); // 🔥 userId 의존성 추가
 
-    // handleSave 함수를 async로 변경하고 API 호출 추가
+    // handleSave 함수를 async로 변경하고 API 호출 추가 + 검증 강화
     const handleSave = async (sectionId: string, data: any, secondaryData?: any) => {
         if (!userId) return;
 
@@ -642,6 +737,7 @@ export default function SpecManagementView() {
             let alertMessage = "정보가 성공적으로 저장되었습니다!";
             const currentUserId = parseInt(userId); // 🔥 실제 사용자 ID 사용
 
+            // 🔥 섹션별 추가 검증
             switch (sectionId) {
                 case 'profile':
                     await api.updateProfile(currentUserId, data);
@@ -674,11 +770,34 @@ export default function SpecManagementView() {
                     setCareerStats(newStats3);
                     break;
                 case 'work':
+                    // 🔥 업무 경력 추가 검증
+                    for (const item of data) {
+                        if (!item.company || !item.position || !item.startDate || !item.endDate) {
+                            alert('업무 경력은 회사명, 직책, 시작일, 종료일이 모두 필수입니다.');
+                            return;
+                        }
+                        // 날짜 형식 검증
+                        if (!item.startDate.match(/^\d{4}-\d{2}-\d{2}$/) || !item.endDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                            alert('날짜는 YYYY-MM-DD 형식으로 입력해주세요.');
+                            return;
+                        }
+                    }
                     await api.updateWorkExperiences(currentUserId, data);
                     setWorkExperiences(data);
                     setActiveSection(null);
                     break;
                 case 'education':
+                    // 🔥 학력 추가 검증
+                    for (const item of data) {
+                        if (!item.school || !item.major || !item.degree || !item.startDate || !item.endDate) {
+                            alert('학력은 학교명, 전공, 학위, 입학일, 졸업일이 모두 필수입니다.');
+                            return;
+                        }
+                        if (!item.startDate.match(/^\d{4}-\d{2}-\d{2}$/) || !item.endDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                            alert('날짜는 YYYY-MM-DD 형식으로 입력해주세요.');
+                            return;
+                        }
+                    }
                     await api.updateEducations(currentUserId, data);
                     setEducations(data);
                     setActiveSection(null);
@@ -689,6 +808,13 @@ export default function SpecManagementView() {
                     setActiveSection(null);
                     break;
                 case 'certificates':
+                    // 🔥 자격증 검증
+                    for (const item of data) {
+                        if (!item.name || !item.issuer || !item.acquisitionDate) {
+                            alert('자격증은 자격증명, 발급기관, 취득일이 모두 필수입니다.');
+                            return;
+                        }
+                    }
                     await api.updateCertificates(currentUserId, data);
                     setCertificates(data);
                     setActiveSection(null);
@@ -704,11 +830,33 @@ export default function SpecManagementView() {
                     setActiveSection(null);
                     break;
                 case 'projects':
+                    // 🔥 프로젝트 추가 검증
+                    for (const item of data) {
+                        if (!item.name || !item.startDate || !item.endDate) {
+                            alert('프로젝트는 프로젝트명, 시작일, 종료일이 모두 필수입니다.');
+                            return;
+                        }
+                        if (!item.startDate.match(/^\d{4}-\d{2}-\d{2}$/) || !item.endDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                            alert('날짜는 YYYY-MM-DD 형식으로 입력해주세요.');
+                            return;
+                        }
+                    }
                     await api.updateProjects(currentUserId, data);
                     setProjects(data);
                     setActiveSection(null);
                     break;
                 case 'activities':
+                    // 🔥 활동 추가 검증
+                    for (const item of data) {
+                        if (!item.name || !item.organization || !item.startDate || !item.endDate) {
+                            alert('활동은 활동명, 기관명, 시작일, 종료일이 모두 필수입니다.');
+                            return;
+                        }
+                        if (!item.startDate.match(/^\d{4}-\d{2}-\d{2}$/) || !item.endDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                            alert('날짜는 YYYY-MM-DD 형식으로 입력해주세요.');
+                            return;
+                        }
+                    }
                     await api.updateActivities(currentUserId, data);
                     setActivities(data);
                     setActiveSection(null);
@@ -722,6 +870,16 @@ export default function SpecManagementView() {
                             alert('병역 구분이 "군필" 또는 "복무중"인 경우, 입대일과 전역일을 모두 입력해야 합니다.');
                             return; // 함수 실행을 중단하여 저장 요청을 보내지 않음
                         }
+
+                        // 🔥 날짜가 있는 경우 형식 검증
+                        if (item.startDate && !item.startDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                            alert('입대일은 YYYY-MM-DD 형식으로 입력해주세요.');
+                            return;
+                        }
+                        if (item.endDate && !item.endDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                            alert('전역일은 YYYY-MM-DD 형식으로 입력해주세요.');
+                            return;
+                        }
                     }
                     await api.updateMilitary(currentUserId, data);
                     setMilitary(data);
@@ -730,8 +888,12 @@ export default function SpecManagementView() {
             }
             alert(alertMessage);
         } catch (error) {
-            alert('저장에 실패했습니다. 다시 시도해주세요.');
             console.error('Save failed:', error);
+            if (error instanceof Error) {
+                alert(`저장에 실패했습니다: ${error.message}`);
+            } else {
+                alert('저장에 실패했습니다. 다시 시도해주세요.');
+            }
         }
     };
 
@@ -877,7 +1039,7 @@ export default function SpecManagementView() {
             ]
         },
         { id: "skills", title: "스킬", icon: <Code className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />, data: skills },
-        { id: "certificates", title: "자격증", icon: <FileCheck className="w-5 h-5 text-amber-600 dark:text-amber-400" />, data: certificates, fields: [{name: 'name', label: '자격증명'}, {name: 'organization1', label: '발급기관'}, {name: 'acquisitionDate', label: '취득일', type: 'date'}] },
+        { id: "certificates", title: "자격증", icon: <FileCheck className="w-5 h-5 text-amber-600 dark:text-amber-400" />, data: certificates, fields: [{name: 'name', label: '자격증명'}, {name: 'issuer', label: '발급기관'}, {name: 'acquisitionDate', label: '취득일', type: 'date'}] },
         { id: "projects", title: "프로젝트", icon: <Folder className="w-5 h-5 text-pink-600 dark:text-pink-400" />, data: projects, fields: [{name: 'name', label: '프로젝트명'}, {name: 'description', label: '설명'}, {name: 'startDate', label: '시작일', type: 'date'}, {name: 'endDate', label: '종료일', type: 'date'}] },
         { id: "activities", title: "활동 & 경험", icon: <Award className="w-5 h-5 text-orange-600 dark:text-orange-400" />, data: activities, fields: [{name: 'name', label: '활동명'}, {name: 'organization', label: '기관/단체명'}, {name: 'startDate', label: '시작일', type: 'date'}, {name: 'endDate', label: '종료일', type: 'date'}]},
         { id: "links", title: "링크", icon: <LinkIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />, data: links, fields: [{name: 'title', label: '링크 제목'}, {name: 'url', label: 'URL'}] },
