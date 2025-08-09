@@ -990,40 +990,6 @@ export default function SpecManagementView() {
 
     return (
         <main className="bg-gray-50 dark:bg-gray-950 min-h-screen transition-all duration-300">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 w-full">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-                    <h1 className="flex items-center text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100">
-                        <span role="img" aria-label="document" className="mr-3">📋</span>
-                        스펙 관리
-                    </h1>
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                        <Button
-                            onClick={() => setIsTemplateSelectorOpen(true)}
-                            className="bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto"
-                        >
-                            <Palette className="w-4 h-4" />
-                            <span className="sm:inline">템플릿 선택</span>
-                        </Button>
-                        <Button
-                            onClick={() => alert('공유 기능은 현재 개발 중입니다. DB 연결 및 호스팅 후 구현될 예정입니다.')}
-                            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto"
-                        >
-                            <Share2 className="w-4 h-4" />
-                            <span className="sm:inline">공유 링크</span>
-                        </Button>
-                        <Button
-                            onClick={handleExportToPdf}
-                            disabled={isExportingPdf || jsPdfStatus !== 'ready' || html2canvasStatus !== 'ready'}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-2 disabled:bg-gray-400 px-4 py-2 w-full sm:w-auto"
-                        >
-                            <FileDown className="w-4 h-4" />
-                            <span className="hidden sm:inline">{isExportingPdf ? '내보내는 중...' : (jsPdfStatus !== 'ready' || html2canvasStatus !== 'ready' ? '준비 중...' : 'PDF로 내보내기')}</span>
-                            <span className="sm:hidden">{isExportingPdf ? '내보내는 중...' : (jsPdfStatus !== 'ready' || html2canvasStatus !== 'ready' ? '준비 중...' : 'PDF 내보내기')}</span>
-                        </Button>
-                    </div>
-                </div>
-
-        <main className="bg-gray-50 dark:bg-gray-950 min-h-screen transition-all duration-300">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 w-full">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
                     <h1 className="flex items-center text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100">
