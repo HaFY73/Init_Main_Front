@@ -171,15 +171,15 @@ export default function Home() {
                             </motion.div>
                         </div>
                         <motion.div
-                            className="relative h-[400px] md:h-[500px] hidden md:block"
+                            className="relative w-full hidden md:block"
                             style={{ y: heroImageY }}
                             initial={{ opacity: 0, x: 100 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 1, delay: 0.3 }}
                         >
                             <motion.div
-                                className="relative w-full h-full bg-black rounded-2xl shadow-2xl overflow-hidden"
-                                animate={{ scale: [1, 1.02, 1], rotate: [0, 0.5, 0] }}
+                                className="relative w-full rounded-2xl shadow-2xl overflow-hidden bg-black"
+                                animate={{ scale: [1, 1.02, 1] }}
                                 transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
                             >
                                 <video 
@@ -187,14 +187,11 @@ export default function Home() {
                                     loop 
                                     muted 
                                     playsInline
-                                    className="w-full h-full object-cover rounded-2xl"
+                                    className="w-full h-auto rounded-2xl"
                                 >
                                     <source src="/Init.mp4" type="video/mp4" />
                                     영상을 재생할 수 없습니다.
                                 </video>
-                                
-                                {/* 선택적 오버레이 */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
                             </motion.div>
                         </motion.div>
                     </div>
