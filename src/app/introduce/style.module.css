@@ -2,8 +2,8 @@
 .pageContainer {
   min-height: 100vh;
   background: #f8fafc;
-  margin-left: 0; /* 기본값을 0으로 */
-  transition: background-color 0.3s ease;
+  margin-left: 0; /* 글로벌 사이드바가 처리하므로 제거 */
+  transition: all 0.3s ease;
 }
 
 :global(.dark) .pageContainer {
@@ -71,7 +71,7 @@
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  padding-right: 150px;
+  padding-right: 0; /* 기본 패딩 제거 */
 }
 
 .mainLayout {
@@ -157,7 +157,7 @@
 .resume {
   flex: 1;
   max-width: 920px;
-  min-width: 650px;
+  min-width: 300px; /* 최소 너비를 더 작게 조정 */
   padding: 40px;
   background: white;
   border-radius: 16px;
@@ -656,6 +656,7 @@
   overflow-y: auto;
 }
 
+/* loadItem 수정 - 액션 버튼들을 위한 공간 확보 */
 .loadItem {
   display: flex;
   justify-content: space-between;
@@ -663,6 +664,7 @@
   padding: 16px 0;
   border-bottom: 1px solid #f1f5f9;
   transition: all 0.3s ease;
+  gap: 16px; /* 텍스트와 버튼 사이 간격 */
 }
 
 :global(.dark) .loadItem {
@@ -679,6 +681,52 @@
 
 :global(.dark) .loadItem:hover {
   background: #334155;
+}
+
+/* 불러오기 모달의 액션 버튼들 */
+.loadActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* 삭제 버튼 스타일 */
+.deleteBtn {
+  background: transparent;
+  color: #6b7280;
+  border: none;
+  padding: 8px 10px;
+  font-size: 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:global(.dark) .deleteBtn {
+  color: #9ca3af;
+}
+
+.deleteBtn:hover:not(:disabled) {
+  background: #f3f4f6;
+  color: #374151;
+  transform: translateY(-1px);
+  box-shadow: none;
+}
+
+:global(.dark) .deleteBtn:hover:not(:disabled) {
+  background: #374151;
+  color: #f9fafb;
+}
+
+.deleteBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  background: transparent;
 }
 
 .loadTitle {
@@ -768,18 +816,15 @@
 :global(.dark) .closeBtn:hover {
   background: #64748b;
 }
+/* 데스크톱에서 저장 패널을 위한 여백만 적용 */
 @media (min-width: 769px) {
-  .pageContainer {
-    margin-left: 280px; /* 사이드바 너비에 맞춤 */
+  .mainWrapper {
+    padding-right: 200px; /* 저장 패널을 위한 여백 */
   }
 }
 
-/* 수정 후 */
+/* 모바일 및 태블릿 반응형 */
 @media (max-width: 768px) {
-  .pageContainer {
-    margin-left: 0;
-  }
-
   .mainWrapper {
     padding-right: 0;
   }
@@ -789,8 +834,8 @@
   }
 
   .pageTitle {
-    font-size: 1.5rem;
-    flex-direction: column;
+    font-size: 1.4rem;
+    flex-direction: row;
     gap: 8px;
   }
 
@@ -823,6 +868,7 @@
     justify-content: flex-start;
     padding: 12px 16px;
     gap: 8px;
+    max-height: none;
   }
 
   .sidebarButton {
@@ -833,14 +879,27 @@
   }
 
   .resume {
-    padding: 24px;
+    padding: 24px 20px;
     max-width: 100%;
     min-width: auto;
   }
 
   .titleInput {
-    font-size: 18px;
+    font-size: 16px;
     padding: 14px 16px;
+  }
+
+  .toggleContainer {
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .toggleText {
+    font-size: 0.8rem;
+    line-height: 1.4;
   }
 
   .questionHeader {
@@ -854,112 +913,9 @@
   }
 
   .content {
-    height: 250px;
-    padding: 14px 16px;
-  }
-
-  .saveSidebar {
-    position: static;
-    margin-top: 20px;
-    width: 100%;
-    max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .modalContent {
-    padding: 24px;
-    width: 95%;
-  }
-
-  .modalContent h2 {
-    font-size: 18px;
-  }
-}
-
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-  .pageContainer {
-    margin-left: 0;
-  }
-
-  .mainWrapper {
-    padding-right: 0;
-
-  }
-
-  .pageHeaderInline {
-    padding: 20px 16px 16px 16px;
-  }
-
-  .pageTitle {
-    font-size: 1.5rem;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .titleIcon {
-    width: 1.25rem;
-    height: 1.25rem;
-  }
-
-  .pageDescription {
-    font-size: 0.875rem;
-  }
-
-  .resumePage {
-    padding: 0 16px 40px 16px;
-  }
-
-  .mainLayout {
-    flex-direction: column;
-    gap: 20px;
-    padding-top: 16px;
-  }
-
-  .sidebar {
-    width: 100%;
-    height: auto;
-    flex-direction: row;
-    position: static;
-    border-radius: 12px;
-    overflow-x: auto;
-    justify-content: flex-start;
-    padding: 12px 16px;
-    gap: 8px;
-  }
-
-  .sidebarButton {
-    width: 44px;
-    height: 44px;
+    height: 280px;
+    padding: 16px;
     font-size: 14px;
-    flex-shrink: 0;
-  }
-
-  .resume {
-    padding: 24px;
-    max-width: 100%;
-    min-width: auto;
-  }
-
-  .titleInput {
-    font-size: 18px;
-    padding: 14px 16px;
-  }
-
-  .questionHeader {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .questionTitleInput {
-    width: 100%;
-  }
-
-  .content {
-    height: 250px;
-    padding: 14px 16px;
   }
 
   .saveSidebar {
@@ -969,159 +925,20 @@
     max-width: 100%;
     margin-left: auto;
     margin-right: auto;
+    right: auto;
+    top: auto;
   }
 
   .modalContent {
     padding: 24px;
     width: 95%;
+    max-width: 400px;
   }
 
   .modalContent h2 {
     font-size: 18px;
   }
-}
 
-.exportOptions button {
-  background: none;
-  border: none;
-  padding: 12px 16px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: #475569;
-}
-
-:global(.dark) .exportOptions button {
-  color: #f1f5f9;
-}
-
-.exportOptions button:hover:not(:disabled) {
-  background: #f8fafc;
-}
-
-:global(.dark) .exportOptions button:hover:not(:disabled) {
-  background: #475569;
-}
-
-.exportOptions button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  color: #9ca3af;
-}
-
-:global(.dark) .exportOptions button:disabled {
-  color: #6b7280;
-}
-
-/* 불러오기 모달의 액션 버튼들 */
-.loadActions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.loadBtn {
-  background: #6366f1;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: 60px;
-}
-
-:global(.dark) .loadBtn {
-  background: #818cf8;
-}
-
-.loadBtn:hover:not(:disabled) {
-  background: #4f46e5;
-  transform: translateY(-1px);
-}
-
-:global(.dark) .loadBtn:hover:not(:disabled) {
-  background: #6366f1;
-}
-
-.loadBtn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-/* 삭제 버튼 스타일 */
-.deleteBtn {
-  background: transparent;  /* 배경 투명 */
-  color: #6b7280;          /* 회색 텍스트 */
-  border: none;
-  padding: 8px 10px;
-  font-size: 1.2rem;       /* × 아이콘 크기 조정 */
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-:global(.dark) .deleteBtn {
-  color: #9ca3af;          /* 다크모드에서 밝은 회색 */
-}
-
-.deleteBtn:hover:not(:disabled) {
-  background: #f3f4f6;    /* 호버시 연한 회색 배경 */
-  color: #374151;         /* 호버시 진한 회색 텍스트 */
-  transform: translateY(-1px);
-  box-shadow: none;       /* 그림자 제거 */
-}
-
-:global(.dark) .deleteBtn:hover:not(:disabled) {
-  background: #374151;    /* 다크모드 호버 배경 */
-  color: #f9fafb;         /* 다크모드 호버 텍스트 */
-}
-
-.deleteBtn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none !important;
-  background: transparent; /* 비활성화시에도 투명 배경 */
-}
-
-/* loadItem 수정 - 액션 버튼들을 위한 공간 확보 */
-.loadItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 16px 0;
-  border-bottom: 1px solid #f1f5f9;
-  transition: all 0.3s ease;
-  gap: 16px; /* 텍스트와 버튼 사이 간격 */
-}
-
-:global(.dark) .loadItem {
-  border-bottom-color: #475569;
-}
-
-.loadItem:hover {
-  background: #f8fafc;
-  padding-left: 12px;
-  padding-right: 12px;
-  border-radius: 8px;
-  border-bottom-color: transparent;
-}
-
-:global(.dark) .loadItem:hover {
-  background: #334155;
-}
-
-/* 모바일 대응 */
-@media (max-width: 768px) {
   .loadActions {
     flex-direction: column;
     gap: 6px;
@@ -1137,5 +954,21 @@
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
+  }
+}
+
+/* 중간 크기 화면 대응 */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .resume {
+    padding: 32px;
+  }
+  
+  .mainWrapper {
+    padding-right: 180px;
+  }
+  
+  .saveSidebar {
+    width: 160px;
+    right: 20px;
   }
 }
