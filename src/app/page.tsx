@@ -267,33 +267,73 @@ export default function Home() {
 
                     <div className="grid md:grid-cols-2 gap-12 items-center">
                         <motion.div
-                            className="relative h-[400px] rounded-xl overflow-hidden shadow-2xl"
+                            className="relative h-[400px] rounded-xl overflow-hidden shadow-2xl hidden md:block"
                             initial={{ opacity: 0, x: -50 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.8 }}
                             viewport={{ once: true }}
                         >
-                            <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center p-4">
-                                <div className="text-center w-full h-full flex flex-col items-center justify-center">
-                                    {activeFeature === "resume" && (
-                                        <img src="/job.png" alt="맞춤 공고" className="max-w-full max-h-full object-contain rounded-lg shadow-lg" />
-                                    )}
-                                    {activeFeature === "template" && (
-                                        <img src="/resume.png" alt="이력서 템플릿" className="max-w-full max-h-full object-contain rounded-lg shadow-lg" />
-                                    )}
-                                    {activeFeature === "dashboard" && (
-                                        <img src="/dash.png" alt="스펙 대시보드" className="max-w-full max-h-full object-contain rounded-lg shadow-lg" />
-                                    )}
-                                    {activeFeature === "community" && (
-                                        <img src="/community.png" alt="커뮤니티" className="max-w-full max-h-full object-contain rounded-lg shadow-lg" />
-                                    )}
-                                    {!activeFeature && (
-                                        <div className="text-blue-800">
+                            <div className="w-full h-full bg-black rounded-xl overflow-hidden">
+                                {activeFeature === "resume" && (
+                                    <video 
+                                        autoPlay 
+                                        loop 
+                                        muted 
+                                        playsInline
+                                        className="w-full h-full object-cover"
+                                        key="resume-video"
+                                    >
+                                        <source src="/resume.mp4" type="video/mp4" />
+                                        영상을 재생할 수 없습니다.
+                                    </video>
+                                )}
+                                {activeFeature === "dashboard" && (
+                                    <video 
+                                        autoPlay 
+                                        loop 
+                                        muted 
+                                        playsInline
+                                        className="w-full h-full object-cover"
+                                        key="dashboard-video"
+                                    >
+                                        <source src="/dashboard.mp4" type="video/mp4" />
+                                        영상을 재생할 수 없습니다.
+                                    </video>
+                                )}
+                                {activeFeature === "template" && (
+                                    <video 
+                                        autoPlay 
+                                        loop 
+                                        muted 
+                                        playsInline
+                                        className="w-full h-full object-cover"
+                                        key="template-video"
+                                    >
+                                        <source src="/template.mp4" type="video/mp4" />
+                                        영상을 재생할 수 없습니다.
+                                    </video>
+                                )}
+                                {activeFeature === "community" && (
+                                    <video 
+                                        autoPlay 
+                                        loop 
+                                        muted 
+                                        playsInline
+                                        className="w-full h-full object-cover"
+                                        key="community-video"
+                                    >
+                                        <source src="/community.mp4" type="video/mp4" />
+                                        영상을 재생할 수 없습니다.
+                                    </video>
+                                )}
+                                {!activeFeature && (
+                                    <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                                        <div className="text-center text-blue-800">
                                             <FileText className="h-20 w-20 mx-auto mb-4" />
                                             <p className="text-lg font-medium">Init 기능</p>
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
+                                )}
                             </div>
                         </motion.div>
 
@@ -322,29 +362,29 @@ export default function Home() {
 
                             <div
                                 className="flex gap-4 cursor-pointer"
-                                onMouseEnter={() => setActiveFeature("template")}
+                                onMouseEnter={() => setActiveFeature("dashboard")}
                                 onMouseLeave={() => setActiveFeature(null)}
                             >
                                 <div className="flex-shrink-0 h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center">
                                     <Briefcase className="h-6 w-6 text-purple-600" />
                                 </div>
                                 <div>
-                                    <h4 className="text-xl font-semibold text-slate-800 mb-2">자소서 템플릿</h4>
-                                    <p className="text-slate-600">자주 사용하는 자기소개서 항목을 템플릿으로 저장하고 재사용하세요.</p>
+                                    <h4 className="text-xl font-semibold text-slate-800 mb-2">스펙 대시보드</h4>
+                                    <p className="text-slate-600">나의 스펙과 이력서 현황을 한눈에 보고 부족한 부분을 파악할 수 있습니다.</p>
                                 </div>
                             </div>
 
                             <div
                                 className="flex gap-4 cursor-pointer"
-                                onMouseEnter={() => setActiveFeature("dashboard")}
+                                onMouseEnter={() => setActiveFeature("template")}
                                 onMouseLeave={() => setActiveFeature(null)}
                             >
                                 <div className="flex-shrink-0 h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
                                     <Award className="h-6 w-6 text-green-600" />
                                 </div>
                                 <div>
-                                    <h4 className="text-xl font-semibold text-slate-800 mb-2">스펙 대시보드</h4>
-                                    <p className="text-slate-600">나의 스펙과 이력서 현황을 한눈에 보고 부족한 부분을 파악할 수 있습니다.</p>
+                                    <h4 className="text-xl font-semibold text-slate-800 mb-2">자소서 템플릿</h4>
+                                    <p className="text-slate-600">자주 사용하는 자기소개서 항목을 템플릿으로 저장하고 재사용하세요.</p>
                                 </div>
                             </div>
 
