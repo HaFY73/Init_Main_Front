@@ -683,27 +683,55 @@ export default function SpecManagementView() {
     // 데이터 로딩 useEffect 수정 - 실제 사용자 ID 사용
     useEffect(() => {
         const loadUserData = async () => {
-            if (!userId) return;
+            if (!userId) {
+                console.log('⏳ userId 없음, 로딩 대기');
+                return;
+            }
 
             try {
                 setIsLoading(true);
+                setError(null);
+                
+                console.log('📥 사용자 데이터 로딩 시작:', userId);
+                
                 const userData = await api.fetchUserSpec(parseInt(userId)); // 🔥 실제 사용자 ID 사용
 
-                // 받아온 데이터로 상태 업데이트
-                setProfile(userData.profile || { name: "", email: "", phone: "", location: "", careerLevel: "", jobTitle: "", introduction: "" });
-                setCareerStats(userData.careerStats || { experience: "", workRecords: "", careerGoal: "" });
-                setSkills(userData.skills || []);
-                setWorkExperiences(userData.workExperiences || []);
-                setEducations(userData.educations || []);
-                setCertificates(userData.certificates || []);
-                setLinks(userData.links || []);
-                setLanguages(userData.languages || []);
-                setProjects(userData.projects || []);
-                setActivities(userData.activities || []);
-                setMilitary(userData.military || []);
+                console.log('✅ 데이터 로딩 성공:', userData);
+
+                // 받아온 데이터로 상태 업데이트 (null 체크 강화)
+                setProfile(userData.profile || { 
+                    name: "", email: "", phone: "", location: "", 
+                    careerLevel: "", jobTitle: "", introduction: "" 
+                });
+                setCareerStats(userData.careerStats || { 
+                    experience: "", workRecords: "", careerGoal: "" 
+                });
+                setSkills(Array.isArray(userData.skills) ? userData.skills : []);
+                setWorkExperiences(Array.isArray(userData.workExperiences) ? userData.workExperiences : []);
+                setEducations(Array.isArray(userData.educations) ? userData.educations : []);
+                setCertificates(Array.isArray(userData.certificates) ? userData.certificates : []);
+                setLinks(Array.isArray(userData.links) ? userData.links : []);
+                setLanguages(Array.isArray(userData.languages) ? userData.languages : []);
+                setProjects(Array.isArray(userData.projects) ? userData.projects : []);
+                setActivities(Array.isArray(userData.activities) ? userData.activities : []);
+                setMilitary(Array.isArray(userData.military) ? userData.military : []);
+                
             } catch (err) {
-                setError('데이터를 불러오는데 실패했습니다.');
-                console.error('Failed to load user data:', err);
+                console.error('❌ 데이터 로딩 실패:', err);
+                setError(err instanceof Error ? err.message : '데이터를 불러오는데 실패했습니다.');
+                
+                // 🔥 에러가 발생해도 기본값으로 초기화하여 페이지 사용 가능하게 함
+                setProfile({ name: "", email: "", phone: "", location: "", careerLevel: "", jobTitle: "", introduction: "" });
+                setCareerStats({ experience: "", workRecords: "", careerGoal: "" });
+                setSkills([]);
+                setWorkExperiences([]);
+                setEducations([]);
+                setCertificates([]);
+                setLinks([]);
+                setLanguages([]);
+                setProjects([]);
+                setActivities([]);
+                setMilitary([]);
             } finally {
                 setIsLoading(false);
             }

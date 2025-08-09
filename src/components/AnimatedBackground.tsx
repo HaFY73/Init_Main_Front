@@ -29,11 +29,11 @@ export default function AnimatedBackground() {
                     }}
                 >
                     {i % 3 === 0 && (
-                        <div className="w-4 h-4 bg-gradient-to-br from-[#356ae4]/30 to-purple-500/30 rounded-full" />
+                        <div className="w-4 h-4 bg-gradient-to-br from-[#6366f1]/30 to-purple-500/30 rounded-full" />
                     )}
                     {i % 3 === 1 && <div className="w-6 h-6 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rotate-45" />}
                     {i % 3 === 2 && (
-                        <div className="w-3 h-8 bg-gradient-to-b from-[#356ae4]/25 to-indigo-500/25 rounded-full" />
+                        <div className="w-3 h-8 bg-gradient-to-b from-[#6366f1]/25 to-indigo-500/25 rounded-full" />
                     )}
                 </motion.div>
             ))}

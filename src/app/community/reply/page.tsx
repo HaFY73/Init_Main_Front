@@ -569,7 +569,7 @@ export default function ReplyPage() {
                                         placeholder="게시글, 댓글, 해시태그, 작성자 검색..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="pl-10 pr-4 py-2 w-full border-gray-300 focus:border-[#356ae4] focus:ring-[#356ae4]"
+                                        className="pl-10 pr-4 py-2 w-full border-gray-300 focus:border-[#6366f1] focus:ring-[#8b5cf6]"
                                     />
                                 </div>
 

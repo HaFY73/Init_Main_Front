@@ -227,12 +227,28 @@ const apiCall = async <T>(endpoint: string, options: RequestInit = {}): Promise<
       url: response.url
     });
 
-    let responseBody;
-    try {
-      responseBody = await response.json() as SpecApiResponse<T>;
-    } catch (parseError) {
-      console.error('❌ JSON 파싱 실패:', parseError);
-      throw new Error('서버 응답을 파싱할 수 없습니다.');
+    // 🔥 빈 응답 처리
+    if (response.status === 204 || response.headers.get('content-length') === '0') {
+      return { success: true, data: {} as T };
+    }
+
+    // 🔥 텍스트로 먼저 받아서 JSON 파싱 시도
+    const responseText = await response.text();
+    console.log('📝 응답 텍스트 길이:', responseText.length);
+
+    let responseBody: SpecApiResponse<T>;
+    
+    if (responseText.trim()) {
+      try {
+        responseBody = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('❌ JSON 파싱 실패:', parseError);
+        console.error('응답 내용:', responseText.substring(0, 200));
+        throw new Error(`서버 응답을 파싱할 수 없습니다: ${responseText.substring(0, 100)}`);
+      }
+    } else {
+      console.warn('⚠️ 빈 응답 받음');
+      responseBody = { success: true, data: {} as T };
     }
 
     if (!response.ok) {
@@ -244,6 +260,7 @@ const apiCall = async <T>(endpoint: string, options: RequestInit = {}): Promise<
       });
 
       if (response.status === 401) {
+        console.log('🔄 토큰 만료, 로그아웃 처리');
         if (typeof window !== 'undefined') {
           localStorage.clear();
           window.location.href = '/login';
@@ -329,11 +346,38 @@ const transformBackendData = (backendData: BackendSpecData): UserSpecData => {
 // =============================================================================
 
 export const fetchUserSpec = async (userId: number): Promise<UserSpecData> => {
-  const result = await apiCall<BackendSpecData>(`/spec/${userId}`);
-  if (!result.success) {
-    throw new Error(result.message || '스펙 데이터를 불러오는데 실패했습니다.');
+  try {
+    console.log('📥 스펙 데이터 요청:', userId);
+    const result = await apiCall<BackendSpecData>(`/spec/${userId}`);
+    if (!result.success) {
+      throw new Error(result.message || '스펙 데이터를 불러오는데 실패했습니다.');
+    }
+    console.log('✅ 스펙 데이터 로딩 성공:', result.data);
+    return transformBackendData(result.data);
+  } catch (error) {
+    console.error('❌ 스펙 데이터 로딩 실패:', error);
+    
+    // 🔥 API 실패 시 기본값 반환하여 페이지가 동작하도록 함
+    console.log('🔄 기본 데이터로 fallback');
+    return {
+      profile: { 
+        name: "", email: "", phone: "", location: "", 
+        careerLevel: "", jobTitle: "", introduction: "" 
+      },
+      careerStats: { 
+        experience: "", workRecords: "", careerGoal: "" 
+      },
+      skills: [],
+      workExperiences: [],
+      educations: [],
+      certificates: [],
+      links: [],
+      languages: [],
+      projects: [],
+      activities: [],
+      military: []
+    };
   }
-  return transformBackendData(result.data);
 };
 
 export const updateProfile = async (userId: number, profileData: ProfileData): Promise<ProfileData> => {

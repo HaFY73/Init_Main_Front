@@ -177,50 +177,25 @@ export default function Home() {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 1, delay: 0.3 }}
                         >
-                            <div className="relative w-full h-full">
-                                <motion.div
-                                    className="absolute inset-0 bg-white/80 rounded-2xl shadow-2xl transform"
-                                    animate={{ rotateY: [0, 5, 0, -5, 0], rotateX: [0, -5, 0, 5, 0] }}
-                                    transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+                            <motion.div
+                                className="relative w-full h-full bg-black rounded-2xl shadow-2xl overflow-hidden"
+                                animate={{ scale: [1, 1.02, 1], rotate: [0, 0.5, 0] }}
+                                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                            >
+                                <video 
+                                    autoPlay 
+                                    loop 
+                                    muted 
+                                    playsInline
+                                    className="w-full h-full object-cover rounded-2xl"
                                 >
-                                    <div className="p-6 h-full flex flex-col">
-                                        <div className="flex items-center gap-2 mb-4">
-                                            <div className="w-3 h-3 rounded-full bg-red-400" />
-                                            <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                                            <div className="w-3 h-3 rounded-full bg-green-400" />
-                                        </div>
-                                        <div className="flex-1 flex flex-col gap-4">
-                                            <div className="h-6 bg-slate-200 rounded-md w-3/4" />
-                                            <div className="h-3 bg-slate-200 rounded-md w-full" />
-                                            <div className="h-3 bg-slate-200 rounded-md w-5/6" />
-                                            <div className="h-3 bg-slate-200 rounded-md w-4/6" />
-                                            <div className="h-16 bg-slate-200 rounded-md w-full mt-4" />
-                                            <div className="h-16 bg-slate-200 rounded-md w-full" />
-                                        </div>
-                                    </div>
-                                </motion.div>
-                                <motion.div
-                                    className="absolute inset-0 bg-white/80 rounded-2xl shadow-2xl transform translate-x-6 translate-y-6"
-                                    animate={{ rotateY: [0, -5, 0, 5, 0], rotateX: [0, 5, 0, -5, 0] }}
-                                    transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                                >
-                                    <div className="p-6 h-full flex flex-col">
-                                        <div className="flex items-center gap-2 mb-4">
-                                            <div className="w-3 h-3 rounded-full bg-red-400" />
-                                            <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                                            <div className="w-3 h-3 rounded-full bg-green-400" />
-                                        </div>
-                                        <div className="flex-1 flex flex-col gap-4">
-                                            <div className="h-6 bg-slate-200 rounded-md w-2/3" />
-                                            <div className="h-3 bg-slate-200 rounded-md w-full" />
-                                            <div className="h-3 bg-slate-200 rounded-md w-4/5" />
-                                            <div className="h-3 bg-slate-200 rounded-md w-3/4" />
-                                            <div className="h-16 bg-slate-200 rounded-md w-full mt-4" />
-                                            <div className="h-16 bg-slate-200 rounded-md w-full" />
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            </div>
+                                    <source src="/Init.mp4" type="video/mp4" />
+                                    영상을 재생할 수 없습니다.
+                                </video>
+                                
+                                {/* 선택적 오버레이 */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+                            </motion.div>
                         </motion.div>
                     </div>
                 </div>

@@ -126,7 +126,7 @@ export default function EnhancedSignupModal({ isOpen, onClose }: EnhancedSignupM
                         >
                             {/* 헤더 */}
                             <div className="relative text-center p-6 border-b border-slate-200 bg-white/95 backdrop-blur-sm sticky top-0 z-10">
-                                <h2 className="text-2xl font-bold text-[#356ae4] mb-1">Init 시작하기</h2>
+                                <h2 className="text-2xl font-bold text-[#6366f1] mb-1">Init 시작하기</h2>
                                 <p className="text-sm text-slate-600">몇 분만 투자하여 더 나은 취업 준비를 시작하세요</p>
 
                                 <button
@@ -153,7 +153,7 @@ export default function EnhancedSignupModal({ isOpen, onClose }: EnhancedSignupM
                                                 value={formData.name}
                                                 onChange={handleInputChange}
                                                 placeholder="이름"
-                                                className="w-full pl-10 pr-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#356ae4] focus:border-[#356ae4] bg-white/50 text-sm"
+                                                className="w-full pl-10 pr-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366f1] focus:border-[#8b5cf6] bg-white/50 text-sm"
                                                 required
                                             />
                                         </div>
@@ -169,7 +169,7 @@ export default function EnhancedSignupModal({ isOpen, onClose }: EnhancedSignupM
                                                 value={formData.id}
                                                 onChange={handleInputChange}
                                                 placeholder="영문, 숫자 조합 4-12자"
-                                                className="flex-1 px-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#356ae4] focus:border-[#356ae4] bg-white/50 text-sm"
+                                                className="flex-1 px-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366f1] focus:border-[#8b5cf6] bg-white/50 text-sm"
                                                 required
                                             />
                                             <button
@@ -194,7 +194,7 @@ export default function EnhancedSignupModal({ isOpen, onClose }: EnhancedSignupM
                                                 value={formData.email}
                                                 onChange={handleInputChange}
                                                 placeholder="example@email.com"
-                                                className="w-full pl-10 pr-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#356ae4] focus:border-[#356ae4] bg-white/50 text-sm"
+                                                className="w-full pl-10 pr-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366f1] focus:border-[#8b5cf6] bg-white/50 text-sm"
                                                 required
                                             />
                                         </div>
@@ -219,7 +219,7 @@ export default function EnhancedSignupModal({ isOpen, onClose }: EnhancedSignupM
                                                 value={formData.password}
                                                 onChange={handleInputChange}
                                                 placeholder="8자 이상, 영문+숫자+특수문자"
-                                                className="w-full pl-10 pr-10 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#356ae4] focus:border-[#356ae4] bg-white/50 text-sm"
+                                                className="w-full pl-10 pr-10 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366f1] focus:border-[#8b5cf6] bg-white/50 text-sm"
                                                 required
                                             />
                                             <button
@@ -274,7 +274,7 @@ export default function EnhancedSignupModal({ isOpen, onClose }: EnhancedSignupM
                                                 value={formData.confirmPassword}
                                                 onChange={handleInputChange}
                                                 placeholder="비밀번호를 다시 입력하세요"
-                                                className="w-full pl-10 pr-10 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#356ae4] focus:border-[#356ae4] bg-white/50 text-sm"
+                                                className="w-full pl-10 pr-10 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366f1] focus:border-[#8b5cf6] bg-white/50 text-sm"
                                                 required
                                             />
                                             <button
@@ -318,7 +318,7 @@ export default function EnhancedSignupModal({ isOpen, onClose }: EnhancedSignupM
                                                     value={formData.phone}
                                                     onChange={handleInputChange}
                                                     placeholder="010-1234-5678"
-                                                    className="w-full pl-10 pr-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#356ae4] focus:border-[#356ae4] bg-white/50 text-sm"
+                                                    className="w-full pl-10 pr-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6366f1] focus:border-[#8b5cf6] bg-white/50 text-sm"
                                                 />
                                             </div>
                                         </div>
@@ -334,7 +334,7 @@ export default function EnhancedSignupModal({ isOpen, onClose }: EnhancedSignupM
                                                     key={index}
                                                     className={`flex items-center p-2 rounded-lg cursor-pointer transition-colors ${
                                                         formData.interests.includes(interest)
-                                                            ? "bg-[#356ae4]/10 border border-[#356ae4]/30"
+                                                            ? "bg-[#6366f1]/10 border border-[#6366f1]/30"
                                                             : "hover:bg-slate-50 border border-slate-200"
                                                     }`}
                                                 >
@@ -342,7 +342,7 @@ export default function EnhancedSignupModal({ isOpen, onClose }: EnhancedSignupM
                                                         type="checkbox"
                                                         checked={formData.interests.includes(interest)}
                                                         onChange={() => handleInterestChange(interest)}
-                                                        className="mr-2 h-3 w-3 text-[#356ae4] focus:ring-[#356ae4] rounded"
+                                                        className="mr-2 h-3 w-3 text-[#6366f1] focus:ring-[#8b5cf6] rounded"
                                                     />
                                                     <span className="text-slate-700 text-xs">{interest}</span>
                                                 </label>
@@ -357,7 +357,7 @@ export default function EnhancedSignupModal({ isOpen, onClose }: EnhancedSignupM
                                             <label className="flex items-center text-sm">
                                                 <input
                                                     type="checkbox"
-                                                    className="mr-2 h-4 w-4 text-[#356ae4] focus:ring-[#356ae4] rounded"
+                                                    className="mr-2 h-4 w-4 text-[#6366f1] focus:ring-[#8b5cf6] rounded"
                                                     required
                                                 />
                                                 <span className="text-slate-700">
@@ -367,7 +367,7 @@ export default function EnhancedSignupModal({ isOpen, onClose }: EnhancedSignupM
                                             <label className="flex items-center text-sm">
                                                 <input
                                                     type="checkbox"
-                                                    className="mr-2 h-4 w-4 text-[#356ae4] focus:ring-[#356ae4] rounded"
+                                                    className="mr-2 h-4 w-4 text-[#6366f1] focus:ring-[#8b5cf6] rounded"
                                                     required
                                                 />
                                                 <span className="text-slate-700">
@@ -375,7 +375,7 @@ export default function EnhancedSignupModal({ isOpen, onClose }: EnhancedSignupM
                         </span>
                                             </label>
                                             <label className="flex items-center text-sm">
-                                                <input type="checkbox" className="mr-2 h-4 w-4 text-[#356ae4] focus:ring-[#356ae4] rounded" />
+                                                <input type="checkbox" className="mr-2 h-4 w-4 text-[#6366f1] focus:ring-[#8b5cf6] rounded" />
                                                 <span className="text-slate-700">마케팅 정보 수신에 동의합니다 (선택)</span>
                                             </label>
                                         </div>
@@ -386,7 +386,7 @@ export default function EnhancedSignupModal({ isOpen, onClose }: EnhancedSignupM
                                         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                                             <button
                                                 type="submit"
-                                                className="w-full bg-[#356ae4] hover:bg-[#2857c8] text-white px-4 py-4 rounded-lg transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed text-base text-center"
+                                                className="w-full bg-[#6366f1] hover:bg-[#8b5cf6] text-white px-4 py-4 rounded-lg transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed text-base text-center"
                                                 disabled={!isFormValid}
                                             >
                                                 Init 시작하기
@@ -401,7 +401,7 @@ export default function EnhancedSignupModal({ isOpen, onClose }: EnhancedSignupM
                                                     // 실제 라우팅 로직으로 교체 필요
                                                     console.log("Navigate to login")
                                                 }}
-                                                className="text-[#356ae4] hover:text-[#2857c8] font-medium"
+                                                className="text-[#6366f1] hover:text-[#8b5cf6] font-medium"
                                             >
                                                 로그인하기
                                             </button>
