@@ -887,7 +887,7 @@ export default function SpecManagementView() {
     // 인증되지 않음
     if (!isAuthenticated || !userId) {
         return (
-            <main className="ml-0 md:ml-64 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
+            <main className="bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
                 <div className="max-w-5xl mx-auto space-y-8 w-full">
                     <div className="flex items-center justify-center h-64">
                         <div className="text-center">
@@ -902,7 +902,7 @@ export default function SpecManagementView() {
     // 로딩 상태 처리
     if (isLoading) {
         return (
-            <main className="ml-0 md:ml-64 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
+            <main className="bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
                 <div className="max-w-5xl mx-auto space-y-8 w-full">
                     <div className="flex items-center justify-center h-64">
                         <div className="text-center">
@@ -918,7 +918,7 @@ export default function SpecManagementView() {
     // 에러 상태 처리
     if (error) {
         return (
-            <main className="ml-0 md:ml-64 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
+            <main className="bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
                 <div className="max-w-5xl mx-auto space-y-8 w-full">
                     <div className="flex items-center justify-center h-64">
                         <div className="text-center">
@@ -989,7 +989,7 @@ export default function SpecManagementView() {
     const allDataForPdf = { profile, skills, workExperiences, educations, certificates, links, projects, activities };
 
     return (
-        <main className="ml-0 md:ml-64 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
+        <main className="bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
             <div className="max-w-5xl mx-auto space-y-8 w-full">
                 <div className="flex items-center justify-between">
                     <h1 className="flex items-center text-3xl font-bold text-gray-800 dark:text-gray-100">
