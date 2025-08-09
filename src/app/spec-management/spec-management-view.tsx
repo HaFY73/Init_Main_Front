@@ -990,35 +990,34 @@ export default function SpecManagementView() {
 
     return (
         <main className="ml-0 md:ml-64 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
-            <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8 w-full">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <h1 className="flex items-center text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100">
+            <div className="max-w-none lg:max-w-7xl mx-auto space-y-8 w-full">
+                <div className="flex items-center justify-between">
+                    <h1 className="flex items-center text-3xl font-bold text-gray-800 dark:text-gray-100">
                         <span role="img" aria-label="document" className="mr-3">📋</span>
                         스펙 관리
                     </h1>
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <div className="flex items-center gap-2">
                         <Button
                             onClick={() => setIsTemplateSelectorOpen(true)}
-                            className="bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm"
+                            className="bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-2 px-4 py-2"
                         >
                             <Palette className="w-4 h-4" />
-                            <span className="sm:inline">템플릿 선택</span>
+                            템플릿 선택
                         </Button>
                         <Button
                             onClick={() => alert('공유 기능은 현재 개발 중입니다. DB 연결 및 호스팅 후 구현될 예정입니다.')}
-                            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm"
+                            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 px-4 py-2"
                         >
                             <Share2 className="w-4 h-4" />
-                            <span className="sm:inline">공유 링크</span>
+                            공유 링크 만들기
                         </Button>
                         <Button
                             onClick={handleExportToPdf}
                             disabled={isExportingPdf || jsPdfStatus !== 'ready' || html2canvasStatus !== 'ready'}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-2 disabled:bg-gray-400 px-4 py-2 w-full sm:w-auto text-sm"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-2 disabled:bg-gray-400 px-4 py-2"
                         >
                             <FileDown className="w-4 h-4" />
-                            <span className="hidden sm:inline">{isExportingPdf ? '내보내는 중...' : (jsPdfStatus !== 'ready' || html2canvasStatus !== 'ready' ? '준비 중...' : 'PDF로 내보내기')}</span>
-                            <span className="sm:hidden">{isExportingPdf ? '내보내는 중...' : (jsPdfStatus !== 'ready' || html2canvasStatus !== 'ready' ? '준비 중...' : 'PDF 내보내기')}</span>
+                            {isExportingPdf ? '내보내는 중...' : (jsPdfStatus !== 'ready' || html2canvasStatus !== 'ready' ? '준비 중...' : 'PDF로 내보내기')}
                         </Button>
                     </div>
                 </div>
@@ -1026,7 +1025,7 @@ export default function SpecManagementView() {
                 <ProfileCard profile={profile} skills={skills} onEditProfile={() => setIsProfileEditOpen(true)} />
                 <IntroductionCard introduction={profile.introduction} onSave={(intro) => handleSave('introduction', intro)} />
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <StatCard title="총 경력" value={careerStats.experience || "경력 입력"} icon={<Briefcase className="w-5 h-5 text-indigo-600" />} onSave={(val) => handleSave('stats_experience', val)} />
                     <StatCard title="총 업무기록" value={careerStats.workRecords || "업무기록 입력"} icon={<FileCheck className="w-5 h-5 text-purple-600" />} onSave={(val) => handleSave('stats_workRecords', val)} />
                     <StatCard title="내 커리어 목표" value={careerStats.careerGoal || "목표 입력"} icon={<Target className="w-5 h-5 text-emerald-600" />} onSave={(val) => handleSave('stats_careerGoal', val)} />
