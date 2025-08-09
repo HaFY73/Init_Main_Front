@@ -989,9 +989,9 @@ export default function SpecManagementView() {
     const allDataForPdf = { profile, skills, workExperiences, educations, certificates, links, projects, activities };
 
     return (
-        <main className="bg-gray-50 dark:bg-gray-950 min-h-screen transition-all duration-300">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 w-full">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+        <main className="ml-0 md:ml-64 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
+            <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8 w-full">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <h1 className="flex items-center text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100">
                         <span role="img" aria-label="document" className="mr-3">📋</span>
                         스펙 관리
@@ -1023,24 +1023,22 @@ export default function SpecManagementView() {
                     </div>
                 </div>
 
-                <div className="space-y-6 sm:space-y-8">
-                    <ProfileCard profile={profile} skills={skills} onEditProfile={() => setIsProfileEditOpen(true)} />
-                    <IntroductionCard introduction={profile.introduction} onSave={(intro) => handleSave('introduction', intro)} />
+                <ProfileCard profile={profile} skills={skills} onEditProfile={() => setIsProfileEditOpen(true)} />
+                <IntroductionCard introduction={profile.introduction} onSave={(intro) => handleSave('introduction', intro)} />
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-                        <StatCard title="총 경력" value={careerStats.experience || "경력 입력"} icon={<Briefcase className="w-5 h-5 text-indigo-600" />} onSave={(val) => handleSave('stats_experience', val)} />
-                        <StatCard title="총 업무기록" value={careerStats.workRecords || "업무기록 입력"} icon={<FileCheck className="w-5 h-5 text-purple-600" />} onSave={(val) => handleSave('stats_workRecords', val)} />
-                        <StatCard title="내 커리어 목표" value={careerStats.careerGoal || "목표 입력"} icon={<Target className="w-5 h-5 text-emerald-600" />} onSave={(val) => handleSave('stats_careerGoal', val)} />
-                    </div>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                    <StatCard title="총 경력" value={careerStats.experience || "경력 입력"} icon={<Briefcase className="w-5 h-5 text-indigo-600" />} onSave={(val) => handleSave('stats_experience', val)} />
+                    <StatCard title="총 업무기록" value={careerStats.workRecords || "업무기록 입력"} icon={<FileCheck className="w-5 h-5 text-purple-600" />} onSave={(val) => handleSave('stats_workRecords', val)} />
+                    <StatCard title="내 커리어 목표" value={careerStats.careerGoal || "목표 입력"} icon={<Target className="w-5 h-5 text-emerald-600" />} onSave={(val) => handleSave('stats_careerGoal', val)} />
+                </div>
 
-                    <div className="space-y-4">
-                        {sections.map((section) => (
-                            <Section key={section.id} title={section.title} icon={section.icon} isActive={activeSection === section.id} onClick={() => setActiveSection(activeSection === section.id ? null : section.id)}>
-                                {section.id === "skills" ? (<SkillsForm initialSkills={skills} onSave={(data) => handleSave("skills", data)} onClose={() => setActiveSection(null)} />)
-                                    : (<GenericForm title={section.title} onSave={(data: any) => handleSave(section.id, data)} onClose={() => setActiveSection(null)} fields={section.fields} initialData={section.data} />)}
-                            </Section>
-                        ))}
-                    </div>
+                <div className="space-y-4">
+                    {sections.map((section) => (
+                        <Section key={section.id} title={section.title} icon={section.icon} isActive={activeSection === section.id} onClick={() => setActiveSection(activeSection === section.id ? null : section.id)}>
+                            {section.id === "skills" ? (<SkillsForm initialSkills={skills} onSave={(data) => handleSave("skills", data)} onClose={() => setActiveSection(null)} />)
+                                : (<GenericForm title={section.title} onSave={(data: any) => handleSave(section.id, data)} onClose={() => setActiveSection(null)} fields={section.fields} initialData={section.data} />)}
+                        </Section>
+                    ))}
                 </div>
 
                 <ProfileEditPanel isOpen={isProfileEditOpen} onClose={() => setIsProfileEditOpen(false)} profileData={profile} initialSkills={skills} onSave={(profileData, skillsData) => handleSave('profile', profileData, skillsData)} />
