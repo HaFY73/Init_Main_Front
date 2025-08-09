@@ -67,8 +67,20 @@ export default function IntroducePage() {
 
     const handleToggleChange = useCallback((checked: boolean) => {
         if (!checked && questions.length > 1) {
-            // 토글을 끄려고 할 때는 그냥 끄기 (다중 문항 모드)
+            // 토글을 끄려고 할 때는 그냥 끄기 (다중 문항 모드 - 1000자)
             setShowQuestionHeaders(false);
+            
+            // 각 문항의 내용이 1000자를 초과하는지 확인하고 잘라내기
+            const hasOverflow = questions.some(q => q.content.length > 1000);
+            setQuestions(prev => prev.map(q => ({
+                ...q,
+                content: q.content.length > 1000 ? q.content.substring(0, 1000) : q.content
+            })));
+            
+            // 글자수가 잘렸다면 사용자에게 알림
+            if (hasOverflow) {
+                alert('다중 문항 모드로 변경되면서 1,000자를 초과하는 내용이 자동으로 잘렸습니다.');
+            }
         } else if (checked && questions.length > 1) {
             // 토글을 켜려고 할 때 (단일 문항으로 변경) 경고
             const confirmed = window.confirm(
@@ -76,12 +88,46 @@ export default function IntroducePage() {
             );
 
             if (confirmed) {
-                setQuestions([questions[0]]);
+                // 첫 번째 문항의 내용이 2000자를 초과하는지 확인
+                const firstQuestion = questions[0];
+                const wasOverflow = firstQuestion.content.length > 2000;
+                const truncatedContent = firstQuestion.content.length > 2000 
+                    ? firstQuestion.content.substring(0, 2000) 
+                    : firstQuestion.content;
+                
+                setQuestions([{
+                    ...firstQuestion,
+                    content: truncatedContent
+                }]);
                 setShowQuestionHeaders(true);
+                
+                // 글자수가 잘렸다면 사용자에게 알림
+                if (wasOverflow) {
+                    alert('단일 문항 모드로 변경되면서 2,000자를 초과하는 내용이 자동으로 잘렸습니다.');
+                }
             }
             // confirmed가 false면 토글 상태 변경 안됨 (현재 상태 유지)
         } else {
-            setShowQuestionHeaders(checked);
+            // 단일 문항에서 토글 변경
+            if (checked) {
+                // 단일 문항 모드 (2000자)
+                setShowQuestionHeaders(true);
+            } else {
+                // 다중 문항 모드 (1000자)
+                setShowQuestionHeaders(false);
+                
+                // 내용이 1000자를 초과하면 잘라내기
+                const wasOverflow = questions.some(q => q.content.length > 1000);
+                setQuestions(prev => prev.map(q => ({
+                    ...q,
+                    content: q.content.length > 1000 ? q.content.substring(0, 1000) : q.content
+                })));
+                
+                // 글자수가 잘렸다면 사용자에게 알림
+                if (wasOverflow) {
+                    alert('다중 문항 모드로 변경되면서 1,000자를 초과하는 내용이 자동으로 잘렸습니다.');
+                }
+            }
         }
     }, [questions]);
 
@@ -171,8 +217,8 @@ export default function IntroducePage() {
                                             />
                                             <span className={styles.toggleSlider}></span>
                                         </label>
-                                        <span className={styles.toggleText} title="OFF: 문항별 제목 작성 가능 / ON: 단일 질문 내용만 작성">
-                          ⓘ  "OFF: 문항별 제목 작성 가능 / ON: 단일 질문 내용만 작성"
+                                        <span className={styles.toggleText} title="OFF: 문항별 제목 작성 가능 (1,000자) / ON: 단일 질문 내용만 작성 (2,000자)">
+                          ⓘ  "OFF: 문항별 제목 작성 가능 (1,000자) / ON: 단일 질문 내용만 작성 (2,000자)"
                         </span>
                                     </div>
 
