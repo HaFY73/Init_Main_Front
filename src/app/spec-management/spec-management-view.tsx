@@ -60,6 +60,22 @@ const useScript = (url: string) => {
     return status;
 };
 
+// 🔥 DateInput 컴포넌트 추가
+const DateInput = ({ value, onChange, ...props }: {
+    value: string;
+    onChange: (value: string) => void;
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>) => {
+    return (
+        <input
+            type="date"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="flex h-12 w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-4 py-3 text-sm focus-visible:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
+            {...props}
+        />
+    );
+};
+
 // --- 🔥 전화번호 포맷팅 유틸리티 함수 ---
 const formatPhoneNumber = (value: string): string => {
     // 숫자만 추출
@@ -303,6 +319,12 @@ const GenericForm = ({ title, onSave, onClose, fields, initialData }: any) => {
                                         <option key={option} value={option}>{option}</option>
                                     ))}
                                 </select>
+                            ) : field.type === 'date' ? (
+                                <DateInput 
+                                    value={item[field.name] || ''} 
+                                    onChange={(value) => updateField(index, field.name, value)} 
+                                    placeholder={field.placeholder}
+                                />
                             ) : field.name === 'description' ? (
                                 <Textarea placeholder={field.placeholder} value={item[field.name] || ''} onChange={(e) => updateField(index, field.name, e.target.value)} className="min-h-[100px] w-full resize-y !bg-white dark:!bg-gray-800 !border-gray-300 dark:!border-gray-600 !text-gray-900 dark:!text-gray-100" />
                             ) : (
@@ -347,23 +369,80 @@ const ProfileEditPanel = ({ isOpen, onClose, profileData, initialSkills, onSave 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/80 ml-0 md:ml-64"><motion.div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto" initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }}>
-            <div className="flex items-center justify-between mb-6"><h2 className="text-xl font-semibold dark:text-gray-100">프로필 수정</h2><Button onClick={onClose}><X className="w-5 h-5" /></Button></div>
-            <div className="space-y-6">
-                <div><label className="text-sm font-medium block mb-2 text-gray-700 dark:text-gray-300">이름</label><Input value={editedProfile.name} onChange={(e) => handleChange('name', e.target.value)} /></div>
-                <div><label className="text-sm font-medium block mb-2 text-gray-700 dark:text-gray-300">이메일</label><Input type="email" value={editedProfile.email} onChange={(e) => handleChange('email', e.target.value)} /></div>
-                <div><label className="text-sm font-medium block mb-2 text-gray-700 dark:text-gray-300">연락처</label>
-                    <PhoneInput
-                        value={editedProfile.phone}
-                        onChange={(formattedPhone) => setEditedProfile(prev => ({ ...prev, phone: formattedPhone }))}
-                    /></div>
-                <div><label className="text-sm font-medium block mb-2 text-gray-700 dark:text-gray-300">거주지</label><Input value={editedProfile.location} onChange={(e) => handleChange('location', e.target.value)} /></div>
-                <div><label className="text-sm font-medium block mb-2 text-gray-700 dark:text-gray-300">경력</label><Input value={editedProfile.careerLevel} onChange={(e) => handleChange('careerLevel', e.target.value)} /></div>
-                <div><label className="text-sm font-medium block mb-2 text-gray-700 dark:text-gray-300">직무</label><Input value={editedProfile.jobTitle} onChange={(e) => handleChange('jobTitle', e.target.value)} /></div>
-                <div className="pt-4 border-t border-gray-200 dark:border-gray-700"><label className="text-sm font-medium block mb-2 text-gray-700 dark:text-gray-300">주요 스택</label><div className="flex items-center gap-2"><Input placeholder="스킬 추가" value={newSkill} onChange={(e) => setNewSkill(e.target.value)} onKeyDown={handleKeyDown}/><Button className="bg-indigo-600 text-white whitespace-nowrap px-4 py-2" onClick={addSkill}>추가</Button></div><div className="flex flex-wrap gap-2 mt-3"><AnimatePresence>{editedSkills.map((skill) => (<SkillTag key={skill} skill={skill} onRemove={removeSkill} />))}</AnimatePresence></div></div>
-            </div>
-            <div className="mt-8 flex justify-end gap-2"><Button className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300" onClick={onClose}>취소</Button><Button className="bg-indigo-600 text-white px-4 py-2" onClick={handleSaveClick}>저장</Button></div>
-        </motion.div></div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/80 p-4">
+            <motion.div 
+                className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto" 
+                initial={{ y: 50, opacity: 0 }} 
+                animate={{ y: 0, opacity: 1 }} 
+                exit={{ y: 50, opacity: 0 }}
+            >
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-semibold dark:text-gray-100">프로필 수정</h2>
+                    <Button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <X className="w-5 h-5" />
+                    </Button>
+                </div>
+                <div className="space-y-6">
+                    <div>
+                        <label className="text-sm font-medium block mb-2 text-gray-700 dark:text-gray-300">이름</label>
+                        <Input value={editedProfile.name} onChange={(e) => handleChange('name', e.target.value)} />
+                    </div>
+                    <div>
+                        <label className="text-sm font-medium block mb-2 text-gray-700 dark:text-gray-300">이메일</label>
+                        <Input type="email" value={editedProfile.email} onChange={(e) => handleChange('email', e.target.value)} />
+                    </div>
+                    <div>
+                        <label className="text-sm font-medium block mb-2 text-gray-700 dark:text-gray-300">연락처</label>
+                        <PhoneInput
+                            value={editedProfile.phone}
+                            onChange={(formattedPhone) => setEditedProfile(prev => ({ ...prev, phone: formattedPhone }))}
+                        />
+                    </div>
+                    <div>
+                        <label className="text-sm font-medium block mb-2 text-gray-700 dark:text-gray-300">거주지</label>
+                        <Input value={editedProfile.location} onChange={(e) => handleChange('location', e.target.value)} />
+                    </div>
+                    <div>
+                        <label className="text-sm font-medium block mb-2 text-gray-700 dark:text-gray-300">경력</label>
+                        <Input value={editedProfile.careerLevel} onChange={(e) => handleChange('careerLevel', e.target.value)} />
+                    </div>
+                    <div>
+                        <label className="text-sm font-medium block mb-2 text-gray-700 dark:text-gray-300">직무</label>
+                        <Input value={editedProfile.jobTitle} onChange={(e) => handleChange('jobTitle', e.target.value)} />
+                    </div>
+                    <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <label className="text-sm font-medium block mb-2 text-gray-700 dark:text-gray-300">주요 스택</label>
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                            <Input 
+                                placeholder="스킬 추가" 
+                                value={newSkill} 
+                                onChange={(e) => setNewSkill(e.target.value)} 
+                                onKeyDown={handleKeyDown}
+                                className="flex-1"
+                            />
+                            <Button className="bg-indigo-600 text-white whitespace-nowrap px-4 py-2 w-full sm:w-auto" onClick={addSkill}>
+                                추가
+                            </Button>
+                        </div>
+                        <div className="flex flex-wrap gap-2 mt-3">
+                            <AnimatePresence>
+                                {editedSkills.map((skill) => (
+                                    <SkillTag key={skill} skill={skill} onRemove={removeSkill} />
+                                ))}
+                            </AnimatePresence>
+                        </div>
+                    </div>
+                </div>
+                <div className="mt-8 flex flex-col sm:flex-row justify-end gap-2">
+                    <Button className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 w-full sm:w-auto" onClick={onClose}>
+                        취소
+                    </Button>
+                    <Button className="bg-indigo-600 text-white px-4 py-2 w-full sm:w-auto" onClick={handleSaveClick}>
+                        저장
+                    </Button>
+                </div>
+            </motion.div>
+        </div>
     );
 };
 
@@ -501,10 +580,9 @@ const TemplateSelector = ({ isOpen, onClose, currentTemplate, onSelectTemplate }
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/80 backdrop-blur-sm p-4 md:translate-x-[140px]">
-
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/80 backdrop-blur-sm p-4">
             <motion.div
-                className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5 max-w-4xl w-full"
+                className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5 max-w-4xl w-full max-h-[90vh] overflow-y-auto"
                 initial={{ y: 50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 50, opacity: 0 }}>
@@ -514,7 +592,7 @@ const TemplateSelector = ({ isOpen, onClose, currentTemplate, onSelectTemplate }
                         <X className="w-4 h-4" />
                     </Button>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {templates.map((template) => (
                         <div
                             key={template.id}
@@ -877,7 +955,7 @@ export default function SpecManagementView() {
             ]
         },
         { id: "skills", title: "스킬", icon: <Code className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />, data: skills },
-        { id: "certificates", title: "자격증", icon: <FileCheck className="w-5 h-5 text-amber-600 dark:text-amber-400" />, data: certificates, fields: [{name: 'name', label: '자격증명'}, {name: 'organization1', label: '발급기관'}, {name: 'acquisitionDate', label: '취득일', type: 'date'}] },
+        { id: "certificates", title: "자격증", icon: <FileCheck className="w-5 h-5 text-amber-600 dark:text-amber-400" />, data: certificates, fields: [{name: 'name', label: '자격증명'}, {name: 'issuer', label: '발급기관'}, {name: 'acquisitionDate', label: '취득일', type: 'date'}] },
         { id: "projects", title: "프로젝트", icon: <Folder className="w-5 h-5 text-pink-600 dark:text-pink-400" />, data: projects, fields: [{name: 'name', label: '프로젝트명'}, {name: 'description', label: '설명'}, {name: 'startDate', label: '시작일', type: 'date'}, {name: 'endDate', label: '종료일', type: 'date'}] },
         { id: "activities", title: "활동 & 경험", icon: <Award className="w-5 h-5 text-orange-600 dark:text-orange-400" />, data: activities, fields: [{name: 'name', label: '활동명'}, {name: 'organization', label: '기관/단체명'}, {name: 'startDate', label: '시작일', type: 'date'}, {name: 'endDate', label: '종료일', type: 'date'}]},
         { id: "links", title: "링크", icon: <LinkIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />, data: links, fields: [{name: 'title', label: '링크 제목'}, {name: 'url', label: 'URL'}] },
@@ -911,55 +989,92 @@ export default function SpecManagementView() {
     const allDataForPdf = { profile, skills, workExperiences, educations, certificates, links, projects, activities };
 
     return (
-        <main className="ml-0 md:ml-64 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
-            <div className="max-w-none lg:max-w-7xl mx-auto space-y-8 w-full">
-                <div className="flex items-center justify-between">
-                    <h1 className="flex items-center text-3xl font-bold text-gray-800 dark:text-gray-100">
+        <main className="bg-gray-50 dark:bg-gray-950 min-h-screen transition-all duration-300">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 w-full">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+                    <h1 className="flex items-center text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100">
                         <span role="img" aria-label="document" className="mr-3">📋</span>
                         스펙 관리
                     </h1>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                         <Button
                             onClick={() => setIsTemplateSelectorOpen(true)}
-                            className="bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-2 px-4 py-2"
+                            className="bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto"
                         >
                             <Palette className="w-4 h-4" />
-                            템플릿 선택
+                            <span className="sm:inline">템플릿 선택</span>
                         </Button>
                         <Button
                             onClick={() => alert('공유 기능은 현재 개발 중입니다. DB 연결 및 호스팅 후 구현될 예정입니다.')}
-                            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 px-4 py-2"
+                            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto"
                         >
                             <Share2 className="w-4 h-4" />
-                            공유 링크 만들기
+                            <span className="sm:inline">공유 링크</span>
                         </Button>
                         <Button
                             onClick={handleExportToPdf}
                             disabled={isExportingPdf || jsPdfStatus !== 'ready' || html2canvasStatus !== 'ready'}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-2 disabled:bg-gray-400 px-4 py-2"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-2 disabled:bg-gray-400 px-4 py-2 w-full sm:w-auto"
                         >
                             <FileDown className="w-4 h-4" />
-                            {isExportingPdf ? '내보내는 중...' : (jsPdfStatus !== 'ready' || html2canvasStatus !== 'ready' ? '준비 중...' : 'PDF로 내보내기')}
+                            <span className="hidden sm:inline">{isExportingPdf ? '내보내는 중...' : (jsPdfStatus !== 'ready' || html2canvasStatus !== 'ready' ? '준비 중...' : 'PDF로 내보내기')}</span>
+                            <span className="sm:hidden">{isExportingPdf ? '내보내는 중...' : (jsPdfStatus !== 'ready' || html2canvasStatus !== 'ready' ? '준비 중...' : 'PDF 내보내기')}</span>
                         </Button>
                     </div>
                 </div>
 
-                <ProfileCard profile={profile} skills={skills} onEditProfile={() => setIsProfileEditOpen(true)} />
-                <IntroductionCard introduction={profile.introduction} onSave={(intro) => handleSave('introduction', intro)} />
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <StatCard title="총 경력" value={careerStats.experience || "경력 입력"} icon={<Briefcase className="w-5 h-5 text-indigo-600" />} onSave={(val) => handleSave('stats_experience', val)} />
-                    <StatCard title="총 업무기록" value={careerStats.workRecords || "업무기록 입력"} icon={<FileCheck className="w-5 h-5 text-purple-600" />} onSave={(val) => handleSave('stats_workRecords', val)} />
-                    <StatCard title="내 커리어 목표" value={careerStats.careerGoal || "목표 입력"} icon={<Target className="w-5 h-5 text-emerald-600" />} onSave={(val) => handleSave('stats_careerGoal', val)} />
+        <main className="bg-gray-50 dark:bg-gray-950 min-h-screen transition-all duration-300">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 w-full">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+                    <h1 className="flex items-center text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100">
+                        <span role="img" aria-label="document" className="mr-3">📋</span>
+                        스펙 관리
+                    </h1>
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                        <Button
+                            onClick={() => setIsTemplateSelectorOpen(true)}
+                            className="bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm"
+                        >
+                            <Palette className="w-4 h-4" />
+                            <span className="sm:inline">템플릿 선택</span>
+                        </Button>
+                        <Button
+                            onClick={() => alert('공유 기능은 현재 개발 중입니다. DB 연결 및 호스팅 후 구현될 예정입니다.')}
+                            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2 px-4 py-2 w-full sm:w-auto text-sm"
+                        >
+                            <Share2 className="w-4 h-4" />
+                            <span className="sm:inline">공유 링크</span>
+                        </Button>
+                        <Button
+                            onClick={handleExportToPdf}
+                            disabled={isExportingPdf || jsPdfStatus !== 'ready' || html2canvasStatus !== 'ready'}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-2 disabled:bg-gray-400 px-4 py-2 w-full sm:w-auto text-sm"
+                        >
+                            <FileDown className="w-4 h-4" />
+                            <span className="hidden sm:inline">{isExportingPdf ? '내보내는 중...' : (jsPdfStatus !== 'ready' || html2canvasStatus !== 'ready' ? '준비 중...' : 'PDF로 내보내기')}</span>
+                            <span className="sm:hidden">{isExportingPdf ? '내보내는 중...' : (jsPdfStatus !== 'ready' || html2canvasStatus !== 'ready' ? '준비 중...' : 'PDF 내보내기')}</span>
+                        </Button>
+                    </div>
                 </div>
 
-                <div className="space-y-4">
-                    {sections.map((section) => (
-                        <Section key={section.id} title={section.title} icon={section.icon} isActive={activeSection === section.id} onClick={() => setActiveSection(activeSection === section.id ? null : section.id)}>
-                            {section.id === "skills" ? (<SkillsForm initialSkills={skills} onSave={(data) => handleSave("skills", data)} onClose={() => setActiveSection(null)} />)
-                                : (<GenericForm title={section.title} onSave={(data: any) => handleSave(section.id, data)} onClose={() => setActiveSection(null)} fields={section.fields} initialData={section.data} />)}
-                        </Section>
-                    ))}
+                <div className="space-y-6 sm:space-y-8">
+                    <ProfileCard profile={profile} skills={skills} onEditProfile={() => setIsProfileEditOpen(true)} />
+                    <IntroductionCard introduction={profile.introduction} onSave={(intro) => handleSave('introduction', intro)} />
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                        <StatCard title="총 경력" value={careerStats.experience || "경력 입력"} icon={<Briefcase className="w-5 h-5 text-indigo-600" />} onSave={(val) => handleSave('stats_experience', val)} />
+                        <StatCard title="총 업무기록" value={careerStats.workRecords || "업무기록 입력"} icon={<FileCheck className="w-5 h-5 text-purple-600" />} onSave={(val) => handleSave('stats_workRecords', val)} />
+                        <StatCard title="내 커리어 목표" value={careerStats.careerGoal || "목표 입력"} icon={<Target className="w-5 h-5 text-emerald-600" />} onSave={(val) => handleSave('stats_careerGoal', val)} />
+                    </div>
+
+                    <div className="space-y-4">
+                        {sections.map((section) => (
+                            <Section key={section.id} title={section.title} icon={section.icon} isActive={activeSection === section.id} onClick={() => setActiveSection(activeSection === section.id ? null : section.id)}>
+                                {section.id === "skills" ? (<SkillsForm initialSkills={skills} onSave={(data) => handleSave("skills", data)} onClose={() => setActiveSection(null)} />)
+                                    : (<GenericForm title={section.title} onSave={(data: any) => handleSave(section.id, data)} onClose={() => setActiveSection(null)} fields={section.fields} initialData={section.data} />)}
+                            </Section>
+                        ))}
+                    </div>
                 </div>
 
                 <ProfileEditPanel isOpen={isProfileEditOpen} onClose={() => setIsProfileEditOpen(false)} profileData={profile} initialSkills={skills} onSave={(profileData, skillsData) => handleSave('profile', profileData, skillsData)} />
