@@ -872,7 +872,7 @@ export default function SpecManagementView() {
     if (authLoading) {
         return (
             <main className="ml-64 md:ml-0 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
-                <div className="max-w-none lg:max-w-7xl mx-auto space-y-8 w-full">
+                <div className="max-w-5xl mx-auto space-y-8 w-full">
                     <div className="flex items-center justify-center h-64">
                         <div className="text-center">
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
@@ -888,7 +888,7 @@ export default function SpecManagementView() {
     if (!isAuthenticated || !userId) {
         return (
             <main className="ml-0 md:ml-64 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
-                <div className="max-w-none lg:max-w-7xl mx-auto space-y-8 w-full">
+                <div className="max-w-5xl mx-auto space-y-8 w-full">
                     <div className="flex items-center justify-center h-64">
                         <div className="text-center">
                             <p className="text-red-600 dark:text-red-400 mb-4">로그인이 필요합니다.</p>
@@ -903,7 +903,7 @@ export default function SpecManagementView() {
     if (isLoading) {
         return (
             <main className="ml-0 md:ml-64 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
-                <div className="max-w-none lg:max-w-7xl mx-auto space-y-8 w-full">
+                <div className="max-w-5xl mx-auto space-y-8 w-full">
                     <div className="flex items-center justify-center h-64">
                         <div className="text-center">
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
@@ -919,7 +919,7 @@ export default function SpecManagementView() {
     if (error) {
         return (
             <main className="ml-0 md:ml-64 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
-                <div className="max-w-none lg:max-w-7xl mx-auto space-y-8 w-full">
+                <div className="max-w-5xl mx-auto space-y-8 w-full">
                     <div className="flex items-center justify-center h-64">
                         <div className="text-center">
                             <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
@@ -990,7 +990,7 @@ export default function SpecManagementView() {
 
     return (
         <main className="ml-0 md:ml-64 bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
-            <div className="max-w-none lg:max-w-7xl mx-auto space-y-8 w-full">
+            <div className="max-w-5xl mx-auto space-y-8 w-full">
                 <div className="flex items-center justify-between">
                     <h1 className="flex items-center text-3xl font-bold text-gray-800 dark:text-gray-100">
                         <span role="img" aria-label="document" className="mr-3">📋</span>
