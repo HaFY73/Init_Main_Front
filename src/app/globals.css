@@ -171,66 +171,7 @@
 }
 
 /* ================================================================
-  4. 앱 레이아웃 기본 스타일
-  ================================================================
-*/
-
-/* 전체 앱 레이아웃 */
-.app-layout {
-  min-height: 100vh;
-  background-color: #f8fafc;
-  position: relative;
-}
-
-.dark .app-layout {
-  background-color: #0f172a;
-}
-
-/* 메인 컨텐츠 영역 - 사이드바 있을 때 */
-.main-content {
-  margin-left: 280px;
-  min-height: 100vh;
-  width: calc(100% - 280px);
-  position: relative;
-  transition: all 0.3s ease;
-  background-color: transparent;
-  padding: 0;
-}
-
-/* 메인 컨텐츠 영역 - 사이드바 없을 때 */
-.main-content-full {
-  margin-left: 0;
-  width: 100%;
-  min-height: 100vh;
-  position: relative;
-  transition: all 0.3s ease;
-  background-color: transparent;
-  padding: 0;
-}
-
-/* 태블릿 (768px ~ 1024px) */
-@media (min-width: 768px) and (max-width: 1024px) {
-  .main-content {
-    margin-left: 260px;
-    width: calc(100% - 260px);
-  }
-}
-
-/* 모바일 (768px 이하) */
-@media (max-width: 768px) {
-  .main-content {
-    margin-left: 0;
-    width: 100%;
-  }
-  
-  .main-content-full {
-    margin-left: 0;
-    width: 100%;
-  }
-}
-
-/* ================================================================
-  5. 스마트 모바일 가로모드 방지 시스템
+  4. 스마트 모바일 가로모드 방지 시스템
   ================================================================
 */
 
