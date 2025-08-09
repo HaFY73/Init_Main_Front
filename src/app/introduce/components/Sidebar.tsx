@@ -17,10 +17,12 @@ export default function Sidebar({
   onScrollToQuestion,
   visible
 }: SidebarProps) {
+  // visibility 스타일을 더 명확하게 처리
   const sidebarStyle = {
     visibility: visible ? 'visible' : 'hidden',
     opacity: visible ? '1' : '0',
-    pointerEvents: visible ? 'auto' : 'none'
+    pointerEvents: visible ? 'auto' : 'none',
+    transition: 'all 0.3s ease' // 부드러운 전환 효과
   } as React.CSSProperties;
 
   return (
@@ -30,6 +32,7 @@ export default function Sidebar({
           key={num}
           className={styles.sidebarButton}
           onClick={() => onScrollToQuestion(num)}
+          aria-label={`문항 ${num}번으로 이동`}
         >
           {num}
         </button>
@@ -39,6 +42,7 @@ export default function Sidebar({
         className={styles.sidebarButton}
         onClick={onAddQuestion}
         title="문항 추가"
+        aria-label="문항 추가"
       >
         +
       </button>
@@ -48,6 +52,7 @@ export default function Sidebar({
         onClick={onRemoveQuestion}
         disabled={questionCount <= 1}
         title="문항 삭제"
+        aria-label="문항 삭제"
         style={{ 
           opacity: questionCount <= 1 ? 0.5 : 1,
           cursor: questionCount <= 1 ? 'not-allowed' : 'pointer'

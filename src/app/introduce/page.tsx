@@ -168,7 +168,7 @@ export default function IntroducePage() {
     return (
         <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950">
             <GlobalSidebar />
-            <main className="flex-1 ml-0 md:ml-64 transition-all duration-300 ease-in-out overflow-x-hidden">
+            <main className="flex-1 ml-0 md:ml-64 transition-all duration-300 ease-in-out overflow-x-hidden relative">
                 <div className={styles.pageContainer}>
                     <motion.div
                         ref={ref}
