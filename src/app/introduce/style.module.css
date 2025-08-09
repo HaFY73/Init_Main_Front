@@ -5,6 +5,9 @@
   margin-left: 0; /* 글로벌 사이드바가 처리하므로 제거 */
   transition: all 0.3s ease;
   /* overflow 속성 제거하여 sticky positioning이 정상 작동하도록 함 */
+  /* sticky를 위한 추가 설정 */
+  position: relative;
+  isolation: isolate; /* 새로운 stacking context 생성 */
 }
 
 :global(.dark) .pageContainer {
@@ -103,7 +106,7 @@
   overflow-y: auto;
   position: sticky;
   top: 24px;
-  z-index: 10; /* 다른 요소들 위에 표시되도록 z-index 추가 */
+  z-index: 1001; /* GlobalSidebar보다 높은 z-index 설정 */
   transition: all 0.3s ease;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.02);
   border: 1px solid #e2e8f0;
@@ -112,10 +115,26 @@
   will-change: transform;
 }
 
+/* sticky 상태일 때 추가 스타일 */
+.sidebar[data-sticky="true"] {
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-color: #d1d5db;
+}
+
 :global(.dark) .sidebar {
   background: #1e293b;
   border-color: #334155;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* 다크 모드에서 sticky 상태일 때 추가 스타일 */
+:global(.dark) .sidebar[data-sticky="true"] {
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.3);
+  background: rgba(30, 41, 59, 0.95);
+  backdrop-filter: blur(8px);
+  border-color: #475569;
 }
 
 .sidebarButton {
@@ -843,12 +862,29 @@
     position: sticky;
     top: 40px; /* top 값을 조금 더 크게 하여 여유 공간 확보 */
     align-self: flex-start; /* flex 컨테이너에서 사이드바가 상단에 고정되도록 함 */
-    z-index: 10;
+    z-index: 1001; /* GlobalSidebar보다 높게 설정 */
+    /* 더 안정적인 sticky positioning을 위한 추가 설정 */
+    transform: translateZ(0); /* 하드웨어 가속 활성화 */
   }
 
   /* 메인 레이아웃에서 flex 정렬 최적화 */
   .mainLayout {
     align-items: flex-start; /* 상단 정렬로 변경 */
+    /* sticky 컨테이너가 제대로 작동하도록 overflow 설정 */
+    overflow: visible;
+  }
+
+  /* 페이지 컨테이너에서도 overflow 최적화 */
+  .pageContainer {
+    overflow: visible;
+  }
+
+  .resumePage {
+    overflow: visible;
+  }
+
+  .mainWrapper {
+    overflow: visible;
   }
 }
 
@@ -898,7 +934,7 @@
     padding: 12px 16px;
     gap: 8px;
     max-height: none; /* 모바일에서는 max-height 제한 해제 */
-    z-index: 5; /* 모바일에서는 z-index 낮춤 */
+    z-index: 50; /* 모바일에서는 GlobalSidebar와 충돌하지 않는 적당한 값 */
   }
 
   .sidebarButton {

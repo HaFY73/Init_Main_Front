@@ -168,7 +168,8 @@ export default function IntroducePage() {
     return (
         <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950">
             <GlobalSidebar />
-            <main className="flex-1 ml-0 md:ml-64 transition-all duration-300 ease-in-out overflow-x-hidden relative">
+            <main className="flex-1 ml-0 md:ml-64 transition-all duration-300 ease-in-out relative">
+                {/* overflow-x-hidden 제거하여 sticky positioning이 정상 작동하도록 함 */}
                 <div className={styles.pageContainer}>
                     <motion.div
                         ref={ref}
