@@ -698,7 +698,7 @@ export default function WritePage() {
         const CategoryIconRender = categoryInfo.icon || FileText
 
         return (
-            <Card className="flex flex-col bg-white shadow-sm hover:shadow-md transition-shadow min-h-[180px] h-full">
+            <Card className="flex flex-col bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-shadow min-h-[180px] h-full border-gray-200 dark:border-gray-700">
                 {/* 헤더 */}
                 <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
@@ -725,7 +725,7 @@ export default function WritePage() {
                 {/* 본문 */}
                 <CardContent className="flex-1 flex flex-col justify-between pb-3 px-4">
                     <div>
-                        <p className="text-sm text-gray-700 mb-3 line-clamp-2">{post.content}</p>
+                        <p className="text-sm text-gray-700 dark:text-gray-300 mb-3 line-clamp-2">{post.content}</p>
 
                         {post.image && (
                             <div className="mb-3">
@@ -753,16 +753,16 @@ export default function WritePage() {
                 </CardContent>
 
                 {/* 푸터 */}
-                <CardFooter className="pt-3 pb-4 px-4 border-t border-gray-100 bg-gray-50/50 mt-auto">
+                <CardFooter className="pt-3 pb-4 px-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 mt-auto">
                     <div className="flex items-center justify-between w-full">
                         <div className="flex items-center gap-3">
                             {post.status === "published" && (
                                 <>
-                                    <div className="flex items-center text-gray-500 text-sm">
+                                    <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
                                         <Heart className="h-4 w-4 mr-1"/>
                                         {post.likes}
                                     </div>
-                                    <div className="flex items-center text-gray-500 text-sm">
+                                    <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
                                         <MessageCircle className="h-4 w-4 mr-1"/>
                                         {post.comments}
                                     </div>
@@ -838,11 +838,11 @@ export default function WritePage() {
                         <div className="community-write-container">
                             {/* Header */}
                             <div className="mb-6 pt-8">
-                                <h1 className="text-2xl font-bold text-gray-900 mb-1 flex items-center">
+                                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1 flex items-center">
                                     <FileText className="mr-2 h-6 w-6"/>
                                     글 작성하기
                                 </h1>
-                                <p className="text-gray-500">게시글을 작성하고 관리하세요.</p>
+                                <p className="text-gray-500 dark:text-gray-400">게시글을 작성하고 관리하세요.</p>
                             </div>
 
                             {/* Tabs */}
@@ -970,7 +970,7 @@ export default function WritePage() {
                                                             ...prev,
                                                             content: e.target.value
                                                         }))}
-                                                        className="min-h-[200px]"
+                                                        className="min-h-[200px] bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                                                     />
                                                 </div>
 
@@ -989,6 +989,7 @@ export default function WritePage() {
                                                                 ...prev,
                                                                 hashtags: e.target.value
                                                             }))}
+                                                            className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                                                         />
                                                     </div>
                                                     <p className="text-xs text-gray-500">예: 취업팁, 면접준비, 포트폴리오</p>

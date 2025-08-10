@@ -1461,21 +1461,32 @@ export default function FeedPage() {
                                 <Tabs value={activeTab}
                                       onValueChange={(value) => setActiveTab(value as "post" | "comments")}
                                       className="flex-1 flex flex-col overflow-hidden">
-                                    <TabsList
-                                        className="grid w-full grid-cols-2 bg-transparent px-6 py-2 border-b border-gray-100">
-                                        <TabsTrigger value="post"
-                                                     className="text-sm font-medium px-2 py-2 data-[state=active]:text-black data-[state=inactive]:text-gray-400">
+                                    <div className="flex border-b border-gray-200 dark:border-gray-700 px-6">
+                                        <button
+                                            onClick={() => setActiveTab("post")}
+                                            className={`py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                                                activeTab === "post"
+                                                    ? "border-violet-500 text-violet-600 dark:text-violet-400"
+                                                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                                            }`}
+                                        >
                                             게시글
-                                        </TabsTrigger>
-                                        <TabsTrigger value="comments"
-                                                     className="text-sm font-medium px-2 py-2 data-[state=active]:text-black data-[state=inactive]:text-gray-400">
+                                        </button>
+                                        <button
+                                            onClick={() => setActiveTab("comments")}
+                                            className={`py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                                                activeTab === "comments"
+                                                    ? "border-violet-500 text-violet-600 dark:text-violet-400"
+                                                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                                            }`}
+                                        >
                                             댓글 {detailedPost.commentsList?.length || 0}개
-                                        </TabsTrigger>
-                                    </TabsList>
+                                        </button>
+                                    </div>
 
                                     {/* 게시글 탭 */}
-                                    <TabsContent value="post" className="flex-1 px-6 py-4 overflow-auto bg-white dark:bg-gray-800"
-                                                 style={{minHeight: '300px', maxHeight: 'calc(90vh - 180px)'}}>
+                                    <div className={`flex-1 px-6 py-4 overflow-auto bg-white dark:bg-gray-800 ${activeTab === "post" ? "block" : "hidden"}`}
+                                         style={{minHeight: '300px', maxHeight: 'calc(90vh - 180px)'}}>
                                         <div className="space-y-4 pr-2">
                                             {detailedPost.imageUrl && (
                                                 <div className="relative w-full h-[300px] rounded-md">
@@ -1507,10 +1518,10 @@ export default function FeedPage() {
                                                 ))}
                                             </div>
                                         </div>
-                                    </TabsContent>
+                                    </div>
 
                                     {/* 댓글 탭 */}
-                                    <TabsContent value="comments" className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                                    <div className={`flex-1 flex flex-col min-h-0 overflow-hidden ${activeTab === "comments" ? "flex" : "hidden"}`}>
                                         <div className="flex-1 overflow-auto px-6 py-4" style={{maxHeight: 'calc(90vh - 250px)'}}>
                                             {detailedPost.commentsList && detailedPost.commentsList.length > 0 ? (
                                                 <div className="space-y-4">
@@ -1642,7 +1653,7 @@ export default function FeedPage() {
                                                 </div>
                                             </div>
                                         </div>
-                                    </TabsContent>
+                                    </div>
                                 </Tabs>
 
                                 <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-4 flex-shrink-0 bg-white dark:bg-gray-800">

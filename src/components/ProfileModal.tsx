@@ -150,8 +150,9 @@ export default function ProfileModal({isOpen, onClose, userId}: ProfileModalProp
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
           <DialogContent
-              className="sm:max-w-[420px] lg:max-w-[480px] max-h-[85vh] overflow-hidden p-0 bg-transparent border-none shadow-2xl mx-4
-             fixed top-1/2 left-1/2 lg:left-[calc(50%+140px)] -translate-x-1/2 -translate-y-1/2 z-50">
+              className="sm:max-w-[420px] lg:max-w-[480px] max-h-[85vh] overflow-hidden p-0 bg-transparent border-none shadow-2xl
+             fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50
+             lg:left-[calc(50%+70px)]">
                 <DialogTitle className="sr-only"/>
                 {/* 커스텀 모달 디자인 */}
                 <div className="relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden">
@@ -176,10 +177,10 @@ export default function ProfileModal({isOpen, onClose, userId}: ProfileModalProp
                         {/* 에러 */}
                         {error && (
                             <div className="flex flex-col items-center justify-center py-16 sm:py-20 text-center">
-                                <div className="bg-white rounded-full p-4 shadow-lg mb-4">
-                                    <Lock className="h-8 w-8 text-gray-400"/>
+                                <div className="bg-white dark:bg-gray-700 rounded-full p-4 shadow-lg mb-4">
+                                    <Lock className="h-8 w-8 text-gray-400 dark:text-gray-500"/>
                                 </div>
-                                <p className="text-gray-600 font-medium">{error}</p>
+                                <p className="text-gray-600 dark:text-gray-300 font-medium">{error}</p>
                             </div>
                         )}
 

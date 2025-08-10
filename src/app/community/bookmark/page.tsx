@@ -311,7 +311,7 @@ export default function BookmarkPage() {
 
                         return (
                             <Card key={post.id}
-                                  className="bg-white shadow-sm hover:shadow-md transition-all duration-200 flex flex-col group">
+                                  className="bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col group border-gray-200 dark:border-gray-700">
                                 <CardHeader className="pb-3">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
@@ -321,8 +321,8 @@ export default function BookmarkPage() {
                                                 <AvatarFallback className="bg-violet-500 text-white">{post.author.name ? post.author.name.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
                                             </Avatar>
                                             <div className="flex-1">
-                                                <p className="font-semibold text-sm">{post.author.name}</p>
-                                                <p className="text-xs text-gray-500">{post.author.jobTitle}</p>
+                                                <p className="font-semibold text-sm text-gray-900 dark:text-gray-100">{post.author.name}</p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">{post.author.jobTitle}</p>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -345,7 +345,7 @@ export default function BookmarkPage() {
                                 </CardHeader>
 
                                 <CardContent className="pb-3 flex-grow">
-                                    <p className={`text-sm text-gray-700 mb-3 ${viewMode === "grid" ? "line-clamp-3" : ""}`}>
+                                    <p className={`text-sm text-gray-700 dark:text-gray-300 mb-3 ${viewMode === "grid" ? "line-clamp-3" : ""}`}>
                                         {post.content}
                                     </p>
                                     {post.imageUrl && (
@@ -378,18 +378,18 @@ export default function BookmarkPage() {
                                     </div>
                                 </CardContent>
 
-                                <CardFooter className="pt-3 pb-4 border-t border-gray-100 bg-gray-50/50">
+                                <CardFooter className="pt-3 pb-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
                                     <div className="flex items-center justify-between w-full">
                                         <div className="flex items-center gap-3">
-                                            <div className="flex items-center text-gray-500 text-sm">
+                                            <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
                                                 <Heart className="h-4 w-4 mr-1 text-red-500"/>
                                                 {post.likesCount}
                                             </div>
-                                            <div className="flex items-center text-gray-500 text-sm">
+                                            <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
                                                 <MessageCircle className="h-4 w-4 mr-1 text-violet-500"/>
                                                 {post.commentsCount}
                                             </div>
-                                            <div className="flex items-center text-gray-500 text-sm">
+                                            <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm">
                                                 <BookmarkIconLucide className="h-4 w-4 mr-1 text-orange-500"/>
                                                 {post.bookmarksCount}
                                             </div>
@@ -472,7 +472,7 @@ export default function BookmarkPage() {
                             <div className="mb-6 pt-8">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <h1 className="text-2xl font-bold text-gray-900 mb-1 flex items-center">
+                                        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1 flex items-center">
                                             <BookmarkIconLucide className="mr-2 h-6 w-6"/>
                                             저장한 글
                                             {bookmarkedPosts.length > 0 && (
@@ -481,7 +481,7 @@ export default function BookmarkPage() {
                                                 </Badge>
                                             )}
                                         </h1>
-                                        <p className="text-gray-500">나중에 다시 보기 위해 저장한 게시글을 확인하세요.</p>
+                                        <p className="text-gray-500 dark:text-gray-400">나중에 다시 보기 위해 저장한 게시글을 확인하세요.</p>
                                     </div>
                                     <Button
                                         onClick={handleRefresh}
@@ -637,16 +637,30 @@ export default function BookmarkPage() {
                                     onValueChange={(value) => setActiveTab(value as "post" | "comments")}
                                     className="flex-1 flex flex-col overflow-hidden"
                                 >
-                                    <TabsList
-                                        className="grid w-full grid-cols-2 bg-transparent px-6 py-2 border-b border-gray-100">
-                                        <TabsTrigger value="post">게시글</TabsTrigger>
-                                        <TabsTrigger value="comments">
+                                    <div className="flex border-b border-gray-200 dark:border-gray-700 px-6">
+                                        <button
+                                            onClick={() => setActiveTab("post")}
+                                            className={`py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                                                activeTab === "post"
+                                                    ? "border-violet-500 text-violet-600 dark:text-violet-400"
+                                                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                                            }`}
+                                        >
+                                            게시글
+                                        </button>
+                                        <button
+                                            onClick={() => setActiveTab("comments")}
+                                            className={`py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                                                activeTab === "comments"
+                                                    ? "border-violet-500 text-violet-600 dark:text-violet-400"
+                                                    : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                                            }`}
+                                        >
                                             댓글 {postComments.length}개
-                                        </TabsTrigger>
-                                    </TabsList>
+                                        </button>
+                                    </div>
 
-                                    <TabsContent value="post"
-                                                 className="flex-1 px-6 py-4 overflow-y-auto min-h-[500px] max-h-full bg-white">
+                                    <div className={`flex-1 px-6 py-4 overflow-y-auto min-h-[500px] max-h-full bg-white dark:bg-gray-800 ${activeTab === "post" ? "block" : "hidden"}`}>
                                         <div className="space-y-4 pr-2">
                                             {detailedPost.imageUrl && (
                                                 <div className="relative w-full h-[300px] rounded-md">
@@ -661,7 +675,7 @@ export default function BookmarkPage() {
                                                     />
                                                 </div>
                                             )}
-                                            <p className="text-gray-700 whitespace-pre-line leading-relaxed text-base">
+                                            <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line leading-relaxed text-base">
                                                 {detailedPost.content}
                                             </p>
                                             <div className="flex flex-wrap gap-2 pt-4">
@@ -676,9 +690,9 @@ export default function BookmarkPage() {
                                                 ))}
                                             </div>
                                         </div>
-                                    </TabsContent>
+                                    </div>
 
-                                    <TabsContent value="comments" className="flex-1 flex flex-col min-h-0">
+                                    <div className={`flex-1 flex flex-col min-h-0 ${activeTab === "comments" ? "flex" : "hidden"}`}>
                                         {/* 🔥 댓글 탭에서도 게시글 이미지 표시 */}
                                         {/*{detailedPost.imageUrl && (
                                             <div className="px-6 py-4 border-b border-gray-100">
@@ -701,7 +715,7 @@ export default function BookmarkPage() {
                                                     {postComments.slice(0, visibleComments).map((comment) => (
                                                         <div
                                                             key={comment.id}
-                                                            className="py-3 border-b border-gray-100 last:border-b-0"
+                                                            className="py-3 border-b border-gray-100 dark:border-gray-700 last:border-b-0"
                                                         >
                                                             <div className="flex items-start gap-3">
                                                                 <Avatar className="h-8 w-8 flex-shrink-0">
@@ -714,17 +728,17 @@ export default function BookmarkPage() {
                                                                 </Avatar>
                                                                 <div className="flex-1 min-w-0">
                                                                     <div className="flex items-center gap-2 mb-1">
-                                                                        <p className="font-semibold text-sm truncate">
+                                                                        <p className="font-semibold text-sm truncate text-gray-900 dark:text-gray-100">
                                                                             {comment.author.name}
                                                                         </p>
                                                                         {comment.author.title && (
-                                                                            <p className="text-xs text-gray-500 truncate">{comment.author.title}</p>
+                                                                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{comment.author.title}</p>
                                                                         )}
-                                                                        <p className="text-xs text-gray-400 ml-auto flex-shrink-0">
+                                                                        <p className="text-xs text-gray-400 dark:text-gray-500 ml-auto flex-shrink-0">
                                                                             {comment.timeAgo}
                                                                         </p>
                                                                     </div>
-                                                                    <p className="text-sm text-gray-700 break-words">
+                                                                    <p className="text-sm text-gray-700 dark:text-gray-300 break-words">
                                                                         {comment.content}
                                                                     </p>
                                                                 </div>
@@ -746,17 +760,17 @@ export default function BookmarkPage() {
                                                     )}
                                                 </div>
                                             ) : (
-                                                <div className="flex-1 flex items-center justify-center text-gray-500">
+                                                <div className="flex-1 flex items-center justify-center text-gray-500 dark:text-gray-400">
                                                     <div className="text-center">
                                                         <MessageCircle
-                                                            className="h-12 w-12 mx-auto mb-2 text-gray-300"/>
+                                                            className="h-12 w-12 mx-auto mb-2 text-gray-300 dark:text-gray-600"/>
                                                         <p>아직 댓글이 없습니다.</p>
                                                         <p className="text-sm">첫 번째 댓글을 작성해보세요!</p>
                                                     </div>
                                                 </div>
                                             )}
                                         </div>
-                                    </TabsContent>
+                                    </div>
                                 </Tabs>
 
                                 <div className="border-t border-gray-100 p-4 flex-shrink-0">

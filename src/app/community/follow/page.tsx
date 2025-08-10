@@ -244,11 +244,11 @@ export default function FollowPage() {
 
                             {/* Header */}
                             <div className="mb-6 pt-8">
-                                <h1 className="text-2xl font-bold text-gray-900 mb-1 flex items-center">
+                                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1 flex items-center">
                                     <Users className="mr-2 h-6 w-6"/>
                                     팔로우 ({followingUsers.length})
                                 </h1>
-                                <p className="text-gray-500">팔로우 중인 사용자를 확인하세요.</p>
+                                <p className="text-gray-500 dark:text-gray-400">팔로우 중인 사용자를 확인하세요.</p>
                             </div>
 
                             {/* Search Bar */}
