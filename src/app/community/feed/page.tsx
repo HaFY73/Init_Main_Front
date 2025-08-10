@@ -1420,7 +1420,13 @@ export default function FeedPage() {
                             setVisibleComments(5);
                         }}>
                             <DialogContent
-                                className="w-full max-w-2xl sm:p-6 p-4 h-[85vh] sm:h-[80vh] max-h-[85vh] sm:max-h-[80vh] flex flex-col overflow-hidden mx-auto">
+                                style={{
+                                    top: '50%',
+                                    left: isLargeScreen ? 'calc((100vw + 280px) / 2)' : '50%',
+                                    transform: 'translate(-50%, -50%)',
+                                    position: 'fixed'
+                                }}
+                                className="w-full max-w-2xl sm:p-6 p-4 h-[85vh] sm:h-[80vh] max-h-[85vh] sm:max-h-[80vh] flex flex-col overflow-hidden">
                                 <DialogHeader className="p-6 pb-3 border-b border-gray-100 flex-shrink-0">
                                     <div className="flex items-center justify-between w-full">
                                         <div className="flex items-center gap-3">

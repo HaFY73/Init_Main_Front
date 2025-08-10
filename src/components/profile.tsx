@@ -38,7 +38,7 @@ const SimpleToggle = ({checked, onChange, label}: {
     label: string
 }) => (
     <div className="flex items-center justify-between py-2">
-        <span className="text-sm font-medium">{label}</span>
+        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{label}</span>
         <button
             onClick={() => onChange(!checked)}
             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${checked ? 'bg-violet-500' : 'bg-gray-400'}`}
@@ -331,11 +331,11 @@ export default function ProfileDialog() {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent
-                className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto bg-white shadow-lg"
+                className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto bg-white dark:bg-gray-800 shadow-lg"
                 style={{
                     position: "fixed",
                     top: "12%",
-                    left: "calc((100% - 250px) / 2 + 250px)",
+                    left: "50%",
                     transform: "translateX(-50%)"
                 }}
             >
@@ -413,46 +413,51 @@ export default function ProfileDialog() {
                         {/* 기본 정보 입력 */}
                         <SimpleSeparator/>
                         <div className="space-y-2">
-                            <label className="text-sm font-medium">프로필 이름</label>
+                            <label className="text-sm font-medium text-gray-900 dark:text-gray-100">프로필 이름</label>
                             <Input value={profile.displayName}
                                    onChange={(e) => setProfile(p => ({...p, displayName: e.target.value}))}
-                                   maxLength={20}/>
+                                   maxLength={20}
+                                   className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"/>
                             <p className="text-xs text-gray-500">{profile.displayName.length}/20</p>
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium flex items-center gap-1"><Briefcase
+                            <label className="text-sm font-medium flex items-center gap-1 text-gray-900 dark:text-gray-100"><Briefcase
                                 className="h-4 w-4"/> 직책</label>
                             <Input value={profile.jobTitle}
                                    onChange={(e) => setProfile(p => ({...p, jobTitle: e.target.value}))}
-                                   maxLength={30}/>
+                                   maxLength={30}
+                                   className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"/>
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium flex items-center gap-1"><Building2
+                            <label className="text-sm font-medium flex items-center gap-1 text-gray-900 dark:text-gray-100"><Building2
                                 className="h-4 w-4"/> 회사</label>
                             <Input value={profile.company}
-                                   onChange={(e) => setProfile(p => ({...p, company: e.target.value}))} maxLength={30}/>
+                                   onChange={(e) => setProfile(p => ({...p, company: e.target.value}))} maxLength={30}
+                                   className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"/>
                         </div>
 
                         <div className="space-y-2">
                             <div className="space-y-2">
-                                <label className="text-sm font-medium flex items-center gap-1"><MapPin
+                                <label className="text-sm font-medium flex items-center gap-1 text-gray-900 dark:text-gray-100"><MapPin
                                     className="h-4 w-4"/> 지역</label>
                                 <Input
                                     value={profile.location || ""}
                                     onChange={(e) => setProfile(p => ({...p, location: e.target.value}))}
                                     maxLength={20}
+                                    className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                                 />
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">소개</label>
+                                <label className="text-sm font-medium text-gray-900 dark:text-gray-100">소개</label>
                                 <Textarea
                                     rows={3}
                                     value={profile.bio || ""}
                                     onChange={(e) => setProfile(p => ({...p, bio: e.target.value}))}
                                     maxLength={200}
+                                    className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                                 />
                                 <p className="text-xs text-gray-500">{profile.bio?.length || 0}/200</p>
                             </div>
@@ -461,7 +466,7 @@ export default function ProfileDialog() {
 
                             {/* 프로필 설정 */}
                             <div className="space-y-4">
-                                <h4 className="font-medium flex items-center gap-2"><Lock className="h-4 w-4"/> 프로필 설정
+                                <h4 className="font-medium flex items-center gap-2 text-gray-900 dark:text-gray-100"><Lock className="h-4 w-4"/> 프로필 설정
                                 </h4>
                                 <SimpleToggle
                                     label="공개 프로필"

@@ -151,7 +151,8 @@ export default function ProfileModal({isOpen, onClose, userId}: ProfileModalProp
         <Dialog open={isOpen} onOpenChange={onClose}>
           <DialogContent
               className="sm:max-w-[420px] lg:max-w-[480px] max-h-[85vh] overflow-hidden p-0 bg-transparent border-none shadow-2xl
-             fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
+             fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50
+             lg:left-[calc(50%+140px)]">
                 <DialogTitle className="sr-only"/>
                 {/* 커스텀 모달 디자인 */}
                 <div className="relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden">
