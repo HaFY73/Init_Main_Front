@@ -187,18 +187,18 @@ export const AdaptedPostCard = memo<AdaptedPostCardProps>(function AdaptedPostCa
           </div>
         </div>
         <div className="post-meta">
-          <div className="author-name">{post.author.name}</div>
-          <div className="post-time">{post.timeAgo}</div>
+          <div className="author-name dark:text-gray-100">{post.author.name}</div>
+          <div className="post-time dark:text-gray-400">{post.timeAgo}</div>
         </div>
         {/* Follow Button */}
         <button
           onClick={handleFollowClick}
           className={`ml-auto p-1.5 rounded-full text-xs flex items-center transition-colors ${
             !hasProfile 
-              ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+              ? "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
               : post.author.isFollowing
-                ? "bg-violet-500 text-white hover:bg-violet-600"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                ? "bg-violet-500 text-white hover:bg-violet-600 dark:bg-violet-600 dark:hover:bg-violet-700"
+                : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
           }`}
           title={!hasProfile ? "프로필을 만들어주세요" : post.author.isFollowing ? "팔로잉" : "팔로우"}
           disabled={!hasProfile}
@@ -225,13 +225,13 @@ export const AdaptedPostCard = memo<AdaptedPostCardProps>(function AdaptedPostCa
             />
           </div>
       )}
-      <p className="post-content" style={{ whiteSpace: 'pre-wrap' }}>{post.content}</p>
+      <p className="post-content dark:text-gray-300" style={{ whiteSpace: 'pre-wrap' }}>{post.content}</p>
       {post.hashtags && post.hashtags.length > 0 && (
           <div className="post-hashtags flex flex-wrap gap-2 mt-2">
             {post.hashtags.map((tag, idx) => (
                 <span
                     key={idx}
-                    className="text-xs bg-violet-100 text-violet-700 px-2 py-1 rounded-full"
+                    className="text-xs bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 px-2 py-1 rounded-full"
                 >
         {tag}
       </span>
@@ -243,10 +243,10 @@ export const AdaptedPostCard = memo<AdaptedPostCardProps>(function AdaptedPostCa
           <button
             className={`relative flex items-center gap-1 p-1 transition-all duration-300 transform ${
               !hasProfile 
-                ? "text-gray-400 cursor-not-allowed" 
+                ? "text-gray-400 dark:text-gray-600 cursor-not-allowed" 
                 : post.likedByMe 
                   ? "text-red-500 scale-105" 
-                  : "text-gray-500 hover:text-red-500 hover:scale-105"
+                  : "text-gray-500 dark:text-gray-400 hover:text-red-500 hover:scale-105"
             } ${isLikeAnimating ? 'animate-pulse' : ''}`}
             title={!hasProfile ? "프로필을 만들어주세요" : "좋아요"}
             onClick={handleLikeClick}
@@ -266,8 +266,8 @@ export const AdaptedPostCard = memo<AdaptedPostCardProps>(function AdaptedPostCa
           <button
             className={`flex items-center gap-1 p-1 transition-colors hover:scale-105 transform duration-200 ${
               !hasProfile 
-                ? "text-gray-400 cursor-not-allowed"
-                : "text-gray-500 hover:text-violet-500"
+                ? "text-gray-400 dark:text-gray-600 cursor-not-allowed"
+                : "text-gray-500 dark:text-gray-400 hover:text-violet-500 dark:hover:text-violet-400"
             }`}
             title={!hasProfile ? "프로필을 만들어주세요" : "댓글"}
             onClick={handleCommentClick}
@@ -281,10 +281,10 @@ export const AdaptedPostCard = memo<AdaptedPostCardProps>(function AdaptedPostCa
           <button
             className={`p-1 transition-all duration-200 transform hover:scale-105 ${
               !hasProfile 
-                ? "text-gray-400 cursor-not-allowed"
+                ? "text-gray-400 dark:text-gray-600 cursor-not-allowed"
                 : post.bookmarkedByMe 
                   ? "text-orange-500" 
-                  : "text-gray-500 hover:text-orange-500"
+                  : "text-gray-500 dark:text-gray-400 hover:text-orange-500"
             }`}
             title={!hasProfile ? "프로필을 만들어주세요" : "저장하기"}
             onClick={handleBookmarkClick}
@@ -349,7 +349,11 @@ export const Carousel = memo<CarouselProps>(function Carousel({ children, initia
   return (
     <div className="carousel">
       {count > 1 && (
-        <button className="nav left" onClick={handlePrev}>
+        <button 
+          className="nav left" 
+          onClick={handlePrev}
+          aria-label="이전 게시글"
+        >
           <ChevronLeft size={24} />
         </button>
       )}
@@ -385,7 +389,11 @@ export const Carousel = memo<CarouselProps>(function Carousel({ children, initia
         )
       })}
       {count > 1 && (
-        <button className="nav right" onClick={handleNext}>
+        <button 
+          className="nav right" 
+          onClick={handleNext}
+          aria-label="다음 게시글"
+        >
           <ChevronRight size={24} />
         </button>
       )}

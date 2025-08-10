@@ -103,6 +103,37 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  /* 커뮤니티 페이지 전용 다크모드 텍스트 색상 */
+  .text-community-primary {
+    @apply text-gray-900 dark:text-gray-100;
+  }
+
+  .text-community-secondary {
+    @apply text-gray-600 dark:text-gray-300;
+  }
+
+  .text-community-muted {
+    @apply text-gray-500 dark:text-gray-400;
+  }
+
+  /* 커뮤니티 페이지 전용 다크모드 배경 그라디언트 */
+  .bg-community-gradient {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+  }
+
+  .dark .bg-community-gradient {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  }
+
+  /* 커뮤니티 카드 다크모드 */
+  .community-card {
+    @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700;
+  }
+
+  .community-card-hover {
+    @apply hover:shadow-md dark:hover:shadow-xl dark:hover:shadow-gray-900/25;
+  }
 }
 
 /* ================================================================

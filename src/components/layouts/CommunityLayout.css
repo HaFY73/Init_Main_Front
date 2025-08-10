@@ -104,11 +104,43 @@
    다크 모드 지원
    ================================================================ */
 .dark .community-app-layout {
-  background-color: #0f172a;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
 }
 
 .dark .community-content {
   background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+}
+
+/* 커뮤니티 메인 컨테이너 다크모드 */
+.dark .community-container {
+  background: transparent;
+}
+
+/* 개별 페이지 컨테이너 다크모드 스타일 */
+.dark .community-feed-container,
+.dark .community-write-container,
+.dark .community-follow-container,
+.dark .community-bookmark-container,
+.dark .community-reply-container {
+  background: transparent;
+}
+
+/* 다크모드 전용 그라디언트 배경 클래스 */
+.community-dark-gradient {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+}
+
+.dark .community-dark-gradient {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+}
+
+/* 라이트모드 전용 그라디언트 배경 클래스 */
+.community-light-gradient {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+}
+
+.dark .community-light-gradient {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
 }
 
 /* ================================================================

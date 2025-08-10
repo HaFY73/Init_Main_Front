@@ -831,9 +831,9 @@ export default function WritePage() {
                 initial={{opacity: 0, y: 30}}
                 animate={{opacity: 1, y: 0}}
                 transition={{duration: 0.6, ease: "easeOut"}}
-                className="community-content"
+                className="community-content community-light-gradient dark:community-dark-gradient"
             >
-                <div className="community-container bg-green-50">
+                <div className="community-container">
                     <div className="community-main">
                         <div className="community-write-container">
                             {/* Header */}

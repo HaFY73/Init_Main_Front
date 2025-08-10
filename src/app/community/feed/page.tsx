@@ -1103,18 +1103,18 @@ export default function FeedPage() {
                 initial={{opacity: 0, y: 30}}
                 animate={{opacity: 1, y: 0}}
                 transition={{duration: 0.6, ease: "easeOut"}}
-                className="flex flex-1 flex-col min-h-screen bg-gradient-to-br from-violet-50 to-indigo-100 px-2 sm:px-4 md:pl-6"
+                className="flex flex-1 flex-col min-h-screen community-light-gradient dark:community-dark-gradient px-2 sm:px-4 md:pl-6"
             >
-                <div className="community-container bg-gradient-to-br from-violet-50 to-indigo-100 px-2 sm:px-4 md:pl-6">
+                <div className="community-container px-2 sm:px-4 md:pl-6">
                     <div className="community-main" ref={contentRef}>
                         <div className="community-feed-container">
                             {/* 필터 헤더 */}
                             <div className="mb-4 sm:mb-6 pt-4 sm:pt-6 md:pt-8">
-                                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 flex items-center">
+                                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1 flex items-center">
                                     <Rss className="mr-2 h-5 w-5 sm:h-6 sm:w-6"/>
                                     피드
                                 </h1>
-                                <p className="text-sm sm:text-base text-gray-500">커뮤니티의 최신 소식을 확인하고 이야기를 나눠보세요.</p>
+                                <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">커뮤니티의 최신 소식을 확인하고 이야기를 나눠보세요.</p>
                             </div>
 
                             {/* 카테고리 & 검색 */}
@@ -1144,7 +1144,7 @@ export default function FeedPage() {
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => setSelectedCategoryKey(null)}
-                                            className="text-gray-600 hover:text-red-500 h-full px-3 py-2.5 rounded-full"
+                                            className="text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 h-full px-3 py-2.5 rounded-full"
                                             title="필터 해제"
                                         >
                                             <FilterX className="h-4 w-4"/>
@@ -1153,12 +1153,12 @@ export default function FeedPage() {
                                 </div>
                                 <div className="relative w-full md:w-auto md:max-w-xs order-1 md:order-2">
                                     <Search
-                                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4"/>
+                                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 h-4 w-4"/>
                                     <Input
                                         placeholder="검색..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="pl-10 pr-4 py-2.5 w-full border-gray-300 focus:border-[#6366f1] focus:ring-[#8b5cf6] rounded-full text-sm"
+                                        className="pl-10 pr-4 py-2.5 w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-[#6366f1] focus:ring-[#8b5cf6] rounded-full text-sm"
                                     />
                                 </div>
                             </div>
@@ -1191,7 +1191,7 @@ export default function FeedPage() {
 
                             {/* 게시글 Carousel */}
                             {posts.length > 0 ? (
-                                <div className="carousel-container-wrapper relative">
+                                <div className="carousel-container-wrapper relative w-full overflow-x-hidden">
                                     {/* 🔥 프로필이 없을 때는 알림 카드만 표시 (오버레이 제거) */}
                                     {showProfileRequired ? (
                                         <div className="flex items-center justify-center py-20">
@@ -1236,12 +1236,12 @@ export default function FeedPage() {
                                         <>
                                             <div
                                                 className="w-24 h-24 rounded-full flex items-center justify-center mb-6">
-                                                <Rss className="h-12 w-12 text-gray-400"/>
+                                                <Rss className="h-12 w-12 text-gray-400 dark:text-gray-500"/>
                                             </div>
-                                            <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                                            <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                                 {loading ? "로딩 중..." : "게시글이 없습니다"}
                                             </h3>
-                                            <p className="text-gray-500 mb-6 max-w-md">
+                                            <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md">
                                                 {loading ? "잠시만 기다려주세요..." :
                                                     feedMode === "following"
                                                         ? "팔로우한 사용자의 게시글이 없습니다. 더 많은 사람들을 팔로우해보세요!"
@@ -1263,8 +1263,8 @@ export default function FeedPage() {
 
                                             {!loading && process.env.NODE_ENV === 'development' && (
                                                 <div
-                                                    className="mt-8 p-4 bg-violet-50 border border-violet-200 rounded-lg max-w-md">
-                                                    <p className="text-sm text-violet-800">
+                                                    className="mt-8 p-4 bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800 rounded-lg max-w-md">
+                                                    <p className="text-sm text-violet-800 dark:text-violet-300">
                                                         <strong>📝 데모 모드:</strong> 백엔드 서버가 연결되지 않아 목 데이터를 표시 중입니다.
                                                         <br/>실제 서버 연결 시 모든 기능이 정상 작동합니다.
                                                         {feedMode === "following" && (
@@ -1302,7 +1302,7 @@ export default function FeedPage() {
                             setVisibleComments(5);
                         }}>
                             <DialogContent
-                                className="w-full max-w-3xl sm:p-6 p-4 h-[85vh] max-h-[900px] flex flex-col overflow-hidden mx-auto md:ml-[10rem]">
+                                className="w-full max-w-3xl sm:p-6 p-4 h-[90vh] sm:h-[85vh] max-h-[95vh] sm:max-h-[900px] flex flex-col overflow-hidden mx-auto md:ml-[10rem]">
                                 <DialogHeader className="p-6 pb-3 border-b border-gray-100 flex-shrink-0">
                                     <div className="flex items-center justify-between w-full">
                                         <div className="flex items-center gap-3">
@@ -1356,8 +1356,8 @@ export default function FeedPage() {
                                     </TabsList>
 
                                     {/* 게시글 탭 */}
-                                    <TabsContent value="post" className="flex-1 px-6 py-4 overflow-auto bg-white"
-                                                 style={{minHeight: '500px', maxHeight: 'calc(85vh - 150px)'}}>
+                                    <TabsContent value="post" className="flex-1 px-6 py-4 overflow-auto bg-white dark:bg-gray-800"
+                                                 style={{minHeight: '300px', maxHeight: 'calc(90vh - 180px)'}}>
                                         <div className="space-y-4 pr-2">
                                             {detailedPost.imageUrl && (
                                                 <div className="relative w-full h-[300px] rounded-md">
@@ -1374,7 +1374,7 @@ export default function FeedPage() {
                                                     />
                                                 </div>
                                             )}
-                                            <p className="text-gray-700 whitespace-pre-line leading-relaxed text-base">
+                                            <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line leading-relaxed text-base">
                                                 {detailedPost.content}
                                             </p>
                                             <div className="flex flex-wrap gap-2 pt-4">
@@ -1392,13 +1392,13 @@ export default function FeedPage() {
                                     </TabsContent>
 
                                     {/* 댓글 탭 */}
-                                    <TabsContent value="comments" className="flex-1 flex flex-col min-h-0">
-                                        <div className="flex-1 overflow-auto px-6 py-4">
+                                    <TabsContent value="comments" className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                                        <div className="flex-1 overflow-auto px-6 py-4" style={{maxHeight: 'calc(90vh - 250px)'}}>
                                             {detailedPost.commentsList && detailedPost.commentsList.length > 0 ? (
                                                 <div className="space-y-4">
                                                     {detailedPost.commentsList.slice(0, visibleComments).map((comment) => (
                                                         <div key={comment.id}
-                                                             className="py-3 border-b border-gray-100 last:border-b-0">
+                                                             className="py-3 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
                                                             <div className="flex items-start gap-3">
                                                                 <Avatar className="h-8 w-8 flex-shrink-0">
                                                                     <AvatarImage
@@ -1408,11 +1408,11 @@ export default function FeedPage() {
                                                                 </Avatar>
                                                                 <div className="flex-1 min-w-0">
                                                                     <div className="flex items-center gap-2 mb-1">
-                                                                        <p className="font-semibold text-sm truncate">{comment.author.name}</p>
+                                                                        <p className="font-semibold text-sm truncate dark:text-gray-200">{comment.author.name}</p>
                                                                         {comment.author.title && (
-                                                                            <p className="text-xs text-gray-500 truncate">{comment.author.title}</p>
+                                                                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{comment.author.title}</p>
                                                                         )}
-                                                                        <p className="text-xs text-gray-400 ml-auto flex-shrink-0">{comment.timeAgo}</p>
+                                                                        <p className="text-xs text-gray-400 dark:text-gray-500 ml-auto flex-shrink-0">{comment.timeAgo}</p>
 
                                                                         {/* 🔥 댓글 삭제 버튼 - 본인 댓글에만 표시 (수정됨) */}
                                                                         {(() => {
@@ -1453,7 +1453,7 @@ export default function FeedPage() {
                                                                             ) : null;
                                                                         })()}
                                                                     </div>
-                                                                    <p className="text-sm text-gray-700 break-words">{comment.content}</p>
+                                                                    <p className="text-sm text-gray-700 dark:text-gray-300 break-words">{comment.content}</p>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1475,7 +1475,7 @@ export default function FeedPage() {
                                                     )}
                                                 </div>
                                             ) : (
-                                                <div className="flex-1 flex items-center justify-center text-gray-500">
+                                                <div className="flex-1 flex items-center justify-center text-gray-500 py-8">
                                                     <div className="text-center">
                                                         <MessageCircle
                                                             className="h-12 w-12 mx-auto mb-2 text-gray-300"/>
@@ -1486,24 +1486,23 @@ export default function FeedPage() {
                                             )}
                                         </div>
 
-                                        {/* 🔥 수정 10: 댓글 입력 섹션 개선 */}
-                                        <div className="p-4 flex-shrink-0">
-                                            <div className="border-t border-gray-200 p-4 flex items-center gap-3">
-                                                <Avatar className="h-8 w-8 flex-shrink-0">
+                                        {/* 🔥 수정 10: 댓글 입력 섹션 개선 - 모바일 최적화 */}
+                                        <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                                            <div className="p-3 sm:p-4 flex items-start gap-2 sm:gap-3">
+                                                <Avatar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 mt-1">
                                                     <AvatarImage
                                                         src={myProfile?.profileImageUrl || ""}/>
-                                                    <AvatarFallback className="bg-violet-500 text-white">
+                                                    <AvatarFallback className="bg-violet-500 text-white text-xs">
                                                         {myProfile?.displayName?.charAt(0).toUpperCase() || "U"}
                                                     </AvatarFallback>
                                                 </Avatar>
-                                                <div
-                                                    className="flex-1 flex items-center gap-2 bg-white rounded-md px-3 py-2">
+                                                <div className="flex-1 min-w-0">
                                                     <Textarea
                                                         placeholder="댓글을 작성하세요"
                                                         value={newComment}
                                                         onChange={(e) => setNewComment(e.target.value)}
-                                                        className="flex-1 resize-none border-gray-300 focus:border-violet-500 focus:ring-violet-500 rounded-md text-sm min-h-[40px] max-h-[120px]"
-                                                        rows={2}
+                                                        className="w-full resize-none border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:border-violet-500 focus:ring-violet-500 rounded-md text-sm min-h-[36px] sm:min-h-[40px] max-h-[100px] sm:max-h-[120px] py-2 px-3"
+                                                        rows={1}
                                                         onKeyDown={(e) => {
                                                             if (e.key === 'Enter' && !e.shiftKey) {
                                                                 e.preventDefault()
@@ -1511,27 +1510,30 @@ export default function FeedPage() {
                                                             }
                                                         }}
                                                     />
-                                                    <Button
-                                                        size="icon"
-                                                        className="rounded-full p-2 bg-violet-500 text-white hover:bg-violet-600 disabled:opacity-50"
-                                                        onClick={handleCommentSubmit}
-                                                        disabled={!newComment.trim()}
-                                                    >
-                                                        <Send className="h-4 w-4"/>
-                                                    </Button>
+                                                    <div className="flex justify-end mt-2">
+                                                        <Button
+                                                            size="sm"
+                                                            className="px-4 py-1.5 bg-violet-500 text-white hover:bg-violet-600 disabled:opacity-50 text-xs"
+                                                            onClick={handleCommentSubmit}
+                                                            disabled={!newComment.trim()}
+                                                        >
+                                                            <Send className="h-3 w-3 mr-1"/>
+                                                            전송
+                                                        </Button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </TabsContent>
                                 </Tabs>
 
-                                <div className="border-t border-gray-100 p-4 flex-shrink-0">
+                                <div className="border-t border-gray-100 dark:border-gray-700 p-3 sm:p-4 flex-shrink-0 bg-white dark:bg-gray-800">
                                     <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-1 sm:gap-2">
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                className={`text-gray-600 transition-all duration-200 ${
+                                                className={`text-gray-600 transition-all duration-200 px-2 sm:px-3 py-1.5 ${
                                                     detailedPost.likedByMe
                                                         ? 'text-red-500 hover:text-red-600'
                                                         : 'hover:text-red-500'
@@ -1547,21 +1549,21 @@ export default function FeedPage() {
                                                     fill={detailedPost.likedByMe ? "#ef4444" : "none"}
                                                     stroke={detailedPost.likedByMe ? "#ef4444" : "currentColor"}
                                                 />
-                                                {detailedPost.likes}
+                                                <span className="text-sm">{detailedPost.likes}</span>
                                             </Button>
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                className="text-gray-600 hover:text-violet-500"
+                                                className="text-gray-600 hover:text-violet-500 px-2 sm:px-3 py-1.5"
                                                 onClick={() => setActiveTab("comments")}
                                             >
                                                 <MessageCircle className="h-4 w-4 mr-1"/>
-                                                {detailedPost.comments}
+                                                <span className="text-sm">{detailedPost.comments}</span>
                                             </Button>
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                className={`text-gray-600 transition-all duration-200 ${
+                                                className={`text-gray-600 transition-all duration-200 px-2 sm:px-3 py-1.5 ${
                                                     detailedPost.bookmarkedByMe
                                                         ? 'text-orange-500 hover:text-orange-600'
                                                         : 'hover:text-orange-500'
@@ -1577,7 +1579,7 @@ export default function FeedPage() {
                                                     fill={detailedPost.bookmarkedByMe ? "#f97316" : "none"}
                                                     stroke={detailedPost.bookmarkedByMe ? "#f97316" : "currentColor"}
                                                 />
-                                                저장
+                                                <span className="text-sm hidden sm:inline">저장</span>
                                             </Button>
                                         </div>
                                     </div>

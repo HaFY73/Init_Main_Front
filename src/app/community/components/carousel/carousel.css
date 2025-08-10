@@ -4,18 +4,20 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 500px; /* Adjusted to ensure cards are not cut off */
+  min-height: 500px;
   position: relative;
   width: 100%;
-  padding-bottom: 2rem;
+  padding: 0 80px 2rem; /* 좌우 패딩 추가로 네비게이션 버튼 공간 확보 */
+  box-sizing: border-box;
 }
 
 .carousel {
   position: relative;
-  width: 25rem; /* Increased width slightly */
-  height: 30rem; /* Increased height slightly */
+  width: min(25rem, calc(100vw - 160px)); /* 화면 크기에 따라 동적 조정 */
+  height: 30rem;
   perspective: 500px;
   transform-style: preserve-3d;
+  margin: 0 auto; /* 중앙 정렬 보장 */
 }
 
 .card-container {
@@ -45,6 +47,35 @@
 
 .card-container[style*="--active: 1"] .card {
   background-color: white;
+}
+
+/* 다크 모드 카드 스타일 */
+.dark .card {
+  background-color: hsl(220deg, 20%, calc(20% + var(--abs-offset) * 20%));
+  color: #e5e7eb;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), 0 6px 6px rgba(0, 0, 0, 0.2);
+}
+
+.dark .card-container[style*="--active: 1"] .card {
+  background-color: #1f2937;
+  color: #f9fafb;
+}
+
+.dark .author-name {
+  color: #f9fafb;
+}
+
+.dark .post-content {
+  color: #e5e7eb;
+}
+
+.dark .post-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .post-stats {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .post-header {
@@ -177,6 +208,18 @@
   border-radius: 50%;
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
+  transform: translateY(-50%); /* 기본 변환 추가 */
+}
+
+/* 다크 모드 네비게이션 버튼 */
+.dark .nav {
+  background: #374151;
+  border: 1px solid #4b5563;
+  color: #f9fafb;
+}
+
+.dark .nav:hover {
+  background-color: #4b5563;
 }
 
 .nav:hover {
@@ -187,57 +230,117 @@
 
 .nav.left {
   left: -70px;
-  transform: translateY(-50%);
 }
 
 .nav.right {
   right: -70px;
-  transform: translateY(-50%);
 }
 
 @media (max-width: 768px) {
+  .carousel-container-wrapper {
+    padding: 0 60px 2rem; /* 모바일에서 패딩 축소 */
+    min-height: 450px;
+  }
+  
   .carousel {
-    width: 20rem;
-    height: 28rem; /* Adjusted height for smaller screens */
+    width: min(20rem, calc(100vw - 120px)); /* 모바일에서 더 작게 */
+    height: 28rem;
   }
+  
   .nav.left {
-    left: -20px;
+    left: -50px; /* 캐러셀에 더 가깝게 */
   }
+  
   .nav.right {
-    right: -20px;
+    right: -50px;
   }
+  
   .nav {
     width: 40px;
     height: 40px;
   }
+  
   .nav svg {
     width: 20px;
     height: 20px;
   }
+  
   .post-content {
-    -webkit-line-clamp: 5; /* Adjust for smaller card */
+    -webkit-line-clamp: 5;
   }
 }
 
 @media (max-width: 480px) {
+  .carousel-container-wrapper {
+    padding: 0 50px 2rem; /* 더 작은 화면에서 패딩 축소 */
+    min-height: 400px;
+  }
+  
   .carousel {
-    width: calc(100vw - 4rem);
-    height: 26rem; /* Adjusted height for very small screens */
+    width: min(18rem, calc(100vw - 100px)); /* 최소 화면에서 최적화 */
+    height: 26rem;
   }
+  
   .nav.left {
-    left: -10px;
+    left: -40px; /* 더 가깝게 */
   }
+  
   .nav.right {
-    right: -10px;
+    right: -40px;
   }
+  
+  .nav {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .nav svg {
+    width: 18px;
+    height: 18px;
+  }
+  
   .post-content {
-    -webkit-line-clamp: 4; /* Adjust for very small card */
+    -webkit-line-clamp: 4;
   }
+  
   .post-title {
     font-size: 0.9rem;
   }
+  
   .post-category-badge {
     font-size: 0.65rem;
+  }
+}
+
+/* 아주 작은 화면 (320px 이하)을 위한 추가 최적화 */
+@media (max-width: 360px) {
+  .carousel-container-wrapper {
+    padding: 0 40px 1.5rem;
+    min-height: 380px;
+  }
+  
+  .carousel {
+    width: calc(100vw - 80px); /* 최대한 화면 활용 */
+    height: 24rem;
+  }
+  
+  .nav.left {
+    left: -35px;
+  }
+  
+  .nav.right {
+    right: -35px;
+  }
+  
+  .nav {
+    width: 32px;
+    height: 32px;
+    font-size: 1.2rem;
+  }
+  
+  .nav svg {
+    width: 16px;
+    height: 16px;
   }
 }
 

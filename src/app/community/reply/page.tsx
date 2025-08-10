@@ -443,10 +443,10 @@ export default function ReplyPage() {
     }
 
     const EmptyState = ({title, description, icon: Icon}: { title: string; description: string; icon: LucideIcon }) => (
-        <div className="text-center py-12 bg-white rounded-lg shadow-sm">
-            <Icon className="h-12 w-12 mx-auto text-gray-300 mb-4"/>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">{title}</h3>
-            <p className="text-gray-500 max-w-md mx-auto">{description}</p>
+        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <Icon className="h-12 w-12 mx-auto text-gray-300 dark:text-gray-600 mb-4"/>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">{title}</h3>
+            <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">{description}</p>
         </div>
     )
 
@@ -466,70 +466,70 @@ export default function ReplyPage() {
         return width
     }
 
-    // 로딩 상태
-    if (loading) {
-        return (
-            <motion.div
-                initial={{opacity: 0, y: 30}}
-                animate={{opacity: 1, y: 0}}
-                transition={{duration: 0.6, ease: "easeOut"}}
-                className="community-content bg-gradient-to-br from-violet-50 to-indigo-100 min-h-screen"
-            >
-                <div className="community-container">
-                    <div className="community-main">
-                        <div className="flex justify-center items-center h-full py-20">
-                            <div className="flex flex-col items-center">
-                                <div
-                                    className="animate-spin rounded-full h-12 w-12 border-b-2 border-violet-500 mb-4"></div>
-                                <p className="text-gray-600">댓글을 불러오는 중...</p>
+                // 로딩 상태
+                if (loading) {
+                    return (
+                        <motion.div
+                            initial={{opacity: 0, y: 30}}
+                            animate={{opacity: 1, y: 0}}
+                            transition={{duration: 0.6, ease: "easeOut"}}
+                            className="community-content community-light-gradient dark:community-dark-gradient min-h-screen"
+                        >
+                            <div className="community-container">
+                                <div className="community-main">
+                                    <div className="flex justify-center items-center h-full py-20">
+                                        <div className="flex flex-col items-center">
+                                            <div
+                                                className="animate-spin rounded-full h-12 w-12 border-b-2 border-violet-500 mb-4"></div>
+                                            <p className="text-gray-600 dark:text-gray-300">댓글을 불러오는 중...</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </motion.div>
-        )
-    }
+                        </motion.div>
+                    )
+                }
 
-    // 에러 상태
-    if (error) {
-        return (
-            <motion.div
-                initial={{opacity: 0, y: 30}}
-                animate={{opacity: 1, y: 0}}
-                transition={{duration: 0.6, ease: "easeOut"}}
-                className="community-content bg-gradient-to-br from-violet-50 to-indigo-100 min-h-screen"
-            >
-                <div className="community-container">
-                    <div className="community-main">
-                        <div className="w-full max-w-[1200px] mx-auto px-12 md:px-6 lg:px-14 py-8">
-                            <div className="mb-6 pt-8">
-                                <h1 className="text-2xl font-bold text-gray-900 mb-1 flex items-center">
-                                    <MessageSquare className="mr-2 h-6 w-6"/>
-                                    내 댓글
-                                </h1>
-                                <p className="text-gray-500">내가 작성한 댓글과 해당 게시글을 확인하세요.</p>
+                // 에러 상태
+                if (error) {
+                    return (
+                        <motion.div
+                            initial={{opacity: 0, y: 30}}
+                            animate={{opacity: 1, y: 0}}
+                            transition={{duration: 0.6, ease: "easeOut"}}
+                            className="community-content community-light-gradient dark:community-dark-gradient min-h-screen"
+                        >
+                            <div className="community-container">
+                                <div className="community-main">
+                                    <div className="w-full max-w-[1200px] mx-auto px-12 md:px-6 lg:px-14 py-8">
+                                        <div className="mb-6 pt-8">
+                                            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1 flex items-center">
+                                                <MessageSquare className="mr-2 h-6 w-6"/>
+                                                내 댓글
+                                            </h1>
+                                            <p className="text-gray-500 dark:text-gray-400">내가 작성한 댓글과 해당 게시글을 확인하세요.</p>
+                                        </div>
+
+                                        <EmptyState
+                                            title="댓글을 불러올 수 없습니다"
+                                            description={error}
+                                            icon={MessageSquare}
+                                        />
+
+                                        <div className="text-center mt-4">
+                                            <Button
+                                                onClick={() => window.location.reload()}
+                                                className="bg-violet-500 hover:bg-violet-600 text-white"
+                                            >
+                                                다시 시도
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-
-                            <EmptyState
-                                title="댓글을 불러올 수 없습니다"
-                                description={error}
-                                icon={MessageSquare}
-                            />
-
-                            <div className="text-center mt-4">
-                                <Button
-                                    onClick={() => window.location.reload()}
-                                    className="bg-violet-500 hover:bg-violet-600 text-white"
-                                >
-                                    다시 시도
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </motion.div>
-        )
-    }
+                        </motion.div>
+                    )
+                }
 
     return (
         <CommunityLayout>
@@ -537,9 +537,9 @@ export default function ReplyPage() {
                 initial={{opacity: 0, y: 30}}
                 animate={{opacity: 1, y: 0}}
                 transition={{duration: 0.6, ease: "easeOut"}}
-                className="community-content bg-gradient-to-br from-violet-50 to-indigo-100 min-h-screen"
+                className="community-content community-light-gradient dark:community-dark-gradient min-h-screen"
             >
-                <div className="community-container bg-yellow-50">
+                <div className="community-container">
                     <div className="community-main">
                         <div className="community-reply-container">
                             {/* Header */}

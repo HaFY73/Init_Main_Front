@@ -453,9 +453,9 @@ export default function BookmarkPage() {
                 initial={{opacity: 0, y: 30}}
                 animate={{opacity: 1, y: 0}}
                 transition={{duration: 0.6, ease: "easeOut"}}
-                className="flex flex-1 flex-col min-h-screen bg-gradient-to-br from-violet-50 to-indigo-100"
+                className="flex flex-1 flex-col min-h-screen community-light-gradient dark:community-dark-gradient"
             >
-                <div className="community-container bg-red-50">
+                <div className="community-container">
                     <div className="community-main">
                         <div className="community-bookmark-container">
                             {/* 🔥 프로필 필수 알림 - 배너 형태 */}

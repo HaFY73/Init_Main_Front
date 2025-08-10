@@ -181,17 +181,17 @@ function ProfileCard({ profile, skills, onEditProfile }: { profile: ProfileData,
         <motion.div ref={ref} initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.5 }}>
             <Card className="p-6 overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-indigo-100 to-purple-100 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-full -mr-32 -mt-32 opacity-50"></div>
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between relative z-10">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between relative z-10 gap-4 md:gap-0">
                     <div className="flex items-center">
                         <div className="relative">
-                            <motion.div className="w-20 h-20 overflow-hidden bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-lg" whileHover={{ scale: 1.05 }} transition={{ type: "spring", stiffness: 400, damping: 10 }}>
+                            <motion.div className="w-16 h-16 sm:w-20 sm:h-20 overflow-hidden bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-lg" whileHover={{ scale: 1.05 }} transition={{ type: "spring", stiffness: 400, damping: 10 }}>
                                 <div className="absolute inset-0 flex items-center justify-center text-white">
-                                    <span className="text-3xl font-semibold">{profile.name.charAt(0)}</span>
+                                    <span className="text-2xl sm:text-3xl font-semibold">{profile.name.charAt(0)}</span>
                                 </div>
                             </motion.div>
                         </div>
-                        <div className="ml-5">
-                            <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">{profile.name}</h2>
+                        <div className="ml-4 sm:ml-5">
+                            <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-100">{profile.name}</h2>
                             <div className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                                 <span>{profile.careerLevel}</span>
                                 <span className="mx-2">|</span>
@@ -199,8 +199,12 @@ function ProfileCard({ profile, skills, onEditProfile }: { profile: ProfileData,
                             </div>
                         </div>
                     </div>
-                    <Button className="mt-4 md:mt-0 flex items-center gap-1 dark:border-gray-700 dark:text-gray-300 px-4 py-2" onClick={onEditProfile}>
-                        <Edit2 className="w-4 h-4" /><span>프로필 수정</span>
+                    <Button 
+                        className="flex items-center gap-1 sm:gap-2 dark:border-gray-700 dark:text-gray-300 px-3 sm:px-4 py-2 text-sm w-full md:w-auto justify-center md:justify-start" 
+                        onClick={onEditProfile}
+                    >
+                        <Edit2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span>프로필 수정</span>
                     </Button>
                 </div>
                 <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800 relative z-10">
@@ -262,17 +266,19 @@ function StatCard({ title, value, icon, onSave }: { title: string; value: string
     const handleSave = () => { onSave(editValue); setIsEditing(false); };
     return (
         <motion.div ref={ref} initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.5 }} whileHover={{ y: -5 }}>
-            <Card className="p-4 relative z-10 overflow-hidden">
+            <Card className="p-3 sm:p-4 relative z-10 overflow-hidden">
                 <div className="flex items-center justify-between relative z-10">
-                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">{title}</h3>
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded-xl">{icon}</div>
+                    <h3 className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">{title}</h3>
+                    <div className="p-1.5 sm:p-2 bg-gray-50 dark:bg-gray-800 rounded-xl">{icon}</div>
                 </div>
                 {isEditing ? (
                     <div className="mt-2 flex gap-2">
-                        <Input value={editValue} onChange={(e) => setEditValue(e.target.value)} autoFocus onKeyDown={(e) => { if (e.key === "Enter") handleSave(); }} />
-                        <Button className="bg-indigo-500 hover:bg-indigo-600 text-white px-3" onClick={handleSave}>+</Button>
+                        <Input value={editValue} onChange={(e) => setEditValue(e.target.value)} autoFocus onKeyDown={(e) => { if (e.key === "Enter") handleSave(); }} className="text-sm" />
+                        <Button className="bg-indigo-500 hover:bg-indigo-600 text-white px-2 sm:px-3 text-sm" onClick={handleSave}>+</Button>
                     </div>
-                ) : (<p className="mt-2 text-xl font-semibold text-gray-800 dark:text-gray-100 cursor-pointer hover:text-indigo-600" onClick={() => setIsEditing(true)}>{value}</p>)}
+                ) : (
+                    <p className="mt-2 text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-100 cursor-pointer hover:text-indigo-600 break-words" onClick={() => setIsEditing(true)}>{value}</p>
+                )}
             </Card>
         </motion.div>
     );
@@ -1017,35 +1023,50 @@ export default function SpecManagementView() {
     const allDataForPdf = { profile, skills, workExperiences, educations, certificates, links, projects, activities };
 
     return (
-        <main className="bg-gray-50 dark:bg-gray-950 min-h-screen p-4 sm:p-6 lg:p-8 transition-all duration-300">
-            <div className="max-w-5xl mx-auto space-y-8 w-full">
-                <div className="flex items-center justify-between">
-                    <h1 className="flex items-center text-3xl font-bold text-gray-800 dark:text-gray-100">
-                        <span role="img" aria-label="document" className="mr-3">📋</span>
+        <main className="bg-gray-50 dark:bg-gray-950 min-h-screen p-3 sm:p-4 md:p-8 lg:p-10 transition-all duration-300">
+            <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8 w-full">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <h1 className="flex items-center text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100">
+                        <span role="img" aria-label="document" className="mr-2 sm:mr-3">📋</span>
                         스펙 관리
                     </h1>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 sm:gap-2 w-full sm:w-auto">
+                        {/* 템플릿 선택 버튼 */}
                         <Button
                             onClick={() => setIsTemplateSelectorOpen(true)}
-                            className="bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-2 px-4 py-2"
+                            className="bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 text-xs sm:text-sm flex-1 sm:flex-none justify-center"
+                            title="템플릿 선택"
                         >
-                            <Palette className="w-4 h-4" />
-                            템플릿 선택
+                            <Palette className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                            <span className="hidden sm:inline whitespace-nowrap">템플릿 선택</span>
+                            <span className="sm:hidden text-xs">템플릿</span>
                         </Button>
+                        
+                        {/* 공유 링크 버튼 */}
                         <Button
                             onClick={() => alert('공유 기능은 현재 개발 중입니다. DB 연결 및 호스팅 후 구현될 예정입니다.')}
-                            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 px-4 py-2"
+                            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 text-xs sm:text-sm flex-1 sm:flex-none justify-center"
+                            title="공유 링크 만들기"
                         >
-                            <Share2 className="w-4 h-4" />
-                            공유 링크 만들기
+                            <Share2 className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                            <span className="hidden sm:inline whitespace-nowrap">공유 링크 만들기</span>
+                            <span className="sm:hidden text-xs">공유</span>
                         </Button>
+                        
+                        {/* PDF 내보내기 버튼 */}
                         <Button
                             onClick={handleExportToPdf}
                             disabled={isExportingPdf || jsPdfStatus !== 'ready' || html2canvasStatus !== 'ready'}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-2 disabled:bg-gray-400 px-4 py-2"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1 sm:gap-2 disabled:bg-gray-400 px-2 sm:px-4 py-2 text-xs sm:text-sm flex-1 sm:flex-none justify-center"
+                            title={isExportingPdf ? '내보내는 중...' : (jsPdfStatus !== 'ready' || html2canvasStatus !== 'ready' ? '준비 중...' : 'PDF로 내보내기')}
                         >
-                            <FileDown className="w-4 h-4" />
-                            {isExportingPdf ? '내보내는 중...' : (jsPdfStatus !== 'ready' || html2canvasStatus !== 'ready' ? '준비 중...' : 'PDF로 내보내기')}
+                            <FileDown className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                            <span className="hidden sm:inline whitespace-nowrap">
+                                {isExportingPdf ? '내보내는 중...' : (jsPdfStatus !== 'ready' || html2canvasStatus !== 'ready' ? '준비 중...' : 'PDF로 내보내기')}
+                            </span>
+                            <span className="sm:hidden text-xs">
+                                {isExportingPdf ? '처리중' : (jsPdfStatus !== 'ready' || html2canvasStatus !== 'ready' ? '준비중' : 'PDF')}
+                            </span>
                         </Button>
                     </div>
                 </div>
@@ -1053,10 +1074,10 @@ export default function SpecManagementView() {
                 <ProfileCard profile={profile} skills={skills} onEditProfile={() => setIsProfileEditOpen(true)} />
                 <IntroductionCard introduction={profile.introduction} onSave={(intro) => handleSave('introduction', intro)} />
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <StatCard title="총 경력" value={careerStats.experience || "경력 입력"} icon={<Briefcase className="w-5 h-5 text-indigo-600" />} onSave={(val) => handleSave('stats_experience', val)} />
-                    <StatCard title="총 업무기록" value={careerStats.workRecords || "업무기록 입력"} icon={<FileCheck className="w-5 h-5 text-purple-600" />} onSave={(val) => handleSave('stats_workRecords', val)} />
-                    <StatCard title="내 커리어 목표" value={careerStats.careerGoal || "목표 입력"} icon={<Target className="w-5 h-5 text-emerald-600" />} onSave={(val) => handleSave('stats_careerGoal', val)} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                    <StatCard title="총 경력" value={careerStats.experience || "경력 입력"} icon={<Briefcase className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />} onSave={(val) => handleSave('stats_experience', val)} />
+                    <StatCard title="총 업무기록" value={careerStats.workRecords || "업무기록 입력"} icon={<FileCheck className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />} onSave={(val) => handleSave('stats_workRecords', val)} />
+                    <StatCard title="내 커리어 목표" value={careerStats.careerGoal || "목표 입력"} icon={<Target className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />} onSave={(val) => handleSave('stats_careerGoal', val)} />
                 </div>
 
                 <div className="space-y-4">

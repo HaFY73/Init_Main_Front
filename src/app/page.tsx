@@ -225,7 +225,7 @@ export default function Home() {
                         </motion.div>
 
                         <motion.div
-                            className="relative h-[400px] rounded-xl overflow-hidden shadow-xl"
+                            className="relative rounded-xl overflow-hidden shadow-xl"
                             initial={{ opacity: 0, x: 50 }}
                             whileInView={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.8 }}

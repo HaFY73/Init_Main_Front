@@ -76,7 +76,7 @@ export const CategoryDropdown = memo<CategoryDropdownProps>(function CategoryDro
     <div className="relative inline-block">
       <div
         ref={buttonRef}
-        className="flex items-center gap-1 px-5 py-2.5 cursor-pointer text-gray-700 hover:text-violet-600 transition-all duration-200 rounded-full hover:bg-violet-50 border border-gray-300 shadow-sm bg-white"
+        className="flex items-center gap-1 px-5 py-2.5 cursor-pointer text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400 transition-all duration-200 rounded-full hover:bg-violet-50 dark:hover:bg-violet-900/30 border border-gray-300 dark:border-gray-600 shadow-sm bg-white dark:bg-gray-800"
         onMouseEnter={() => setIsOpen(true)}
         onMouseLeave={() => {
           setTimeout(() => {
@@ -112,7 +112,7 @@ export const CategoryDropdown = memo<CategoryDropdownProps>(function CategoryDro
               ${gridCols === 3 ? "grid-cols-3" : ""}
               ${gridCols === 4 ? "grid-cols-4" : ""}
               ${gridCols === 5 ? "grid-cols-5" : ""}
-              gap-1.5 p-1.5 rounded-xl backdrop-blur-md bg-white/30 shadow-lg
+              gap-1.5 p-1.5 rounded-xl backdrop-blur-md bg-white/30 dark:bg-gray-800/30 shadow-lg border border-white/20 dark:border-gray-700/20
             `}
           >
             {categories.map((category, index) => (
@@ -128,13 +128,17 @@ export const CategoryDropdown = memo<CategoryDropdownProps>(function CategoryDro
                   group
                   flex items-center justify-center px-3 py-2.5 text-xs font-medium rounded-lg cursor-pointer
                   transition-all duration-200 transform hover:scale-105
-                  ${selectedKey === category.key ? "text-white" : "text-gray-800 hover:text-white"}
+                  ${selectedKey === category.key ? "text-white" : "text-gray-800 dark:text-gray-200 hover:text-white"}
                 `}
                 style={{
                   backgroundColor: selectedKey === category.key ? category.color : "rgba(255,255,255,0.7)",
                   animationDelay: `${Math.floor(index / gridCols) * 50 + (index % gridCols) * 25}ms`,
                   animationFillMode: "both",
                   "--category-color": category.color,
+                  // 다크 모드에서 배경색 조정
+                  ...(selectedKey !== category.key && document.documentElement.classList.contains('dark')
+                    ? { backgroundColor: "rgba(55, 65, 81, 0.7)" } 
+                    : {}),
                 } as React.CSSProperties}
               >
                 <category.icon
