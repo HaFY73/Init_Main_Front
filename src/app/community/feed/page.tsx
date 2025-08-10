@@ -273,6 +273,23 @@ export default function FeedPage() {
     const userId = getCurrentUserId();
     const router = useRouter()
 
+    // 🔥 화면 크기 감지 함수 추가
+    const useWindowWidth = () => {
+        const [width, setWidth] = useState(1920)
+
+        useEffect(() => {
+            const handleResize = () => setWidth(window.innerWidth)
+            handleResize()
+            window.addEventListener("resize", handleResize)
+            return () => window.removeEventListener("resize", handleResize)
+        }, [])
+
+        return width
+    }
+
+    const windowWidth = useWindowWidth()
+    const isLargeScreen = windowWidth >= 1024
+
     // 🔥 커뮤니티 프로필 존재 여부 확인
     const hasProfile = !profileLoading && myProfile && myProfile.displayName;
     const showProfileRequired = !profileLoading && !hasProfile && userId;
