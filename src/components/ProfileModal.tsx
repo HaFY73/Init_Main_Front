@@ -151,10 +151,10 @@ export default function ProfileModal({isOpen, onClose, userId}: ProfileModalProp
         <Dialog open={isOpen} onOpenChange={onClose}>
           <DialogContent
               className="sm:max-w-[420px] lg:max-w-[480px] max-h-[85vh] overflow-hidden p-0 bg-transparent border-none shadow-2xl mx-4
-             fixed top-1/2 left-[calc(50%+140px)] -translate-x-1/2 -translate-y-1/2 z-50">
+             fixed top-1/2 left-1/2 lg:left-[calc(50%+140px)] -translate-x-1/2 -translate-y-1/2 z-50">
                 <DialogTitle className="sr-only"/>
                 {/* 커스텀 모달 디자인 */}
-                <div className="relative bg-white rounded-2xl overflow-hidden">
+                <div className="relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden">
                     <div
                         className="relative h-28 sm:h-32"
                         style={backgroundStyle}
@@ -222,9 +222,9 @@ export default function ProfileModal({isOpen, onClose, userId}: ProfileModalProp
                                     </div>
 
                                     <div className="mt-3 sm:mt-4 space-y-1">
-                                        <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{profile.displayName}</h3>
+                                        <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{profile.displayName}</h3>
                                         {profile.jobTitle && (
-                                            <p className="text-violet-600 font-medium text-sm sm:text-base">{profile.jobTitle}</p>
+                                            <p className="text-violet-600 dark:text-violet-400 font-medium text-sm sm:text-base">{profile.jobTitle}</p>
                                         )}
                                     </div>
                                 </div>
@@ -234,31 +234,31 @@ export default function ProfileModal({isOpen, onClose, userId}: ProfileModalProp
                                     <div className="flex flex-wrap justify-center gap-2 sm:gap-3 text-sm">
                                         {profile.company && (
                                             <div
-                                                className="flex items-center gap-1.5 sm:gap-2 bg-gray-50 hover:bg-gray-100 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full transition-colors">
-                                                <Building2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500"/>
+                                                className="flex items-center gap-1.5 sm:gap-2 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full transition-colors">
+                                                <Building2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500 dark:text-gray-400"/>
                                                 <span
-                                                    className="text-gray-700 text-xs sm:text-sm">{profile.company}</span>
+                                                    className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">{profile.company}</span>
                                             </div>
                                         )}
                                         {profile.location && (
                                             <div
-                                                className="flex items-center gap-1.5 sm:gap-2 bg-gray-50 hover:bg-gray-100 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full transition-colors">
-                                                <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500"/>
+                                                className="flex items-center gap-1.5 sm:gap-2 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full transition-colors">
+                                                <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500 dark:text-gray-400"/>
                                                 <span
-                                                    className="text-gray-700 text-xs sm:text-sm">{profile.location}</span>
+                                                    className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">{profile.location}</span>
                                             </div>
                                         )}
                                     </div>
                                 )}
 
                                 {/* 소개글 */}
-                                <div className="bg-gray-50 rounded-xl p-3 sm:p-4 border border-gray-100">
+                                <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-3 sm:p-4 border border-gray-100 dark:border-gray-600">
                                     {profile.bio ? (
-                                        <p className="text-gray-700 leading-relaxed text-center whitespace-pre-wrap text-sm sm:text-base">
+                                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-center whitespace-pre-wrap text-sm sm:text-base">
                                             {profile.bio}
                                         </p>
                                     ) : (
-                                        <p className="text-gray-500 text-center italic text-sm sm:text-base">
+                                        <p className="text-gray-500 dark:text-gray-400 text-center italic text-sm sm:text-base">
                                             아직 소개글이 없습니다.
                                         </p>
                                     )}
@@ -271,7 +271,7 @@ export default function ProfileModal({isOpen, onClose, userId}: ProfileModalProp
                                         <div
                                             className="text-xl sm:text-2xl font-bold text-blue-600">{profile.postsCount || 0}</div>
                                         <div
-                                            className="text-xs sm:text-sm text-gray-600 flex items-center justify-center mt-1">
+                                            className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 flex items-center justify-center mt-1">
                                             <MessageSquare className="h-3 w-3 mr-1"/>
                                             게시물
                                         </div>
@@ -281,7 +281,7 @@ export default function ProfileModal({isOpen, onClose, userId}: ProfileModalProp
                                         <div
                                             className="text-xl sm:text-2xl font-bold text-purple-600">{profile.followersCount || 0}</div>
                                         <div
-                                            className="text-xs sm:text-sm text-gray-600 flex items-center justify-center mt-1">
+                                            className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 flex items-center justify-center mt-1">
                                             <Users className="h-3 w-3 mr-1"/>
                                             팔로워
                                         </div>
@@ -291,7 +291,7 @@ export default function ProfileModal({isOpen, onClose, userId}: ProfileModalProp
                                         <div
                                             className="text-xl sm:text-2xl font-bold text-pink-600">{profile.followingCount || 0}</div>
                                         <div
-                                            className="text-xs sm:text-sm text-gray-600 flex items-center justify-center mt-1">
+                                            className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 flex items-center justify-center mt-1">
                                             <Users className="h-3 w-3 mr-1"/>
                                             팔로잉
                                         </div>
@@ -302,7 +302,7 @@ export default function ProfileModal({isOpen, onClose, userId}: ProfileModalProp
                                 {profile.isMutualFollow && (
                                     <div className="flex justify-center">
                                         <Badge variant="outline"
-                                               className="text-violet-600 border-violet-300 bg-violet-50 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm">
+                                               className="text-violet-600 dark:text-violet-400 border-violet-300 dark:border-violet-600 bg-violet-50 dark:bg-violet-900/20 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm">
                                             <Users className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2"/>
                                             서로 팔로우하는 사이
                                         </Badge>

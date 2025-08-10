@@ -224,3 +224,63 @@
     max-width: none;
   }
 }
+
+/* ================================================================
+   스크롤바 숨김 유틸리티
+   ================================================================ */
+
+/* 스크롤바 숨김 유틸리티 클래스 */
+.scrollbar-hide {
+  /* Firefox */
+  scrollbar-width: none;
+  /* IE and Edge */
+  -ms-overflow-style: none;
+}
+
+/* WebKit 브라우저 (Chrome, Safari, Edge) */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ================================================================
+   모바일 카테고리 스타일
+   ================================================================ */
+
+/* 모바일 카테고리 버튼 애니메이션 */
+@media (max-width: 768px) {
+  .mobile-category-button {
+    transition: all 0.2s ease;
+    transform: translateY(0);
+  }
+  
+  .mobile-category-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* 모바일에서 카테고리 스크롤 영역 패딩 */
+  .mobile-category-scroll {
+    padding-left: 16px;
+    padding-right: 16px;
+    margin-left: -16px;
+    margin-right: -16px;
+  }
+}
+
+/* 다크모드 모바일 카테고리 스타일 */
+.dark .mobile-category-button:not(.selected) {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #e5e7eb;
+}
+
+.dark .mobile-category-button:not(.selected):hover {
+  border-color: #8b5cf6;
+  background-color: #4b5563;
+}
+
+.dark .mobile-category-button.selected {
+  background-color: #8b5cf6;
+  border-color: #8b5cf6;
+  color: white;
+}

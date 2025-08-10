@@ -1117,41 +1117,10 @@ export default function FeedPage() {
                                 <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">커뮤니티의 최신 소식을 확인하고 이야기를 나눠보세요.</p>
                             </div>
 
-                            {/* 카테고리 & 검색 */}
-                            <div className="flex flex-col md:flex-row justify-between items-center mb-4 sm:mb-6 md:mb-8 gap-4">
-                                <div
-                                    className="flex justify-center md:justify-start gap-2 order-2 md:order-1 w-full md:w-auto md:flex-grow">
-                                    <CategoryDropdown
-                                        label="직무별 카테고리"
-                                        categories={jobCategoriesList}
-                                        selectedKey={selectedCategoryKey}
-                                        onSelect={handleCategoryClick}
-                                        dropdownWidth={jobCategoriesList.length > 5 ? 700 : jobCategoriesList.length * 140}
-                                        gridCols={jobCategoriesList.length > 5 ? 5 : jobCategoriesList.length}
-                                        align="left"
-                                    />
-                                    <CategoryDropdown
-                                        label="주제별 카테고리"
-                                        categories={topicCategoriesList}
-                                        selectedKey={selectedCategoryKey}
-                                        onSelect={handleCategoryClick}
-                                        dropdownWidth={topicCategoriesList.length * 130}
-                                        gridCols={topicCategoriesList.length}
-                                        align="left"
-                                    />
-                                    {selectedCategoryKey && (
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => setSelectedCategoryKey(null)}
-                                            className="text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 h-full px-3 py-2.5 rounded-full"
-                                            title="필터 해제"
-                                        >
-                                            <FilterX className="h-4 w-4"/>
-                                        </Button>
-                                    )}
-                                </div>
-                                <div className="relative w-full md:w-auto md:max-w-xs order-1 md:order-2">
+                            {/* 카테고리 & 검색 - 모바일 최적화 */}
+                            <div className="flex flex-col gap-4 mb-4 sm:mb-6 md:mb-8">
+                                {/* 모바일: 검색바 먼저 표시 */}
+                                <div className="relative w-full md:hidden">
                                     <Search
                                         className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 h-4 w-4"/>
                                     <Input
@@ -1160,6 +1129,155 @@ export default function FeedPage() {
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         className="pl-10 pr-4 py-2.5 w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-[#6366f1] focus:ring-[#8b5cf6] rounded-full text-sm"
                                     />
+                                </div>
+
+                                {/* 데스크톱: 기존 레이아웃 유지 */}
+                                <div className="hidden md:flex md:flex-row justify-between items-center gap-4">
+                                    <div className="flex justify-center md:justify-start gap-2 md:flex-grow">
+                                        <CategoryDropdown
+                                            label="직무별 카테고리"
+                                            categories={jobCategoriesList}
+                                            selectedKey={selectedCategoryKey}
+                                            onSelect={handleCategoryClick}
+                                            dropdownWidth={jobCategoriesList.length > 5 ? 700 : jobCategoriesList.length * 140}
+                                            gridCols={jobCategoriesList.length > 5 ? 5 : jobCategoriesList.length}
+                                            align="left"
+                                        />
+                                        <CategoryDropdown
+                                            label="주제별 카테고리"
+                                            categories={topicCategoriesList}
+                                            selectedKey={selectedCategoryKey}
+                                            onSelect={handleCategoryClick}
+                                            dropdownWidth={topicCategoriesList.length * 130}
+                                            gridCols={topicCategoriesList.length}
+                                            align="left"
+                                        />
+                                        {selectedCategoryKey && (
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => setSelectedCategoryKey(null)}
+                                                className="text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 h-full px-3 py-2.5 rounded-full"
+                                                title="필터 해제"
+                                            >
+                                                <FilterX className="h-4 w-4"/>
+                                            </Button>
+                                        )}
+                                    </div>
+                                    <div className="relative w-auto max-w-xs">
+                                        <Search
+                                            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 h-4 w-4"/>
+                                        <Input
+                                            placeholder="검색..."
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            className="pl-10 pr-4 py-2.5 w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-[#6366f1] focus:ring-[#8b5cf6] rounded-full text-sm"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* 모바일: 가로 스크롤 카테고리 */}
+                                <div className="block md:hidden">
+                                    {/* 선택된 카테고리 표시 */}
+                                    {selectedCategoryKey && (
+                                        <div className="mb-3 flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                {(() => {
+                                                    const selectedCategory = allCategories.find(c => c.key === selectedCategoryKey);
+                                                    if (!selectedCategory) return null;
+                                                    const Icon = selectedCategory.icon;
+                                                    return (
+                                                        <>
+                                                            <Icon className="h-4 w-4" style={{ color: selectedCategory.color }} />
+                                                            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                                {selectedCategory.label}
+                                                            </span>
+                                                            <span className="text-xs text-gray-500 dark:text-gray-400">선택됨</span>
+                                                        </>
+                                                    );
+                                                })()}
+                                            </div>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => setSelectedCategoryKey(null)}
+                                                className="text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 p-1"
+                                            >
+                                                <FilterX className="h-4 w-4"/>
+                                            </Button>
+                                        </div>
+                                    )}
+                                    
+                                    {/* 스크롤 가능한 카테고리 리스트 */}
+                                    <div className="relative">
+                                        <div className="flex overflow-x-auto pb-2 scrollbar-hide gap-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                                            <style jsx>{`
+                                                div::-webkit-scrollbar {
+                                                    display: none;
+                                                }
+                                            `}</style>
+                                            
+                                            {/* 직무별 카테고리들 */}
+                                            {jobCategoriesList.map((category) => {
+                                                const Icon = category.icon;
+                                                const isSelected = selectedCategoryKey === category.key;
+                                                return (
+                                                    <button
+                                                        key={`job-${category.key}`}
+                                                        onClick={() => handleCategoryClick(category.key)}
+                                                        className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200 border flex-shrink-0 ${
+                                                            isSelected
+                                                                ? 'bg-violet-500 text-white border-violet-500 shadow-md'
+                                                                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-violet-300 dark:hover:border-violet-400 hover:bg-violet-50 dark:hover:bg-gray-700'
+                                                        }`}
+                                                    >
+                                                        <Icon 
+                                                            className="h-3 w-3" 
+                                                            style={{ color: isSelected ? 'white' : category.color }} 
+                                                        />
+                                                        <span>{category.label}</span>
+                                                    </button>
+                                                );
+                                            })}
+                                            
+                                            {/* 구분선 */}
+                                            <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1 flex-shrink-0 self-center"></div>
+                                            
+                                            {/* 주제별 카테고리들 */}
+                                            {topicCategoriesList.map((category) => {
+                                                const Icon = category.icon;
+                                                const isSelected = selectedCategoryKey === category.key;
+                                                return (
+                                                    <button
+                                                        key={`topic-${category.key}`}
+                                                        onClick={() => handleCategoryClick(category.key)}
+                                                        className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200 border flex-shrink-0 ${
+                                                            isSelected
+                                                                ? 'bg-violet-500 text-white border-violet-500 shadow-md'
+                                                                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-violet-300 dark:hover:border-violet-400 hover:bg-violet-50 dark:hover:bg-gray-700'
+                                                        }`}
+                                                    >
+                                                        <Icon 
+                                                            className="h-3 w-3" 
+                                                            style={{ color: isSelected ? 'white' : category.color }} 
+                                                        />
+                                                        <span>{category.label}</span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                        
+                                        {/* 스크롤 힌트 */}
+                                        {!selectedCategoryKey && (
+                                            <div className="flex items-center justify-center mt-2">
+                                                <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                                                    <span>←</span>
+                                                    <span>좌우로 스크롤하여 카테고리 탐색</span>
+                                                    <span>→</span>
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 

@@ -273,21 +273,19 @@ export default function FollowPage() {
                                 </div>
                             )}
 
-                            {/* Users Grid */}
+                            {/* Users Grid - 다크모드 적용 */}
                             {!loading && hasProfile && (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-8">
                                     {filteredUsers.length > 0 ? (
                                         filteredUsers.map((user) => (
                                             <Card
                                                 key={user.userId}
-                                                className="bg-white shadow-sm hover:shadow-md transition-shadow"
+                                                className="bg-white dark:bg-gray-800 shadow-sm hover:shadow-md dark:hover:shadow-lg transition-shadow border-gray-200 dark:border-gray-700"
                                             >
                                                 <CardHeader className="pb-2">
-                                                    <div
-                                                        className="flex flex-col sm:flex-row flex-wrap justify-between gap-3 sm:items-center items-start">
+                                                    <div className="flex flex-col sm:flex-row flex-wrap justify-between gap-3 sm:items-center items-start">
                                                         {/* 아바타 + 유저 정보 */}
-                                                        <div
-                                                            className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                                                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                                                             {(() => {
                                                                 const avatarData = getAvatarData(user.profileImageUrl, user.displayName);
                                                                 return (
@@ -300,12 +298,12 @@ export default function FollowPage() {
                                                                 );
                                                             })()}
                                                             <div>
-                                                                <h3 className="font-semibold text-gray-900">
+                                                                <h3 className="font-semibold text-gray-900 dark:text-gray-100">
                                                                     {user.displayName}
                                                                 </h3>
-                                                                <p className="text-sm text-gray-500">{user.jobTitle}</p>
+                                                                <p className="text-sm text-gray-500 dark:text-gray-400">{user.jobTitle}</p>
                                                                 {user.company && (
-                                                                    <p className="text-xs text-gray-400">{user.company}</p>
+                                                                    <p className="text-xs text-gray-400 dark:text-gray-500">{user.company}</p>
                                                                 )}
                                                             </div>
                                                         </div>
@@ -315,7 +313,7 @@ export default function FollowPage() {
                                                             variant="outline"
                                                             size="sm"
                                                             onClick={() => handleUnfollow(user)}
-                                                            className="w-full sm:w-auto border-[#6366f1] text-[#6366f1] hover:bg-[#6366f1]/10 hover:text-[#6366f1]"
+                                                            className="w-full sm:w-auto border-[#6366f1] text-[#6366f1] hover:bg-[#6366f1]/10 hover:text-[#6366f1] dark:border-[#8b5cf6] dark:text-[#8b5cf6] dark:hover:bg-[#8b5cf6]/10"
                                                         >
                                                             <UserMinus className="h-4 w-4 mr-1"/>
                                                             팔로잉
@@ -326,18 +324,18 @@ export default function FollowPage() {
                                                 <CardContent className="pt-2 pb-4">
                                                     <div className="flex justify-between text-sm">
                                                         <div>
-                                                            <p className="font-medium">{user.followersCount}</p>
-                                                            <p className="text-gray-500">팔로워</p>
+                                                            <p className="font-medium text-gray-900 dark:text-gray-100">{user.followersCount}</p>
+                                                            <p className="text-gray-500 dark:text-gray-400">팔로워</p>
                                                         </div>
                                                         <div>
-                                                            <p className="font-medium">{user.postsCount}</p>
-                                                            <p className="text-gray-500">게시글</p>
+                                                            <p className="font-medium text-gray-900 dark:text-gray-100">{user.postsCount}</p>
+                                                            <p className="text-gray-500 dark:text-gray-400">게시글</p>
                                                         </div>
                                                         <div>
                                                             <Button
                                                                 variant="ghost"
                                                                 size="sm"
-                                                                className="text-[#6366f1] p-0 h-auto hover:bg-transparent"
+                                                                className="text-[#6366f1] dark:text-[#8b5cf6] p-0 h-auto hover:bg-transparent hover:text-[#5854eb] dark:hover:text-[#a78bfa]"
                                                                 onClick={() => {
                                                                     setSelectedUserId(user.userId)
                                                                     setModalOpen(true)
@@ -351,18 +349,17 @@ export default function FollowPage() {
                                             </Card>
                                         ))
                                     ) : (
-                                        <div
-                                            className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-12 bg-white rounded-lg shadow-sm">
-                                            <Users className="h-12 w-12 mx-auto text-gray-300 mb-4"/>
-                                            <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                        <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                                            <Users className="h-12 w-12 mx-auto text-gray-300 dark:text-gray-600 mb-4"/>
+                                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                                                 {searchQuery ? "검색 결과가 없습니다" : "팔로우하는 사용자가 없습니다"}
                                             </h3>
-                                            <p className="text-gray-500 max-w-md mx-auto">
+                                            <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
                                                 {searchQuery ? "다른 검색어로 시도해보세요." : "피드에서 다른 사용자들을 팔로우해보세요."}
                                             </p>
                                             <Button
                                                 onClick={() => router.push("/community/feed")}
-                                                className="mt-4"
+                                                className="mt-4 bg-[#6366f1] hover:bg-[#5854eb] text-white"
                                             >
                                                 피드로 이동
                                             </Button>
