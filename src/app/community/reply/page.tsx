@@ -690,10 +690,10 @@ export default function ReplyPage() {
                                 onValueChange={(value) => setActiveTab(value as "post" | "comments")}
                                 className="flex-1 flex flex-col overflow-hidden"
                             >
-                                <div className="flex border-b border-gray-200 dark:border-gray-700 px-6">
+                                <div className="flex border-b border-gray-200 dark:border-gray-700">
                                     <button
                                         onClick={() => setActiveTab("post")}
-                                        className={`py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                                        className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors text-center ${
                                             activeTab === "post"
                                                 ? "border-violet-500 text-violet-600 dark:text-violet-400"
                                                 : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
@@ -703,7 +703,7 @@ export default function ReplyPage() {
                                     </button>
                                     <button
                                         onClick={() => setActiveTab("comments")}
-                                        className={`py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                                        className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors text-center ${
                                             activeTab === "comments"
                                                 ? "border-violet-500 text-violet-600 dark:text-violet-400"
                                                 : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"

@@ -1420,7 +1420,7 @@ export default function FeedPage() {
                             setVisibleComments(5);
                         }}>
                             <DialogContent
-                                className="w-full max-w-3xl sm:p-6 p-4 h-[90vh] sm:h-[85vh] max-h-[95vh] sm:max-h-[900px] flex flex-col overflow-hidden mx-auto md:ml-[10rem]">
+                                className="w-full max-w-2xl sm:p-6 p-4 h-[85vh] sm:h-[80vh] max-h-[85vh] sm:max-h-[80vh] flex flex-col overflow-hidden mx-auto">
                                 <DialogHeader className="p-6 pb-3 border-b border-gray-100 flex-shrink-0">
                                     <div className="flex items-center justify-between w-full">
                                         <div className="flex items-center gap-3">
@@ -1461,10 +1461,10 @@ export default function FeedPage() {
                                 <Tabs value={activeTab}
                                       onValueChange={(value) => setActiveTab(value as "post" | "comments")}
                                       className="flex-1 flex flex-col overflow-hidden">
-                                    <div className="flex border-b border-gray-200 dark:border-gray-700 px-6">
+                                    <div className="flex border-b border-gray-200 dark:border-gray-700">
                                         <button
                                             onClick={() => setActiveTab("post")}
-                                            className={`py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                                            className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors text-center ${
                                                 activeTab === "post"
                                                     ? "border-violet-500 text-violet-600 dark:text-violet-400"
                                                     : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
@@ -1474,7 +1474,7 @@ export default function FeedPage() {
                                         </button>
                                         <button
                                             onClick={() => setActiveTab("comments")}
-                                            className={`py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                                            className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors text-center ${
                                                 activeTab === "comments"
                                                     ? "border-violet-500 text-violet-600 dark:text-violet-400"
                                                     : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
@@ -1486,7 +1486,7 @@ export default function FeedPage() {
 
                                     {/* 게시글 탭 */}
                                     <div className={`flex-1 px-6 py-4 overflow-auto bg-white dark:bg-gray-800 ${activeTab === "post" ? "block" : "hidden"}`}
-                                         style={{minHeight: '300px', maxHeight: 'calc(90vh - 180px)'}}>
+                                         style={{minHeight: '250px', maxHeight: 'calc(80vh - 160px)'}}>
                                         <div className="space-y-4 pr-2">
                                             {detailedPost.imageUrl && (
                                                 <div className="relative w-full h-[300px] rounded-md">
@@ -1522,7 +1522,7 @@ export default function FeedPage() {
 
                                     {/* 댓글 탭 */}
                                     <div className={`flex-1 flex flex-col min-h-0 overflow-hidden ${activeTab === "comments" ? "flex" : "hidden"}`}>
-                                        <div className="flex-1 overflow-auto px-6 py-4" style={{maxHeight: 'calc(90vh - 250px)'}}>
+                                        <div className="flex-1 overflow-auto px-6 py-4" style={{maxHeight: 'calc(80vh - 220px)'}}>
                                             {detailedPost.commentsList && detailedPost.commentsList.length > 0 ? (
                                                 <div className="space-y-4">
                                                     {detailedPost.commentsList.slice(0, visibleComments).map((comment) => (

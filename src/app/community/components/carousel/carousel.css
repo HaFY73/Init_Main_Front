@@ -357,6 +357,13 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
+/* 다크모드 필터 토글 */
+.dark .filter-toggle {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
 .filter-background {
   position: absolute;
   top: 8px;
@@ -368,6 +375,12 @@
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   z-index: 1;
+}
+
+/* 다크모드 필터 배경 */
+.dark .filter-background {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(139, 92, 246, 0.2));
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.2);
 }
 
 .filter-background.left {
@@ -394,9 +407,20 @@
   color: #4b5563;
 }
 
+/* 다크모드 필터 버튼 */
+.dark .filter-button {
+  color: #9ca3af;
+}
+
 .filter-button.active {
   color: #6366f1;
   text-shadow: none;
+}
+
+/* 다크모드 활성 필터 버튼 */
+.dark .filter-button.active {
+  color: #a78bfa;
+  text-shadow: 0 0 10px rgba(167, 139, 250, 0.3);
 }
 
 .filter-button.active .filter-icon {
@@ -436,6 +460,11 @@
   font-style: italic;
   margin-top: 0.5rem;
   animation: fadeIn 0.5s ease-in-out;
+}
+
+/* 다크모드 필터 설명 */
+.dark .filter-description {
+  color: #9ca3af;
 }
 
 @keyframes fadeIn {

@@ -151,8 +151,7 @@ export default function ProfileModal({isOpen, onClose, userId}: ProfileModalProp
         <Dialog open={isOpen} onOpenChange={onClose}>
           <DialogContent
               className="sm:max-w-[420px] lg:max-w-[480px] max-h-[85vh] overflow-hidden p-0 bg-transparent border-none shadow-2xl
-             fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50
-             lg:left-[calc(50%+70px)]">
+             fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
                 <DialogTitle className="sr-only"/>
                 {/* 커스텀 모달 디자인 */}
                 <div className="relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden">
@@ -268,9 +267,9 @@ export default function ProfileModal({isOpen, onClose, userId}: ProfileModalProp
                                 {/* 통계 정보 */}
                                 <div className="grid grid-cols-3 gap-2 sm:gap-3">
                                     <div
-                                        className="text-center bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-3 sm:p-4 border border-blue-100">
+                                        className="text-center bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-3 sm:p-4 border border-blue-100 dark:border-blue-800">
                                         <div
-                                            className="text-xl sm:text-2xl font-bold text-blue-600">{profile.postsCount || 0}</div>
+                                            className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400">{profile.postsCount || 0}</div>
                                         <div
                                             className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 flex items-center justify-center mt-1">
                                             <MessageSquare className="h-3 w-3 mr-1"/>
@@ -278,9 +277,9 @@ export default function ProfileModal({isOpen, onClose, userId}: ProfileModalProp
                                         </div>
                                     </div>
                                     <div
-                                        className="text-center bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl p-3 sm:p-4 border border-purple-100">
+                                        className="text-center bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 rounded-xl p-3 sm:p-4 border border-purple-100 dark:border-purple-800">
                                         <div
-                                            className="text-xl sm:text-2xl font-bold text-purple-600">{profile.followersCount || 0}</div>
+                                            className="text-xl sm:text-2xl font-bold text-purple-600 dark:text-purple-400">{profile.followersCount || 0}</div>
                                         <div
                                             className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 flex items-center justify-center mt-1">
                                             <Users className="h-3 w-3 mr-1"/>
@@ -288,9 +287,9 @@ export default function ProfileModal({isOpen, onClose, userId}: ProfileModalProp
                                         </div>
                                     </div>
                                     <div
-                                        className="text-center bg-gradient-to-br from-pink-50 to-rose-50 rounded-xl p-3 sm:p-4 border border-pink-100">
+                                        className="text-center bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900/20 dark:to-rose-900/20 rounded-xl p-3 sm:p-4 border border-pink-100 dark:border-pink-800">
                                         <div
-                                            className="text-xl sm:text-2xl font-bold text-pink-600">{profile.followingCount || 0}</div>
+                                            className="text-xl sm:text-2xl font-bold text-pink-600 dark:text-pink-400">{profile.followingCount || 0}</div>
                                         <div
                                             className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 flex items-center justify-center mt-1">
                                             <Users className="h-3 w-3 mr-1"/>

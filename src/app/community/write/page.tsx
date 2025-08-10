@@ -906,17 +906,25 @@ export default function WritePage() {
                                                         </PopoverTrigger>
                                                         <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
                                                             <div className="p-4 space-y-4">
-                                                                <div className="flex p-1 rounded-md bg-gray-100 mb-2">
+                                                                <div className="flex p-1 rounded-md bg-gray-100 dark:bg-gray-700 mb-2">
                                                                     <Button
                                                                         variant={categoryType === "job" ? "default" : "ghost"}
-                                                                        className="flex-1 justify-center py-2 text-sm font-medium rounded-md"
+                                                                        className={`flex-1 justify-center py-2 text-sm font-medium rounded-md ${
+                                                                            categoryType === "job" 
+                                                                                ? "bg-violet-500 text-white hover:bg-violet-600" 
+                                                                                : "text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                                                                        }`}
                                                                         onClick={() => handleCategoryTypeChange("job")}
                                                                     >
                                                                         직무별
                                                                     </Button>
                                                                     <Button
                                                                         variant={categoryType === "topic" ? "default" : "ghost"}
-                                                                        className="flex-1 justify-center py-2 text-sm font-medium rounded-md"
+                                                                        className={`flex-1 justify-center py-2 text-sm font-medium rounded-md ${
+                                                                            categoryType === "topic" 
+                                                                                ? "bg-violet-500 text-white hover:bg-violet-600" 
+                                                                                : "text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                                                                        }`}
                                                                         onClick={() => handleCategoryTypeChange("topic")}
                                                                     >
                                                                         주제별
